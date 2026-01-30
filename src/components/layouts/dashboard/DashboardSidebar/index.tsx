@@ -21,15 +21,11 @@ const DashboardSidebar = () => {
 
   return (
     <div
-      className={`hidden md:w-[240px] h-screen shrink-0 overflow-x-hidden overflow-y-auto md:flex flex-col bg-[#111]`}
+      className={`hidden md:w-[240px] h-screen shrink-0 overflow-x-hidden overflow-y-auto md:flex flex-col bg-[#111] gap-8`}
     >
-      <div className="px-6 py-6.5">
+      <div className="px-6 py-6">
         <Link href="/">
-          <img
-            src="/icons/logo.svg"
-            className="mb-8 object-contain"
-            alt="logo"
-          />
+          <img src="/icons/logo.svg" className="object-contain" alt="logo" />
         </Link>
       </div>
 

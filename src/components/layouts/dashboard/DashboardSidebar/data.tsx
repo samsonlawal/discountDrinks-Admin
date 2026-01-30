@@ -16,7 +16,7 @@ export const NAVBAR_TOP_LINKS: INavbarLink[] = [
     id: "1",
     title: "Dashboard",
     url: "/dashboard",
-    icon: "/icons/home.svg",
+    icon: "/icons/house.svg",
     trigger: "url",
   },
 
@@ -32,7 +32,7 @@ export const NAVBAR_TOP_LINKS: INavbarLink[] = [
     id: "3",
     title: "Products",
     url: "/dashboard/products",
-    icon: "/icons/tags.svg",
+    icon: "/icons/tag.svg",
     trigger: "url",
   },
 
@@ -48,7 +48,7 @@ export const NAVBAR_TOP_LINKS: INavbarLink[] = [
     id: "5",
     title: "Orders",
     url: "/dashboard/orders",
-    icon: "/icons/orders.svg",
+    icon: "/icons/receipt.svg",
     trigger: "url",
   },
 
@@ -82,14 +82,14 @@ export const NAVBAR_BOTTOM_LINKS: INavbarLink[] = [
     id: "1",
     title: "Settings",
     url: "/dashboard/settings",
-    icon: "/icons/settings.svg",
+    icon: "/icons/gear.svg",
     trigger: "url",
   },
 
   {
     id: "2",
     title: "Logout",
-    icon: "/icons/logout.svg",
+    icon: "/icons/sign-out.svg",
     trigger: "action",
     action: "logout",
   },
