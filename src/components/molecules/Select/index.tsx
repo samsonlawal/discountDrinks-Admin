@@ -33,7 +33,8 @@ export const Select = ({
 
   return (
     <SelectContext.Provider
-      value={{ isOpen, toggle, currentValue, setValue, onChange }}>
+      value={{ isOpen, toggle, currentValue, setValue, onChange }}
+    >
       <div className="flex">
         <div className="relative">{children}</div>
       </div>
@@ -56,13 +57,14 @@ export const SelectContent = ({
         `${
           isOpen ? "block" : "hidden"
         } absolute right-0 origin-bottom-right bottom-4 z-10 mt-2 w-auto rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none`,
-        className
+        className,
       )}
       role="menu"
       aria-orientation="vertical"
       aria-labelledby="menu-button"
       tabIndex={-1}
-      ref={ref}>
+      ref={ref as React.RefObject<HTMLDivElement>}
+    >
       <div className="py-1" role="none">
         {children}
       </div>
@@ -96,9 +98,10 @@ export const SelectLabel = ({
         aria-haspopup="true"
         className={cn(
           "inline-flex w-full justify-center space-x-[2px] bg-white px-3 py-2 text-sm font-normal text-light-grey-g1 leading-[22px] hover:bg-gray-50",
-          className
+          className,
         )}
-        onClick={onToggle}>
+        onClick={onToggle}
+      >
         <span>{prefixIconName && prefixIcon}</span>
         {currentValue || label}
         <span>{icon}</span>
@@ -129,12 +132,13 @@ export const SelectItemButton = ({
     <button
       className={cn(
         "inline-flex px-4 py-2 text-sm text-light-grey-g1 w-full whitespace-nowrap",
-        className
+        className,
       )}
       role="menuitem"
       tabIndex={-1}
       id={id}
-      onClick={onClick}>
+      onClick={onClick}
+    >
       {children}
     </button>
   );

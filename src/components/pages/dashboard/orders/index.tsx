@@ -7,6 +7,7 @@ import Tabs, { ITabItem } from "@/components/molecules/Tabs";
 import { ETagType, IFetchTagQuery } from "@/types";
 import { TableFilter } from "@/components/molecules/TableFilter";
 import { DebounceInput } from "@/components/molecules/TableFilter/TableFilterSearch/DebouceInput";
+import RowActions from "./rowActions";
 
 type Order = {
   id: string;
@@ -70,6 +71,11 @@ const Search = ({
 
 const columns: ColumnDef<Order>[] = [
   {
+    id: "number",
+    header: "#",
+    cell: ({ row }) => <span className="text-gray-600">{row.index + 1}</span>,
+  },
+  {
     accessorKey: "id",
     header: "Order ID",
   },
@@ -88,7 +94,7 @@ const columns: ColumnDef<Order>[] = [
       const status = row.getValue("status") as string;
       return (
         <span
-          className={`px-2 py-1 rounded-full text-xs font-medium ${
+          className={`px-2 py-0.5 rounded-md text-xs font-medium ${
             status === "Completed"
               ? "bg-green-100 text-green-800"
               : status === "Pending"
@@ -110,10 +116,8 @@ const columns: ColumnDef<Order>[] = [
   {
     id: "actions",
     header: "ACTION",
-    cell: () => (
-      <button className="px-2 py-1 bg-gray-100 rounded hover:bg-gray-200 transition-colors">
-        <img src="/icons/dots.svg" className="w-5 h-5" alt="" />
-      </button>
+    cell: ({ row }) => (
+      <RowActions category={row?.original} refresh={() => {}} />
     ),
   },
 ];

@@ -14,6 +14,8 @@ import {
 } from "@/components/molecules/FlyOut";
 import { DeleteDialog } from "@/components/Dialogs/DialogContent/DeleteDialog";
 import { AddDialog } from "@/components/Dialogs/DialogContent/AddDialog";
+import RowActions from "./rowActions";
+import { refresh } from "next/cache";
 
 type Product = {
   name: string;
@@ -195,6 +197,14 @@ const columns: ColumnDef<Product>[] = [
     ),
   },
   {
+    id: "number",
+    header: () => <span className="-ml-6">#</span>,
+    cell: ({ row }) => (
+      <span className="text-gray-600 -ml-6">{row.index + 1}</span>
+    ),
+    size: 30,
+  },
+  {
     accessorKey: "name",
     header: "PRODUCT",
   },
@@ -217,7 +227,7 @@ const columns: ColumnDef<Product>[] = [
       const status = row.getValue("status") as string;
       return (
         <span
-          className={`px-2 py-1 rounded-full text-xs font-medium ${
+          className={`px-2 py-0.5 rounded-md text-xs font-medium ${
             status === "In Stock"
               ? "bg-green-100 text-green-800"
               : status === "Low Stock"
@@ -233,10 +243,13 @@ const columns: ColumnDef<Product>[] = [
   {
     id: "actions",
     header: "ACTION",
-    cell: () => (
-      <button className="px-2 py-1 bg-gray-100 rounded hover:bg-gray-200 transition-colors">
-        <img src="/icons/dots.svg" className="w-5 h-5" alt="" />
-      </button>
+    accessorKey: "actions",
+
+    cell: ({ row }) => (
+      // <button className="px-2 py-1 bg-gray-100 rounded hover:bg-gray-200 transition-colors">
+      //   <img src="/icons/dots.svg" className="w-5 h-5" alt="" />
+      // </button>
+      <RowActions category={row?.original} refresh={refresh} />
     ),
   },
 ];
