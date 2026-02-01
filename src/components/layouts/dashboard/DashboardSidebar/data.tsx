@@ -15,8 +15,8 @@ export const NAVBAR_TOP_LINKS: INavbarLink[] = [
   {
     id: "1",
     title: "Dashboard",
-    url: "/dashboard",
     icon: "/icons/house.svg",
+    url: "/dashboard",
     trigger: "url",
   },
 
@@ -52,39 +52,33 @@ export const NAVBAR_TOP_LINKS: INavbarLink[] = [
     trigger: "url",
   },
 
-  // {
-  //    id: '6',
-  //    title: 'Emails',
-  //    url: '/dashboard/emails',
-  //    icon: '/icons/mail-white.svg',
-  //    trigger: 'url',
-  // },
+  {
+    id: "7",
+    title: "Categories",
+    url: "/dashboard/categories",
+    icon: "/icons/checklist-white.svg",
+    trigger: "url",
+    disabled: true,
+  },
 
-  // {
-  //    id: '7',
-  //    title: 'Categories',
-  //    url: '/dashboard/categories',
-  //    icon: '/icons/checklist-white.svg',
-  //    trigger: 'url',
-  // },
-
-  // {
-  //    id: '8',
-  //    title: 'Tags',
-  //    url: '/dashboard/tags',
-  //    icon: '/icons/tag.svg',
-  //    trigger: 'url',
-  // },
+  {
+    id: "8",
+    title: "Tags",
+    url: "/dashboard/tags",
+    icon: "/icons/tag.svg",
+    trigger: "url",
+    disabled: true,
+  },
 ];
 
 export const NAVBAR_BOTTOM_LINKS: INavbarLink[] = [
-  {
-    id: "1",
-    title: "Settings",
-    url: "/dashboard/settings",
-    icon: "/icons/gear.svg",
-    trigger: "url",
-  },
+  // {
+  //   id: "1",
+  //   title: "Settings",
+  //   url: "/dashboard/settings",
+  //   icon: "/icons/gear.svg",
+  //   trigger: "url",
+  // },
 
   {
     id: "2",

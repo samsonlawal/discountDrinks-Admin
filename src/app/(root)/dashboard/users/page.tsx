@@ -1,3 +1,5 @@
-export default function page() {
-  return <div>Users</div>;
+import UsersPage from "@/components/pages/dashboard/users";
+
+export default function Page() {
+  return <UsersPage />;
 }

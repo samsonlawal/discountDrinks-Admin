@@ -3,9 +3,9 @@ import React from "react";
 function DashboardTopbar({ leftTitle }: { leftTitle?: string }) {
   return (
     <div
-      className={`py-6 px-6 font-medium fixed w-full md:w-[calc(100%-240px)] shrink-0 border-b-[#E9EDF5] border-b-[1px] flex items-center justify-between`}
+      className={`py-4 px-6 font-medium fixed h-[60px] w-full md:w-[calc(100%-240px)] shrink-0 border-b-[#E9EDF5] bg-white border-b-[1px] flex items-center justify-between`}
     >
-      <div className="flex gap-[16px] items-center">
+      <div className="flex gap-4 items-center">
         {/* <img
           src="/icons/house.svg"
           alt="menu-icon"
@@ -16,19 +16,19 @@ function DashboardTopbar({ leftTitle }: { leftTitle?: string }) {
         </h3>
       </div>
 
-      <div className="flex gap-[16px] items-center">
-        <button>
+      <div className="flex gap-4 items-center">
+        {/* <button>
           <img
             src="/icons/bell-dark.svg"
             alt="avatar-icon"
             className="w-[18px] h-[18px] object-contain"
           />
-        </button>
+        </button> */}
         <button>
           <img
-            src="/icons/avatar.svg"
-            alt="avatar-icon"
-            className="w-[36px] h-[36px] object-contain"
+            src="/icons/user-circle.svg"
+            alt="user-icon"
+            className="w-6.5 h-6.5 object-contain"
           />
         </button>
       </div>

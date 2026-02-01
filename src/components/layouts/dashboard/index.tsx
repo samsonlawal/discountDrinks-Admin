@@ -10,7 +10,7 @@ function DashboardLayout({
   leftTitle?: string;
 }) {
   return (
-    <div className="w-screen h-screen overflow-hidden relative flex p-0 m-0 bg-white">
+    <div className="w-screen h-screen overflow-hidden relative flex p-0 m-0">
       <DashboardSidebar />
       <div className="relative flex-1 m-0 p-0 ">
         <DashboardTopbar leftTitle={leftTitle} />
