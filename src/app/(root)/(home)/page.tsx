@@ -18,7 +18,7 @@ export default function Home() {
     <>
       <div className="h-screen bg-[#111] w-full flex items-center justify-center flex-col">
         <img
-          src="/icons/logo-white.svg"
+          src="/icons/logo.svg"
           className="w-[80px] mb-[20px] object-contain"
           alt="logo"
         />
