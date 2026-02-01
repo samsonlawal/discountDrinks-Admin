@@ -10,13 +10,13 @@ export default function Home() {
 
   useEffect(() => {
     setTimeout(() => {
-      router.push("/admin");
+      router.push("/dashboard");
     }, 1400);
   }, []);
 
   return (
     <>
-      <div className="h-screen bg-[#151357] w-full flex items-center justify-center flex-col">
+      <div className="h-screen bg-[#111] w-full flex items-center justify-center flex-col">
         <img
           src="/icons/logo-white.svg"
           className="w-[80px] mb-[20px] object-contain"
