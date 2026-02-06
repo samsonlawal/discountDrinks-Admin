@@ -194,6 +194,7 @@ const tabsItems = ({}: {}): IActiveTab[] => {
 };
 
 interface IQueryObject extends IFetchTagQuery {
+  search: string;
   activeTab: IActiveTab;
 }
 
