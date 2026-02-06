@@ -58,7 +58,7 @@ export const NAVBAR_TOP_LINKS: INavbarLink[] = [
     url: "/dashboard/categories",
     icon: "/icons/checklist-white.svg",
     trigger: "url",
-    disabled: true,
+    // disabled: true,
   },
 
   {
@@ -67,7 +67,7 @@ export const NAVBAR_TOP_LINKS: INavbarLink[] = [
     url: "/dashboard/tags",
     icon: "/icons/tag.svg",
     trigger: "url",
-    disabled: true,
+    // disabled: true,
   },
 ];
 

@@ -198,14 +198,7 @@ interface IQueryObject extends IFetchTagQuery {
 }
 
 function OrdersPage() {
-  const [statusFilter, setStatusFilter] = useState<string>("All Status");
   const tabsData = tabsItems({});
-
-  // Filter orders based on selected status
-  const filteredOrders =
-    statusFilter === "All Status"
-      ? allOrderData
-      : allOrderData.filter((order) => order.status === statusFilter);
 
   const [queryObject, setqueryObject] = React.useState<IQueryObject>({
     search: "",
@@ -214,11 +207,23 @@ function OrdersPage() {
   });
   const activeTab = queryObject?.activeTab;
 
+  // Filter orders based on search and active tab
+  const filteredOrders = allOrderData.filter((order) => {
+    const matchesSearch =
+      order.customer.toLowerCase().includes(queryObject.search.toLowerCase()) ||
+      order.id.toLowerCase().includes(queryObject.search.toLowerCase());
+
+    const matchesTab =
+      activeTab.title === "All" || order.status === activeTab.title;
+
+    return matchesSearch && matchesTab;
+  });
+
   return (
     <DashboardLayout leftTitle="Orders">
       <div className="px-6 min-h-full">
         <div className="bg-white overflow-hidden">
-          <div className={"my-[20px] px-1 py-2 flex justify-between "}>
+          <div className={"mt-[20px] px-1 pt-2 pb-1 flex justify-between "}>
             <Search
               value={queryObject?.search}
               onChange={(value: string) =>

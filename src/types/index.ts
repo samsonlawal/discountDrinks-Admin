@@ -106,6 +106,7 @@ export interface IDesignCategory {
 
 export interface IFetchDesignCategoryQuery {
   name: string;
+  search?: string;
   page?: number;
   limit?: number;
 }

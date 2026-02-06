@@ -335,7 +335,7 @@ function ProductsPage() {
     <DashboardLayout leftTitle="Products">
       <div className="px-6 min-h-full">
         <div className="bg-white overflow-hidden">
-          <div className={"my-[20px] px-1 py-2 flex justify-between "}>
+          <div className={"mt-[20px] px-1 pt-2 pb-1 flex justify-between "}>
             <Search
               value={queryObject?.search}
               onChange={(value: string) =>
@@ -349,7 +349,7 @@ function ProductsPage() {
 
           <div
             className={
-              "my-[20px]  relative border-t-[#EAEBF0] border-t-[1px] pt-[10px]"
+              "my-[4px]  relative border-t-[#EAEBF0] border-t-[1px] pt-[10px]"
             }
           >
             <div className="px-[20px]">
