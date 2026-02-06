@@ -88,7 +88,7 @@ export interface ITag {
 
 export interface IFetchTagQuery {
   type?: string;
-  search: string;
+  search?: string;
   page?: number;
   limit?: number;
 }
@@ -105,7 +105,7 @@ export interface IDesignCategory {
 }
 
 export interface IFetchDesignCategoryQuery {
-  name: string;
+  name?: string;
   search?: string;
   page?: number;
   limit?: number;

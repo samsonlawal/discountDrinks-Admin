@@ -11,10 +11,11 @@ import { IFetchDesignCategoryQuery } from "@/types";
 
 class Service implements CategoriesInterface {
   getCategories(query?: IFetchDesignCategoryQuery) {
-    const { name, page, limit } = query || {};
+    const { name, search, page, limit } = query || {};
     const params = new URLSearchParams();
 
     if (name) params.append("name", name);
+    if (search) params.append("search", search);
     if (page) params.append("page", page.toString());
     if (limit) params.append("limit", limit.toString());
 
