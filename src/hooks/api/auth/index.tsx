@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { showErrorToast, showSuccessToast } from "@/utils/toaster";
-// import { useUpdateAuthContext } from "@/context/AuthContext";
+import { useUpdateAuthContext } from "@/context/AuthContext";
 
 import env from "@/config/env";
 import { AxiosError } from "axios";
@@ -10,7 +10,7 @@ const INITIAL_APP_STATE = env.auth.INITIAL_APP_STATE;
 
 export const useLoginUser = ({ Service }: { Service: AuthInterface }) => {
   const [loading, setLoading] = useState(false);
-  // const updateAppState = useUpdateAuthContext();
+  const updateAppState = useUpdateAuthContext();
 
   const onLogin = async ({
     payload,
@@ -22,17 +22,19 @@ export const useLoginUser = ({ Service }: { Service: AuthInterface }) => {
     setLoading(true);
     try {
       const res = await Service.login({ payload });
-      // updateAppState({
-      //   accessToken: res?.data?.data?.accessToken,
-      //   refreshToken: res?.data?.data?.refreshToken,
-      //   user: { id: res?.data?.data?.userId },
-      // });
+      console.log("res", res);
+      updateAppState({
+        accessToken: res?.data?.token,
+        user: { id: res?.data?.user?.userId },
+      });
 
-      successCallback?.();
       showSuccessToast({
         message: res?.data?.message || "🚀 Login success!",
         description: res?.data?.description || "",
       });
+
+      // Navigate after showing success message
+      successCallback?.();
     } catch (error: Error | AxiosError | any) {
       showErrorToast({
         message: error?.response?.data?.message || "An error occured!",
@@ -46,12 +48,16 @@ export const useLoginUser = ({ Service }: { Service: AuthInterface }) => {
   return { loading, onLogin };
 };
 
-// export function useLogout() {
-//   const updateAppState = useUpdateAuthContext();
+export function useLogout() {
+  const updateAppState = useUpdateAuthContext();
 
-//   const onLogout = () => {
-//     updateAppState(INITIAL_APP_STATE);
-//   };
+  const onLogout = () => {
+    updateAppState(INITIAL_APP_STATE);
+    // Clear localStorage
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem("DISCOUNT_DRINKS_ADMIN_PERSISTOR");
+    }
+  };
 
-//   return { onLogout };
-// }
+  return { onLogout };
+}

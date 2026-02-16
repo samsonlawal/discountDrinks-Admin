@@ -8,7 +8,8 @@ import RowActions from "./rowActions";
 import AddCategoryDialog from "./AddCategoryDialog";
 import { DebounceInput } from "@/components/molecules/TableFilter/TableFilterSearch/DebouceInput";
 import { useGetCategories } from "@/hooks/api/categories";
-import CategoriesService from "@/services/categories";
+import Tabs, { ITabItem } from "@/components/molecules/Tabs";
+import { IFetchCategoryQuery } from "@/types";
 
 type Category = {
   id: string;
@@ -73,15 +74,80 @@ const Search = ({
   );
 };
 
+interface IActiveTab extends ITabItem {}
+
+interface IQueryObject extends IFetchCategoryQuery {
+  search: string;
+  activeTab: IActiveTab;
+}
+
 export default function CategoriesPage() {
-  const [search, setSearch] = useState("");
-  const { categories, fetchCategories, loading } = useGetCategories({
-    Service: CategoriesService,
+  const { categories, fetchCategories, loading } = useGetCategories();
+
+  const tabsData: IActiveTab[] = [
+    { id: "0", title: "All" },
+    { id: "1", title: "Active" },
+    { id: "2", title: "Inactive" },
+  ];
+
+  const [queryObject, setQueryObject] = React.useState<IQueryObject>({
+    search: "",
+    page: 1,
+    activeTab: tabsData[0],
   });
 
+  const activeTab = queryObject?.activeTab;
+
   React.useEffect(() => {
-    fetchCategories({ search });
-  }, [search]);
+    fetchCategories({ search: queryObject.search });
+  }, [queryObject.search]);
+
+  // Filter categories based on search and active tab
+  const filteredCategories = categories.filter((category) => {
+    const matchesSearch =
+      category.name.toLowerCase().includes(queryObject.search.toLowerCase()) ||
+      category.description
+        ?.toLowerCase()
+        .includes(queryObject.search.toLowerCase());
+
+    const matchesTab =
+      activeTab.title === "All" ||
+      (activeTab.title === "Active" && category.status === "Active") ||
+      (activeTab.title === "Inactive" && category.status === "Inactive");
+
+    return matchesSearch && matchesTab;
+  });
+
+  // Calculate counts for each tab
+  const allCount = categories.length;
+  const activeCount = categories.filter(
+    (cat) => cat.status === "Active",
+  ).length;
+  const inactiveCount = categories.filter(
+    (cat) => cat.status === "Inactive",
+  ).length;
+
+  // Update tabs with counts - only show badge for active tab
+  const tabsWithCounts: IActiveTab[] = [
+    {
+      id: "0",
+      title: "All",
+      badge: String(allCount),
+      showBadge: activeTab.id === "0",
+    },
+    {
+      id: "1",
+      title: "Active",
+      badge: String(activeCount),
+      showBadge: activeTab.id === "1",
+    },
+    {
+      id: "2",
+      title: "Inactive",
+      badge: String(inactiveCount),
+      showBadge: activeTab.id === "2",
+    },
+  ];
 
   const columns: ColumnDef<Category>[] = [
     {
@@ -141,16 +207,38 @@ export default function CategoriesPage() {
         <div className="bg-white overflow-hidden">
           <div className={"mt-[20px] px-1 pt-2 pb-1 flex justify-between"}>
             <Search
-              value={search}
-              onChange={(value: string) => setSearch(value)}
+              value={queryObject.search}
+              onChange={(value: string) =>
+                setQueryObject((x) => ({ ...x, search: value }))
+              }
             />
             <AddCategoryDialog onSave={() => fetchCategories()}>
-              <button className="px-4 py-2 bg-[#111111] text-white rounded-md hover:bg-gray-800 transition-colors">
+              <button className="px-4 py-1.5 text-sm bg-black text-white rounded-lg hover:bg-gray-800 transition-colors">
                 Add Category
               </button>
             </AddCategoryDialog>
           </div>
-          <DataTable columns={columns} data={categories} loading={loading} />
+
+          <div
+            className={
+              "my-[20px] relative border-t-[#EAEBF0] border-t-[1px] pt-[10px]"
+            }
+          >
+            <div className="px-[20px]">
+              <Tabs
+                data={tabsWithCounts}
+                activeTab={activeTab}
+                onChangeTab={({ item }) => {
+                  setQueryObject((x) => ({ ...x, activeTab: item }));
+                }}
+              />
+            </div>
+            <DataTable
+              columns={columns}
+              data={filteredCategories}
+              loading={loading}
+            />
+          </div>
         </div>
       </div>
     </DashboardLayout>

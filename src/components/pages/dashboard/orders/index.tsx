@@ -4,7 +4,7 @@ import DashboardLayout from "@/components/layouts/dashboard";
 import DataTable from "@/components/molecules/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import Tabs, { ITabItem } from "@/components/molecules/Tabs";
-import { ETagType, IFetchTagQuery } from "@/types";
+import { IFetchTagQuery } from "@/types";
 import { TableFilter } from "@/components/molecules/TableFilter";
 import { DebounceInput } from "@/components/molecules/TableFilter/TableFilterSearch/DebouceInput";
 import RowActions from "./rowActions";
@@ -186,10 +186,10 @@ interface IActiveTab extends ITabItem {}
 const tabsItems = ({}: {}): IActiveTab[] => {
   return [
     { id: `0`, title: "All" },
-    { id: `${ETagType.PENDING}`, title: "Pending" },
-    { id: `${ETagType.PROCESSING}`, title: "Processing" },
-    { id: `${ETagType.COMPLETED}`, title: "Completed" },
-    { id: `${ETagType.CANCELLED}`, title: "Cancelled", disabled: true },
+    { id: `1`, title: "Pending" },
+    { id: `2`, title: "Processing" },
+    { id: `3`, title: "Completed" },
+    { id: `4`, title: "Cancelled", disabled: true },
   ];
 };
 
@@ -244,12 +244,14 @@ function OrdersPage() {
                     <path
                       d="M10.625 7.49996C10.625 7.15478 10.3451 6.87496 9.99996 6.87496C9.65478 6.87496 9.37496 7.15478 9.37496 7.49996L9.37496 9.37498H7.49996C7.15478 9.37498 6.87496 9.6548 6.87496 9.99998C6.87496 10.3452 7.15478 10.625 7.49996 10.625H9.37496V12.5C9.37496 12.8451 9.65478 13.125 9.99996 13.125C10.3451 13.125 10.625 12.8451 10.625 12.5L10.625 10.625H12.5C12.8451 10.625 13.125 10.3452 13.125 9.99998C13.125 9.6548 12.8451 9.37498 12.5 9.37498H10.625V7.49996Z"
                       fill="white"
+                      fillOpacity="0.8"
                     />
                     <path
                       fillRule="evenodd"
                       clipRule="evenodd"
                       d="M9.99996 1.04163C5.05241 1.04163 1.04163 5.05241 1.04163 9.99996C1.04163 14.9475 5.05241 18.9583 9.99996 18.9583C14.9475 18.9583 18.9583 14.9475 18.9583 9.99996C18.9583 5.05241 14.9475 1.04163 9.99996 1.04163ZM2.29163 9.99996C2.29163 5.74276 5.74276 2.29163 9.99996 2.29163C14.2572 2.29163 17.7083 5.74276 17.7083 9.99996C17.7083 14.2572 14.2572 17.7083 9.99996 17.7083C5.74276 17.7083 2.29163 14.2572 2.29163 9.99996Z"
                       fill="white"
+                      fillOpacity="0.8"
                     />
                   </svg>
                 </div>

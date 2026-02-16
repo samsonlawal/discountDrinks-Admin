@@ -1,46 +1,51 @@
 import axios from "axios";
 import env from "@/config/env";
 
-import {
-  TagsInterface,
-  TCreateTagPayload,
-  TUpdateTagPayload,
-  TDeleteTagPayload,
-} from "./types";
-import { IFetchTagQuery } from "@/types";
+import { IFetchTagQuery, ITag } from "@/types";
 
-class Service implements TagsInterface {
-  getTags(query?: IFetchTagQuery) {
-    const { search, type, page, limit } = query || {};
-    const params = new URLSearchParams();
-
-    if (search) params.append("search", search);
-    if (type) params.append("type", type.toString());
-    if (page) params.append("page", page.toString());
-    if (limit) params.append("limit", limit.toString());
-
-    const queryString = params.toString();
-    const url = queryString ? `${env.api.tags}?${queryString}` : env.api.tags;
-
-    return axios.get(url);
+class Service {
+  fetchTags() {
+    return axios.get(env.api.tags, {
+      withCredentials: true,
+    });
   }
 
-  createTag(payload: TCreateTagPayload) {
-    return axios.post(env.api.tags, payload);
+  createTag({ name, status }: ITag) {
+    return axios.post(
+      env.api.tags,
+      {
+        name,
+        isActive: status === "Active",
+      },
+      {
+        withCredentials: true,
+      },
+    );
   }
 
-  updateTag(payload: TUpdateTagPayload) {
-    const { id, ...updateData } = payload;
-    return axios.put(`${env.api.tags}/${id}`, updateData);
+  updateTag({ id, name, status }: ITag) {
+    return axios.put(
+      env.api.tags + `/` + id,
+      {
+        name,
+        isActive: status === "Active",
+      },
+      {
+        withCredentials: true,
+      },
+    );
   }
 
-  deleteTag(payload: TDeleteTagPayload) {
-    const { id } = payload;
-    return axios.delete(`${env.api.tags}/${id}`);
+  deleteTag({ id }: { id: string }) {
+    return axios.delete(`${env.api.tags}/${id}`, {
+      withCredentials: true,
+    });
   }
 
-  getTagById(id: string) {
-    return axios.get(`${env.api.tags}/${id}`);
+  getTagById({ tagId }: { tagId: string }) {
+    return axios.get(`${env.api.tags}/${tagId}`, {
+      withCredentials: true,
+    });
   }
 }
 

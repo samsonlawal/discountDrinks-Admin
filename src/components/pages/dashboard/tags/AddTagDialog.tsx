@@ -1,7 +1,16 @@
 import React, { useState } from "react";
 import { AlertDialog, AlertDialogContent } from "@/components/ui/alert-dialog";
-import { useCreateTag } from "@/hooks/api/tags";
+import { useCreateTag, useUpdateTag } from "@/hooks/api/tags";
 import TagsService from "@/services/tags";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { FormField } from "@/components/ui/form-field";
+import { FormSelect } from "@/components/ui/form-select";
 
 interface AddTagDialogProps {
   children: React.ReactNode;
@@ -17,30 +26,51 @@ export default function AddTagDialog({
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: tag?.name || "",
-    type: tag?.type || 1,
-    status: tag?.status || "Active",
+    status: tag?.status || (tag?.isActive ? "Active" : "Inactive") || "",
   });
 
-  const { createTag, loading } = useCreateTag({ Service: TagsService });
+  const { createTag, loading: creating } = useCreateTag();
+  const { updateTag, loading: updating } = useUpdateTag();
+
+  const loading = creating || updating;
+
+  React.useEffect(() => {
+    console.log("AddTagDialog tag:", tag);
+    if (tag) {
+      setFormData({
+        name: tag.name,
+        status: tag.isActive ? "active" : "inactive",
+      });
+    }
+  }, [tag]);
 
   const handleSave = async () => {
-    await createTag({
-      data: {
-        name: formData.name,
-        type: Number(formData.type),
-        status: formData.status,
-      },
-      successCallback: () => {
-        onSave?.(formData);
-        setOpen(false);
-        // Reset form
-        setFormData({
-          name: "",
-          type: 1,
-          status: "Active",
-        });
-      },
-    });
+    const payload = {
+      name: formData.name,
+      status: formData.status,
+    };
+
+    if (tag) {
+      await updateTag({
+        data: { ...payload, id: tag.id || tag._id || tag.tagID },
+        successCallback: () => {
+          onSave?.(formData);
+          setOpen(false);
+        },
+      });
+    } else {
+      await createTag({
+        data: payload,
+        successCallback: () => {
+          onSave?.(formData);
+          setOpen(false);
+          setFormData({
+            name: "",
+            status: "Active",
+          });
+        },
+      });
+    }
   };
 
   return (
@@ -52,64 +82,37 @@ export default function AddTagDialog({
           });
         })}
 
-        <AlertDialogContent className="sm:rounded-[24px] max-w-md">
+        <AlertDialogContent className="sm:rounded-xl max-w-md bg-white">
           <div className="p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
               {tag ? "Edit Tag" : "Add Tag"}
             </h2>
 
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Tag Name
-                </label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter tag name"
-                />
-              </div>
+              <FormField
+                label="Tag Name"
+                placeholder="Enter tag name"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Type
-                </label>
-                <input
-                  type="number"
-                  value={formData.type}
-                  onChange={(e) =>
-                    setFormData({ ...formData, type: Number(e.target.value) })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter tag type"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Status
-                </label>
-                <select
-                  value={formData.status}
-                  onChange={(e) =>
-                    setFormData({ ...formData, status: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
-                </select>
-              </div>
+              <FormSelect
+                label="Status"
+                placeholder="Active/Inactive"
+                value={formData.status}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, status: value })
+                }
+                options={["Active", "Inactive"]}
+              />
             </div>
 
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setOpen(false)}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-full text-gray-700 hover:bg-gray-50 transition-colors"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium"
                 disabled={loading}
               >
                 Cancel
@@ -117,7 +120,7 @@ export default function AddTagDialog({
               <button
                 onClick={handleSave}
                 disabled={loading}
-                className="flex-1 px-4 py-2 bg-[#111111] text-white rounded-full hover:bg-gray-800 transition-colors disabled:opacity-50"
+                className="flex-1 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 font-medium"
               >
                 {loading ? "Saving..." : tag ? "Update" : "Add"}
               </button>

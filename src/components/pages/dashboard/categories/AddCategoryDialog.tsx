@@ -1,7 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AlertDialog, AlertDialogContent } from "@/components/ui/alert-dialog";
-import { useCreateCategory } from "@/hooks/api/categories";
+import { useCreateCategory, useUpdateCategory } from "@/hooks/api/categories";
 import CategoriesService from "@/services/categories";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { FormField } from "@/components/ui/form-field";
+import { FormSelect } from "@/components/ui/form-select";
+import { FormTextarea } from "@/components/ui/form-textarea";
 
 interface AddCategoryDialogProps {
   children: React.ReactNode;
@@ -16,33 +26,69 @@ export default function AddCategoryDialog({
 }: AddCategoryDialogProps) {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
-    name: category?.name || "",
-    description: category?.description || "",
-    status: category?.status || "Active",
+    name: "",
+    description: "",
+    status: "",
   });
 
-  const { createCategory, loading } = useCreateCategory({
-    Service: CategoriesService,
-  });
+  const { createCategory, loading: createLoading } = useCreateCategory();
+  const { updateCategory, loading: updateLoading } = useUpdateCategory();
+  const loading = createLoading || updateLoading;
+
+  // Update form when category prop changes or dialog opens
+  useEffect(() => {
+    if (open && category) {
+      setFormData({
+        name: category.name || "",
+        description: category.description || "",
+        status: category.status ? category.status.toLowerCase() : "",
+      });
+    } else if (open && !category) {
+      setFormData({
+        name: "",
+        description: "",
+        status: "",
+      });
+    }
+  }, [open, category]);
 
   const handleSave = async () => {
-    await createCategory({
-      data: {
-        name: formData.name,
-        description: formData.description,
-        status: formData.status,
-      },
-      successCallback: () => {
-        onSave?.(formData);
-        setOpen(false);
-        // Reset form
-        setFormData({
-          name: "",
-          description: "",
-          status: "Active",
-        });
-      },
-    });
+    const categoryId = category?.id || category?._id;
+
+    if (categoryId) {
+      // Update existing category
+      await updateCategory({
+        data: {
+          id: categoryId,
+          name: formData.name,
+          description: formData.description,
+          status: formData.status,
+        },
+        successCallback: () => {
+          onSave?.(formData);
+          setOpen(false);
+        },
+      });
+    } else {
+      // Create new category
+      await createCategory({
+        data: {
+          name: formData.name,
+          description: formData.description,
+          status: formData.status,
+        },
+        successCallback: () => {
+          onSave?.(formData);
+          setOpen(false);
+          // Reset form
+          setFormData({
+            name: "",
+            description: "",
+            status: "Active",
+          });
+        },
+      });
+    }
   };
 
   return (
@@ -54,64 +100,47 @@ export default function AddCategoryDialog({
           });
         })}
 
-        <AlertDialogContent className="sm:rounded-[24px] max-w-md">
+        <AlertDialogContent className="sm:rounded-xl max-w-[450px] bg-white">
           <div className="p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
               {category ? "Edit Category" : "Add Category"}
             </h2>
 
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Category Name
-                </label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter category name"
-                />
-              </div>
+              <FormField
+                label="Category Name"
+                placeholder="Enter category name"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
-                </label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter description"
-                />
-              </div>
+              <FormTextarea
+                label="Description"
+                placeholder="Enter description"
+                rows={3}
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Status
-                </label>
-                <select
-                  value={formData.status}
-                  onChange={(e) =>
-                    setFormData({ ...formData, status: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
-                </select>
-              </div>
+              <FormSelect
+                label="Status"
+                placeholder="Active/Inactive"
+                value={formData.status}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, status: value })
+                }
+                options={["Active", "Inactive"]}
+              />
             </div>
 
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setOpen(false)}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-full text-gray-700 hover:bg-gray-50 transition-colors"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium"
                 disabled={loading}
               >
                 Cancel
@@ -119,7 +148,7 @@ export default function AddCategoryDialog({
               <button
                 onClick={handleSave}
                 disabled={loading}
-                className="flex-1 px-4 py-2 bg-[#111111] text-white rounded-full hover:bg-gray-800 transition-colors disabled:opacity-50"
+                className="flex-1 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 font-medium"
               >
                 {loading ? "Saving..." : category ? "Update" : "Add"}
               </button>

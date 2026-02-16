@@ -4,19 +4,27 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { IDesignCategory } from "@/types";
 import ReuseableDialog from "@/components/ReuseableDialog";
+import AddCategoryDialog from "./AddCategoryDialog";
+import { useDeleteCategory } from "@/hooks/api/categories";
 
 interface DataTableRowActionsProps {
-  category?: IDesignCategory;
-  isPendingcategory?: boolean;
+  category?: any;
   refresh?: () => void;
 }
 
 export function RowActions({ category, refresh }: DataTableRowActionsProps) {
+  const { deleteCategory, loading } = useDeleteCategory();
+
   const onDeleteCategory = (closeModal?: any) => {
-    refresh?.();
-    closeModal?.();
+    const categoryId = category?.id || category?._id;
+    deleteCategory({
+      data: { id: categoryId },
+      successCallback: () => {
+        refresh?.();
+        closeModal?.();
+      },
+    });
   };
 
   return (
@@ -32,21 +40,16 @@ export function RowActions({ category, refresh }: DataTableRowActionsProps) {
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[146px] bg-white">
-          <ReuseableDialog
-            title="Delete Category"
-            description="Are you sure you want to delete this category?"
-            proceedTitle="Delete"
-            onProceed={onDeleteCategory}
-            loading={false}
-          >
-            <button className="hover:bg-gray-200 w-full flex items-center px-3 py-2 gap-2 cursor-pointer text-[14px]">
-              <img
-                src="/icons/eye.svg"
-                alt=""
-                className="cursor-pointer w-[18px] h-[18px]"
-              />
-              <span className="text-[#111111]">View</span>
-            </button>
+          <button className="hover:bg-gray-200 w-full flex items-center px-3 py-2 gap-2 cursor-pointer text-[14px]">
+            <img
+              src="/icons/eye.svg"
+              alt=""
+              className="cursor-pointer w-[18px] h-[18px]"
+            />
+            <span className="text-[#111111]">View</span>
+          </button>
+
+          <AddCategoryDialog category={category} onSave={refresh}>
             <button className="hover:bg-gray-200 w-full flex items-center px-3 py-2 gap-2 cursor-pointer text-[14px]">
               <img
                 src="/icons/pencil.svg"
@@ -55,6 +58,15 @@ export function RowActions({ category, refresh }: DataTableRowActionsProps) {
               />
               <span className="text-[#111111]">Edit</span>
             </button>
+          </AddCategoryDialog>
+
+          <ReuseableDialog
+            title="Delete Category"
+            description="Are you sure you want to delete this category?"
+            proceedTitle="Delete"
+            onProceed={onDeleteCategory}
+            loading={loading}
+          >
             <button className="hover:bg-gray-200 w-full flex items-center px-3 py-2 gap-2 cursor-pointer text-[14px]">
               <img
                 src="/icons/trash.svg"

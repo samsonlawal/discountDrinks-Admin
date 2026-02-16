@@ -16,6 +16,7 @@ import { DeleteDialog } from "@/components/Dialogs/DialogContent/DeleteDialog";
 import { AddDialog } from "@/components/Dialogs/DialogContent/AddDialog";
 import RowActions from "./rowActions";
 import { refresh } from "next/cache";
+import AddProductDialog from "./AddProductDialog";
 
 type Product = {
   name: string;
@@ -319,6 +320,8 @@ function ProductsPage() {
   });
   const activeTab = queryObject?.activeTab;
 
+  const [isAddDialogOpen, setIsAddDialogOpen] = React.useState(false);
+
   // Filter products based on search and active tab
   const filteredProducts = productData.filter((product) => {
     const matchesSearch =
@@ -342,7 +345,10 @@ function ProductsPage() {
                 setqueryObject((x) => ({ ...x, search: value }))
               }
             />
-            <button className="px-3 py-1.5 text-sm bg-black text-white rounded-lg hover:bg-gray-800 transition-colors">
+            <button
+              onClick={() => setIsAddDialogOpen(true)}
+              className="px-4 py-1.5 text-sm bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+            >
               Add Product
             </button>
           </div>
@@ -365,6 +371,12 @@ function ProductsPage() {
           </div>
         </div>
       </div>
+
+      {/* Full-screen Add Product Dialog */}
+      <AddProductDialog
+        open={isAddDialogOpen}
+        onOpenChange={setIsAddDialogOpen}
+      />
     </DashboardLayout>
   );
 }

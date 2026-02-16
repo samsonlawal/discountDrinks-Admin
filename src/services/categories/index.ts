@@ -1,47 +1,49 @@
 import axios from "axios";
 import env from "@/config/env";
+import { ICategory, IFetchCategoryQuery } from "@/types";
 
-import {
-  CategoriesInterface,
-  TCreateCategoryPayload,
-  TUpdateCategoryPayload,
-  TDeleteCategoryPayload,
-} from "./types";
-import { IFetchDesignCategoryQuery } from "@/types";
-
-class Service implements CategoriesInterface {
-  getCategories(query?: IFetchDesignCategoryQuery) {
+class Service {
+  fetchCategories(query?: IFetchCategoryQuery) {
     const { name, search, page, limit } = query || {};
-    const params = new URLSearchParams();
-
-    if (name) params.append("name", name);
-    if (search) params.append("search", search);
-    if (page) params.append("page", page.toString());
-    if (limit) params.append("limit", limit.toString());
-
-    const queryString = params.toString();
-    const url = queryString
-      ? `${env.api.categories}?${queryString}`
-      : env.api.categories;
-
-    return axios.get(url);
+    return axios.get(env.api.categories, {
+      params: {
+        ...(name ? { name } : {}),
+        ...(search ? { search } : {}),
+        ...(page ? { page } : {}),
+        ...(limit ? { limit } : {}),
+      },
+    });
   }
 
-  getCategoryById(id: string) {
-    return axios.get(`${env.api.categories}/${id}`);
+  getCategoryById({ categoryId }: { categoryId: string }) {
+    return axios.get(`${env.api.categories}/${categoryId}`);
   }
 
-  createCategory(payload: TCreateCategoryPayload) {
-    return axios.post(env.api.categories, payload);
+  createCategory({ name, description, parent_category_id, status }: ICategory) {
+    return axios.post(env.api.categories, {
+      name,
+      description,
+      parent_category_id,
+      isActive: status === "Active",
+    });
   }
 
-  updateCategory(payload: TUpdateCategoryPayload) {
-    const { id, ...updateData } = payload;
-    return axios.put(`${env.api.categories}/${id}`, updateData);
+  updateCategory({
+    id,
+    name,
+    description,
+    parent_category_id,
+    status,
+  }: ICategory) {
+    return axios.put(`${env.api.categories}/${id}`, {
+      name,
+      description,
+      parent_category_id,
+      isActive: status === "Active",
+    });
   }
 
-  deleteCategory(payload: TDeleteCategoryPayload) {
-    const { id } = payload;
+  deleteCategory({ id }: { id: string }) {
     return axios.delete(`${env.api.categories}/${id}`);
   }
 }

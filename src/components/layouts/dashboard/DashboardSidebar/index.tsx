@@ -8,13 +8,16 @@ import {
 } from "./data";
 import SidebarLink from "./SidebarLink";
 import Link from "next/link";
-// import { useLogout } from '@/hooks/api/auth';
+import { useLogout } from "@/hooks/api/auth";
+import { useRouter } from "next/navigation";
 const DashboardSidebar = () => {
-  //   const { onLogout } = useLogout();
+  const { onLogout } = useLogout();
+  const router = useRouter();
+
   const onClickLink = ({ action }: { action?: TNavbarLinkAction }) => {
     if (action === "logout") {
-      // logout action here
-      // onLogout();
+      onLogout();
+      router.push("/auth/sign-in");
       return;
     }
   };

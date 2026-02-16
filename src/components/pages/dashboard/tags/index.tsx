@@ -9,14 +9,16 @@ import AddTagDialog from "./AddTagDialog";
 import { DebounceInput } from "@/components/molecules/TableFilter/TableFilterSearch/DebouceInput";
 import { useGetTags } from "@/hooks/api/tags";
 import TagsService from "@/services/tags";
+import Tabs, { ITabItem } from "@/components/molecules/Tabs";
+import { IFetchTagQuery } from "@/types";
 
 type Tag = {
   id: string;
   name: string;
   type: number;
   productCount: number;
-  status: string;
-  createdDate: string;
+  isActive: boolean;
+  createdAt: string;
 };
 
 const Search = ({
@@ -73,13 +75,74 @@ const Search = ({
   );
 };
 
+interface IActiveTab extends ITabItem {}
+
+interface IQueryObject extends IFetchTagQuery {
+  search: string;
+  activeTab: IActiveTab;
+}
+
 export default function TagsPage() {
-  const [search, setSearch] = useState("");
-  const { tags, fetchTags, loading } = useGetTags({ Service: TagsService });
+  const { tags, fetchTags, loading } = useGetTags();
+
+  const tabsData: IActiveTab[] = [
+    { id: "0", title: "All" },
+    { id: "1", title: "Active" },
+    { id: "2", title: "Inactive" },
+  ];
+
+  const [queryObject, setQueryObject] = React.useState<IQueryObject>({
+    search: "",
+    page: 1,
+    activeTab: tabsData[0],
+  });
+
+  const activeTab = queryObject?.activeTab;
 
   React.useEffect(() => {
-    fetchTags({ search });
-  }, [search]);
+    fetchTags({ search: queryObject.search });
+  }, [queryObject.search]);
+
+  // Filter tags based on search and active tab
+  const filteredTags = tags.filter((tag) => {
+    const matchesSearch = tag.name
+      .toLowerCase()
+      .includes(queryObject.search.toLowerCase());
+
+    const matchesTab =
+      activeTab.title === "All" ||
+      (activeTab.title === "Active" && tag.isActive) ||
+      (activeTab.title === "Inactive" && !tag.isActive);
+
+    return matchesSearch && matchesTab;
+  });
+
+  // Calculate counts for each tab
+  const allCount = tags.length;
+  const activeCount = tags.filter((tag) => tag.isActive).length;
+  const inactiveCount = tags.filter((tag) => !tag.isActive).length;
+
+  // Update tabs with counts - only show badge for active tab
+  const tabsWithCounts: IActiveTab[] = [
+    {
+      id: "0",
+      title: "All",
+      badge: String(allCount),
+      showBadge: activeTab.id === "0",
+    },
+    {
+      id: "1",
+      title: "Active",
+      badge: String(activeCount),
+      showBadge: activeTab.id === "1",
+    },
+    {
+      id: "2",
+      title: "Inactive",
+      badge: String(inactiveCount),
+      showBadge: activeTab.id === "2",
+    },
+  ];
 
   const columns: ColumnDef<Tag>[] = [
     {
@@ -92,38 +155,33 @@ export default function TagsPage() {
       header: "TAG NAME",
     },
     {
-      accessorKey: "type",
-      header: "TYPE",
-      cell: ({ row }) => {
-        const type = row.getValue("type") as number;
-        return <span className="text-sm text-gray-600">{type}</span>;
-      },
-    },
-    {
       accessorKey: "productCount",
       header: "PRODUCTS",
     },
     {
-      accessorKey: "status",
+      accessorKey: "isActive",
       header: "STATUS",
       cell: ({ row }) => {
-        const status = row.getValue("status") as string;
+        const isActive = row.original.isActive;
         return (
           <span
             className={`px-2 py-0.5 rounded-md text-xs font-medium ${
-              status === "Active"
+              isActive
                 ? "bg-green-100 text-green-800"
                 : "bg-gray-100 text-gray-800"
             }`}
           >
-            {status}
+            {isActive ? "Active" : "Inactive"}
           </span>
         );
       },
     },
     {
-      accessorKey: "createdDate",
+      accessorKey: "createdAt",
       header: "CREATED DATE",
+      cell: ({ row }) => (
+        <span>{new Date(row.original?.createdAt).toLocaleDateString()}</span>
+      ),
     },
     {
       id: "actions",
@@ -140,16 +198,38 @@ export default function TagsPage() {
         <div className="bg-white overflow-hidden">
           <div className={"mt-[20px] px-1 pt-2 pb-1 flex justify-between"}>
             <Search
-              value={search}
-              onChange={(value: string) => setSearch(value)}
+              value={queryObject.search}
+              onChange={(value: string) =>
+                setQueryObject((x) => ({ ...x, search: value }))
+              }
             />
             <AddTagDialog onSave={() => fetchTags()}>
-              <button className="px-4 py-2 bg-[#111111] text-white rounded-md hover:bg-gray-800 transition-colors">
+              <button className="px-4 py-1.5 text-sm bg-black text-white rounded-lg hover:bg-gray-800 transition-colors">
                 Add Tag
               </button>
             </AddTagDialog>
           </div>
-          <DataTable columns={columns} data={tags} loading={loading} />
+
+          <div
+            className={
+              "my-[20px] relative border-t-[#EAEBF0] border-t-[1px] pt-[10px]"
+            }
+          >
+            <div className="px-[20px]">
+              <Tabs
+                data={tabsWithCounts}
+                activeTab={activeTab}
+                onChangeTab={({ item }) => {
+                  setQueryObject((x) => ({ ...x, activeTab: item }));
+                }}
+              />
+            </div>
+            <DataTable
+              columns={columns}
+              data={filteredTags}
+              loading={loading}
+            />
+          </div>
         </div>
       </div>
     </DashboardLayout>

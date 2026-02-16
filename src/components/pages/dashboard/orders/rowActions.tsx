@@ -4,11 +4,11 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { IDesignCategory } from "@/types";
+// import { IDesignCategory } from "@/types";
 import ReuseableDialog from "@/components/ReuseableDialog";
 
 interface DataTableRowActionsProps {
-  category?: IDesignCategory;
+  category?: any; //to be edited with proper type/interface
   isPendingcategory?: boolean;
   refresh?: () => void;
 }

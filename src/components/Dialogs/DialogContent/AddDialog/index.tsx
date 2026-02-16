@@ -4,6 +4,13 @@ import { DialogName, DialogProps } from "../../types";
 // import { NewCategory } from '@/components/pages/dashboard/categories/components/NewCategory';
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const AddDialog = ({
   trigger,
@@ -108,33 +115,16 @@ const BaseModalAddDialog = ({
                           htmlFor="parent"
                           className="field-label text-sm leading-[22px] lg:text-base text-[#838383] dark-text-[#717171] whitespace-nowrap text-ellipsis overflow-hidden pointer-events-none absolute top-[calc(50%-1.5rem)] lg:leading-6 font-normal font-gordita h-px w-px border-0 inset-0 p-0"
                         ></label>
-                        <select
-                          name="parent"
-                          onChange={() => {}}
-                          className="text-ellipsis appearance-none overflow-hidden min-h-[48px] max-h-[48px] py-3 px-[calc(0.75rem-1px)] border-solid border-[1px] border-[#838383] rounded-lg w-full text-sm leading-[22px] lg:text-base dark:border-none dark:bg-[#262626] focus:outline-none"
-                        >
-                          <option value=""> </option>
-                          <option value="nigeria">Nigeria</option>
-                          <option value="europe">Europe</option>
-                          <option value="asia">Asia</option>
-                        </select>
-                        <div className="absolute w-5 h-5 outline-none border-none bg-transparent right-5 top-[calc(50%-12px)]">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="20"
-                            height="20"
-                            viewBox="0 0 20 20"
-                            fill="none"
-                          >
-                            <path
-                              d="M15.8333 7.5L9.99996 12.5L4.16663 7.5"
-                              stroke="#717171"
-                              strokeWidth="1.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                        </div>
+                        <Select onValueChange={() => {}}>
+                          <SelectTrigger className="text-ellipsis appearance-none overflow-hidden min-h-[48px] max-h-[48px] py-3 px-[calc(0.75rem-1px)] border-solid border-[1px] border-[#838383] rounded-lg w-full text-sm leading-[22px] lg:text-base dark:border-none dark:bg-[#262626] focus:outline-none">
+                            <SelectValue placeholder=" " />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="nigeria">Nigeria</SelectItem>
+                            <SelectItem value="europe">Europe</SelectItem>
+                            <SelectItem value="asia">Asia</SelectItem>
+                          </SelectContent>
+                        </Select>
 
                         <div
                           className={`field-label bg-white dark:bg-transparent text-sm leading-[22px] lg:text-base text-[#838383] dark:text-[#717171] whitespace-nowrap text-ellipsis overflow-hidden pointer-events-none absolute top-[calc(50%-24px)] lg:leading-6 font-normal font-gordita translate-y-1/2 mx-3`}

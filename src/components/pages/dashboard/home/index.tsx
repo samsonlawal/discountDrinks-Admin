@@ -3,6 +3,10 @@ import DashboardLayout from "@/components/layouts/dashboard";
 import { StatCard, Card } from "@/components/molecules/Card";
 import DataTable from "@/components/molecules/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
+import { useGetUsers } from "@/hooks/api/users";
+import { useGetCategories } from "@/hooks/api/categories";
+import { useGetTags } from "@/hooks/api/tags";
+import React from "react";
 
 type Order = {
   id: string;
@@ -60,73 +64,72 @@ const orderColumns: ColumnDef<Order>[] = [
 ];
 
 function DashboardHome() {
+  const { users, fetchUsers } = useGetUsers();
+  const { categories, fetchCategories } = useGetCategories();
+  const { tags, fetchTags } = useGetTags();
+
+  React.useEffect(() => {
+    fetchUsers();
+    fetchCategories();
+    fetchTags();
+  }, []);
+
+  // Real data from API
+  const recentOrders: Order[] = [];
+
+  // Calculate total sales from orders
+  const totalSales = recentOrders.reduce((sum, order) => {
+    const amount = parseFloat(order.amount.replace("$", "").replace(",", ""));
+    return sum + amount;
+  }, 0);
+
+  const totalOrders = recentOrders.length;
+
   // Mock data - replace with real API data
   const stats = [
     {
       title: "Total Sales",
-      value: "$45,231",
+      value: `$${totalSales.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       icon: "/icons/receipt.svg",
-      trend: { value: "12% from last month", isPositive: true },
+      trend: {
+        // value: `From ${totalOrders} orders`,
+        value: "",
+        isPositive: true,
+      },
       bgColor: "bg-green-500",
     },
     {
       title: "Total Orders",
-      value: "1,234",
+      value: totalOrders.toString(),
       icon: "/icons/receipt.svg",
-      trend: { value: "8% from last month", isPositive: true },
+      trend: {
+        // value: `${totalOrders} total orders`,
+        value: "",
+        isPositive: true,
+      },
       bgColor: "bg-blue-500",
     },
     {
       title: "Total Users",
-      value: "856",
+      value: users.length.toString(),
       icon: "/icons/users.svg",
-      trend: { value: "5% from last month", isPositive: true },
+      trend: {
+        // value: `${users.length} total users`,
+        value: "",
+        isPositive: true,
+      },
       bgColor: "bg-purple-500",
     },
     {
-      title: "Total Products",
-      value: "342",
+      title: "Total Categories",
+      value: categories.length.toString(),
       icon: "/icons/tag.svg",
-      trend: { value: "2% from last month", isPositive: false },
+      trend: {
+        // value: `${categories.length} total categories`,
+        value: "",
+        isPositive: true,
+      },
       bgColor: "bg-orange-500",
-    },
-  ];
-
-  const recentOrders: Order[] = [
-    {
-      id: "#ORD-001",
-      customer: "John Doe",
-      amount: "$125.00",
-      status: "Completed",
-      date: "2026-01-30",
-    },
-    {
-      id: "#ORD-002",
-      customer: "Jane Smith",
-      amount: "$89.50",
-      status: "Pending",
-      date: "2026-01-30",
-    },
-    {
-      id: "#ORD-003",
-      customer: "Mike Johnson",
-      amount: "$210.00",
-      status: "Processing",
-      date: "2026-01-29",
-    },
-    {
-      id: "#ORD-004",
-      customer: "Sarah Williams",
-      amount: "$156.75",
-      status: "Completed",
-      date: "2026-01-29",
-    },
-    {
-      id: "#ORD-005",
-      customer: "Tom Brown",
-      amount: "$95.00",
-      status: "Cancelled",
-      date: "2026-01-28",
     },
   ];
 
@@ -149,7 +152,7 @@ function DashboardHome() {
               title={stat.title}
               value={stat.value}
               icon={stat.icon}
-              trend={stat.trend}
+              // trend={stat.trend}
               bgColor={stat.bgColor}
             />
           ))}

@@ -6,6 +6,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import Tabs, { ITabItem } from "@/components/molecules/Tabs";
 import { DebounceInput } from "@/components/molecules/TableFilter/TableFilterSearch/DebouceInput";
 import RowActions from "./rowActions";
+import { useGetUsers } from "@/hooks/api/users";
 
 type User = {
   name: string;
@@ -116,37 +117,6 @@ const columns: ColumnDef<User>[] = [
   },
 ];
 
-const allUserData: User[] = [
-  {
-    name: "John Doe",
-    email: "john@example.com",
-    role: "Admin",
-    status: "Active",
-    joined: "2026-01-15",
-  },
-  {
-    name: "Jane Smith",
-    email: "jane@example.com",
-    role: "Customer",
-    status: "Active",
-    joined: "2026-01-20",
-  },
-  {
-    name: "Mike Johnson",
-    email: "mike@example.com",
-    role: "Customer",
-    status: "Active",
-    joined: "2026-01-22",
-  },
-  {
-    name: "Sarah Williams",
-    email: "sarah@example.com",
-    role: "Customer",
-    status: "Inactive",
-    joined: "2026-01-10",
-  },
-];
-
 interface IActiveTab extends ITabItem {}
 
 const tabsItems = (): IActiveTab[] => {
@@ -164,6 +134,7 @@ interface IQueryObject {
 }
 
 function UsersPage() {
+  const { users, fetchUsers, loading } = useGetUsers();
   const tabsData = tabsItems();
 
   const [queryObject, setqueryObject] = React.useState<IQueryObject>({
@@ -173,11 +144,21 @@ function UsersPage() {
   });
   const activeTab = queryObject?.activeTab;
 
-  // Filter users based on search and active tab
-  const filteredUsers = allUserData.filter((user) => {
+  React.useEffect(() => {
+    fetchUsers({ search: queryObject.search });
+  }, [queryObject.search]);
+
+  // Transform and filter users based on search and active tab
+  const transformedUsers = users.map((user: any) => ({
+    ...user,
+    status: user.isActive ? "Active" : "Inactive",
+    joined: user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "",
+  }));
+
+  const filteredUsers = transformedUsers.filter((user) => {
     const matchesSearch =
-      user.name.toLowerCase().includes(queryObject.search.toLowerCase()) ||
-      user.email.toLowerCase().includes(queryObject.search.toLowerCase());
+      user.name?.toLowerCase().includes(queryObject.search.toLowerCase()) ||
+      user.email?.toLowerCase().includes(queryObject.search.toLowerCase());
 
     const matchesTab =
       activeTab.title === "All" ||
@@ -214,7 +195,11 @@ function UsersPage() {
                 }}
               />
             </div>
-            <DataTable columns={columns} data={filteredUsers} />
+            <DataTable
+              columns={columns}
+              data={filteredUsers}
+              loading={loading}
+            />
           </div>
         </div>
       </div>

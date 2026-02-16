@@ -1,24 +1,28 @@
 import { useState } from "react";
 import { showErrorToast, showSuccessToast } from "@/utils/toaster";
 import { AxiosError } from "axios";
-import { CategoriesInterface } from "@/services/categories/types";
-import { IFetchDesignCategoryQuery } from "@/types";
+import { IFetchCategoryQuery } from "@/types";
+import CategoriesService from "@/services/categories";
 
 // Hook for fetching categories
-export const useGetCategories = ({
-  Service,
-}: {
-  Service: CategoriesInterface;
-}) => {
+export const useGetCategories = () => {
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<any[]>([]);
 
-  const fetchCategories = async (query?: IFetchDesignCategoryQuery) => {
+  const fetchCategories = async (query?: IFetchCategoryQuery) => {
     setLoading(true);
     try {
-      const res = await Service.getCategories(query);
-      setCategories(res?.data?.data || []);
-      return res?.data?.data;
+      const res = await CategoriesService.fetchCategories(query || {});
+      // Transform the data to match expected format
+      const transformedData = (res?.data?.data || []).map((category: any) => ({
+        ...category,
+        status: category.isActive ? "Active" : "Inactive",
+        createdDate: category.createdAt
+          ? new Date(category.createdAt).toLocaleDateString()
+          : "",
+      }));
+      setCategories(transformedData);
+      return transformedData;
     } catch (error: Error | AxiosError | any) {
       showErrorToast({
         message: error?.response?.data?.message || "Failed to fetch categories",
@@ -34,18 +38,14 @@ export const useGetCategories = ({
 };
 
 // Hook for fetching a single category by ID
-export const useGetCategoryById = ({
-  Service,
-}: {
-  Service: CategoriesInterface;
-}) => {
+export const useGetCategoryById = () => {
   const [loading, setLoading] = useState(false);
   const [category, setCategory] = useState<any>(null);
 
   const fetchCategory = async (id: string) => {
     setLoading(true);
     try {
-      const res = await Service.getCategoryById(id);
+      const res = await CategoriesService.getCategoryById({ categoryId: id });
       setCategory(res?.data?.data || null);
       return res?.data?.data;
     } catch (error: Error | AxiosError | any) {
@@ -63,11 +63,7 @@ export const useGetCategoryById = ({
 };
 
 // Hook for creating a category
-export const useCreateCategory = ({
-  Service,
-}: {
-  Service: CategoriesInterface;
-}) => {
+export const useCreateCategory = () => {
   const [loading, setLoading] = useState(false);
 
   const createCategory = async ({
@@ -84,7 +80,7 @@ export const useCreateCategory = ({
   }) => {
     setLoading(true);
     try {
-      const res = await Service.createCategory(data);
+      const res = await CategoriesService.createCategory(data);
       successCallback?.();
       showSuccessToast({
         message: res?.data?.message || "Category created successfully!",
@@ -106,11 +102,7 @@ export const useCreateCategory = ({
 };
 
 // Hook for updating a category
-export const useUpdateCategory = ({
-  Service,
-}: {
-  Service: CategoriesInterface;
-}) => {
+export const useUpdateCategory = () => {
   const [loading, setLoading] = useState(false);
 
   const updateCategory = async ({
@@ -128,7 +120,7 @@ export const useUpdateCategory = ({
   }) => {
     setLoading(true);
     try {
-      const res = await Service.updateCategory(data);
+      const res = await CategoriesService.updateCategory(data);
       successCallback?.();
       showSuccessToast({
         message: res?.data?.message || "Category updated successfully!",
@@ -150,11 +142,7 @@ export const useUpdateCategory = ({
 };
 
 // Hook for deleting a category
-export const useDeleteCategory = ({
-  Service,
-}: {
-  Service: CategoriesInterface;
-}) => {
+export const useDeleteCategory = () => {
   const [loading, setLoading] = useState(false);
 
   const deleteCategory = async ({
@@ -166,7 +154,7 @@ export const useDeleteCategory = ({
   }) => {
     setLoading(true);
     try {
-      const res = await Service.deleteCategory(data);
+      const res = await CategoriesService.deleteCategory(data);
       successCallback?.();
       showSuccessToast({
         message: res?.data?.message || "Category deleted successfully!",

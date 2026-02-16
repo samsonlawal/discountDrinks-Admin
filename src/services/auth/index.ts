@@ -7,6 +7,12 @@ class Service implements AuthInterface {
   login({ payload }: TLoginService) {
     return axios.post(env.api.auth + "/login", payload);
   }
+
+  logout() {
+    return axios.post(env.api.auth + "/logout", {
+      withCredentials: true,
+    });
+  }
 }
 
 const AuthService = new Service();

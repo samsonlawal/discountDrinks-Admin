@@ -103,7 +103,7 @@ export const BaseDeleteDialog = ({
               </DialogClose>
               <button
                 type="button"
-                className="justify-center inline-flex flex-1 p-3 border-solid border-[1px] bg-[#111111] font-medium font-gordita text-base leading-6 text-white rounded-[1000px]"
+                className="justify-center inline-flex flex-1 p-3 border-solid border-[1px] bg-[red] font-medium font-gordita text-base leading-6 text-white rounded-[1000px]"
                 onClick={async () => {
                   await action?.();
                   onClose();

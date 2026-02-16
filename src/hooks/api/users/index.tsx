@@ -1,37 +1,23 @@
 import { useState } from "react";
 import { showErrorToast, showSuccessToast } from "@/utils/toaster";
 import { AxiosError } from "axios";
-import { IFetchTagQuery } from "@/types";
-import TagsService from "@/services/tags";
+import { IFetchUserQuery } from "@/types";
+import UsersService from "@/services/users";
 
-// Hook for fetching tags
-export const useGetTags = () => {
+// Hook for fetching users
+export const useGetUsers = () => {
   const [loading, setLoading] = useState(false);
-  const [tags, setTags] = useState<any[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
 
-  //  const [meta, setMeta] = useState<{
-  //    currentPage: number;
-  //    nextPage: number;
-  //    totalPages: number;
-  //    totalRecords: number;
-  //  }>();
-
-  const fetchTags = async (queries?: IFetchTagQuery) => {
+  const fetchUsers = async (query?: IFetchUserQuery) => {
     setLoading(true);
     try {
-      const res = await TagsService.fetchTags(queries);
-      setTags(res?.data?.data || []);
-      //  setMeta({
-      //    currentPage: res?.data?.data?.currentPage,
-      //    nextPage: res?.data?.data?.nextPage,
-      //    totalPages: res?.data?.data?.totalPages,
-      //    totalRecords: res?.data?.data?.totalRecords,
-      //  });
-      console.log(res);
+      const res = await UsersService.fetchUsers(query || {});
+      setUsers(res?.data?.data || []);
       return res?.data?.data;
     } catch (error: Error | AxiosError | any) {
       showErrorToast({
-        message: error?.response?.data?.message || "Failed to fetch tags",
+        message: error?.response?.data?.message || "Failed to fetch users",
         description: error?.response?.data?.description || "",
       });
       return [];
@@ -40,23 +26,23 @@ export const useGetTags = () => {
     }
   };
 
-  return { loading, tags, fetchTags };
+  return { loading, users, fetchUsers };
 };
 
-// Hook for fetching a single tag by ID
-export const useGetTagById = () => {
+// Hook for fetching a single user by ID
+export const useGetUserById = () => {
   const [loading, setLoading] = useState(false);
-  const [tag, setTag] = useState<any>(null);
+  const [user, setUser] = useState<any>(null);
 
-  const fetchTag = async (id: string) => {
+  const fetchUser = async (id: string) => {
     setLoading(true);
     try {
-      const res = await TagsService.getTagById({ tagId: id });
-      setTag(res?.data?.data || null);
+      const res = await UsersService.getUserById({ userId: id });
+      setUser(res?.data?.data || null);
       return res?.data?.data;
     } catch (error: Error | AxiosError | any) {
       showErrorToast({
-        message: error?.response?.data?.message || "Failed to fetch tag",
+        message: error?.response?.data?.message || "Failed to fetch user",
         description: error?.response?.data?.description || "",
       });
       return null;
@@ -65,67 +51,66 @@ export const useGetTagById = () => {
     }
   };
 
-  return { loading, tag, fetchTag };
+  return { loading, user, fetchUser };
 };
 
-// Hook for creating a tag
-export const useCreateTag = () => {
+// Hook for creating a user
+export const useCreateUser = () => {
   const [loading, setLoading] = useState(false);
 
-  const createTag = async ({
+  const createUser = async ({
     data,
     successCallback,
   }: {
-    data: { name: string; status?: string };
+    data: any;
     successCallback?: () => void;
   }) => {
     setLoading(true);
     try {
-      const res = await TagsService.createTag(data);
+      const res = await UsersService.createUser(data);
       successCallback?.();
       showSuccessToast({
-        message: res?.data?.message || "Tag created successfully!",
+        message: res?.data?.message || "User created successfully!",
         description: res?.data?.description || "",
       });
       return res?.data?.data;
     } catch (error: Error | AxiosError | any) {
       showErrorToast({
-        message: error?.response?.data?.message || "Failed to create tag",
+        message: error?.response?.data?.message || "Failed to create user",
         description: error?.response?.data?.description || "",
       });
-      console.log(error);
       return null;
     } finally {
       setLoading(false);
     }
   };
 
-  return { loading, createTag };
+  return { loading, createUser };
 };
 
-// Hook for updating a tag
-export const useUpdateTag = () => {
+// Hook for updating a user
+export const useUpdateUser = () => {
   const [loading, setLoading] = useState(false);
 
-  const updateTag = async ({
+  const updateUser = async ({
     data,
     successCallback,
   }: {
-    data: { id: string; name?: string; status?: string };
+    data: { id: string; [key: string]: any };
     successCallback?: () => void;
   }) => {
     setLoading(true);
     try {
-      const res = await TagsService.updateTag(data);
+      const res = await UsersService.updateUser(data);
       successCallback?.();
       showSuccessToast({
-        message: res?.data?.message || "Tag updated successfully!",
+        message: res?.data?.message || "User updated successfully!",
         description: res?.data?.description || "",
       });
       return res?.data?.data;
     } catch (error: Error | AxiosError | any) {
       showErrorToast({
-        message: error?.response?.data?.message || "Failed to update tag",
+        message: error?.response?.data?.message || "Failed to update user",
         description: error?.response?.data?.description || "",
       });
       return null;
@@ -134,14 +119,14 @@ export const useUpdateTag = () => {
     }
   };
 
-  return { loading, updateTag };
+  return { loading, updateUser };
 };
 
-// Hook for deleting a tag
-export const useDeleteTag = () => {
+// Hook for deleting a user
+export const useDeleteUser = () => {
   const [loading, setLoading] = useState(false);
 
-  const deleteTag = async ({
+  const deleteUser = async ({
     data,
     successCallback,
   }: {
@@ -150,16 +135,16 @@ export const useDeleteTag = () => {
   }) => {
     setLoading(true);
     try {
-      const res = await TagsService.deleteTag(data);
+      const res = await UsersService.deleteUser(data);
       successCallback?.();
       showSuccessToast({
-        message: res?.data?.message || "Tag deleted successfully!",
+        message: res?.data?.message || "User deleted successfully!",
         description: res?.data?.description || "",
       });
       return true;
     } catch (error: Error | AxiosError | any) {
       showErrorToast({
-        message: error?.response?.data?.message || "Failed to delete tag",
+        message: error?.response?.data?.message || "Failed to delete user",
         description: error?.response?.data?.description || "",
       });
       return false;
@@ -168,5 +153,5 @@ export const useDeleteTag = () => {
     }
   };
 
-  return { loading, deleteTag };
+  return { loading, deleteUser };
 };

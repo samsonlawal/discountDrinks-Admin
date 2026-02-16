@@ -85,16 +85,25 @@
 //   );
 // };
 
+import { useLoginUser } from "@/hooks/api/auth";
+import AuthService from "@/services/auth";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 export const SignInPageForm = () => {
+  const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [alert, setAlert] = useState({ show: false, type: "", message: "" });
   const [errors, setErrors] = useState({ email: "", password: "" });
+
+  const { loading: authLoading, onLogin } = useLoginUser({
+    Service: AuthService,
+  });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -124,17 +133,10 @@ export const SignInPageForm = () => {
       return;
     }
 
-    setIsLoading(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      setAlert({
-        show: true,
-        type: "success",
-        message: "Sign in successful!",
-      });
-    }, 1500);
+    onLogin({
+      payload: { email, password },
+      successCallback: () => router.replace("/dashboard"),
+    });
   };
 
   return (
@@ -368,10 +370,10 @@ export const SignInPageForm = () => {
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  disabled={isLoading}
-                  className="w-full h-[54px] text-base bg-teal-600 text-white font-medium rounded-lg transition-all duration-200 hover:bg-teal-700 disabled:opacity-70 disabled:cursor-not-allowed relative"
+                  disabled={authLoading}
+                  className="w-full h-[54px] cursor-pointer text-base bg-teal-600 text-white font-medium rounded-lg transition-all duration-200 hover:bg-teal-700 disabled:opacity-70 disabled:cursor-not-allowed relative"
                 >
-                  {isLoading ? (
+                  {authLoading ? (
                     <span className="inline-flex items-center">
                       <svg
                         className="w-5 h-5 animate-spin"
