@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import DashboardLayout from "@/components/layouts/dashboard";
 import DataTable from "@/components/molecules/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
@@ -17,13 +17,16 @@ import { AddDialog } from "@/components/Dialogs/DialogContent/AddDialog";
 import RowActions from "./rowActions";
 import { refresh } from "next/cache";
 import AddProductDialog from "./AddProductDialog";
+import EditProductDialog from "./EditProductDialog";
+import { useGetProducts } from "@/hooks/api/products";
 
 type Product = {
+  _id: string;
   name: string;
   category: string;
-  price: string;
-  stock: number;
-  status: string;
+  basePrice: number;
+  availableQuantity: number;
+  isActive: boolean;
 };
 
 const Search = ({
@@ -115,7 +118,7 @@ const MoreButton = ({ id }: { id: string }) => {
               <path
                 fillRule="evenodd"
                 clipRule="evenodd"
-                d="M9 2.4375C5.6144 2.4375 3.33397 4.46565 2.01043 6.18515L1.98656 6.21615C1.68723 6.6049 1.41155 6.96294 1.22452 7.3863C1.02423 7.83965 0.9375 8.33377 0.9375 9C0.9375 9.66623 1.02423 10.1603 1.22452 10.6137C1.41155 11.0371 1.68723 11.3951 1.98656 11.7839L2.01043 11.8149C3.33397 13.5344 5.6144 15.5625 9 15.5625C12.3856 15.5625 14.666 13.5344 15.9896 11.8149L16.0134 11.7839C16.3128 11.3951 16.5885 11.0371 16.7755 10.6137C16.9758 10.1603 17.0625 9.66623 17.0625 9C17.0625 8.33377 16.9758 7.83965 16.7755 7.3863C16.5885 6.96293 16.3128 6.60489 16.0134 6.21613L15.9896 6.18515C14.666 4.46565 12.3856 2.4375 9 2.4375ZM2.90191 6.87135C4.12398 5.28369 6.11277 3.5625 9 3.5625C11.8872 3.5625 13.876 5.28369 15.0981 6.87135C15.427 7.29869 15.6197 7.55404 15.7464 7.84091C15.8649 8.10901 15.9375 8.4367 15.9375 9C15.9375 9.5633 15.8649 9.89099 15.7464 10.1591C15.6197 10.446 15.427 10.7013 15.0981 11.1287C13.876 12.7163 11.8872 14.4375 9 14.4375C6.11277 14.4375 4.12398 12.7163 2.90191 11.1287C2.57298 10.7013 2.3803 10.446 2.25357 10.1591C2.13513 9.89099 2.0625 9.5633 2.0625 9C2.0625 8.4367 2.13513 8.10901 2.25357 7.84091C2.3803 7.55404 2.57298 7.29869 2.90191 6.87135Z"
+                d="M9 2.4375C5.6144 2.4375 3.33397 4.46565 2.01043 6.18515L1.98656 6.21615C1.68723 6.6049 1.41155 6.96294 1.22452 7.3863C1.02423 7.83965 0.9375 8.33377 0.9375 9C0.9375 9.66623 1.02423 10.1603 1.22452 10.6137C1.41155 11.0371 1.68723 11.3951 1.98656 11.7839L2.01043 11.8149C3.33397 13.5344 5.6144 15.5625 9 15.5625C12.3856 15.5625 14.666 13.5344 15.9896 11.8149L16.0134 11.7839C16.3128 11.3951 16.5885 11.0371 16.7755 10.6137C16.9758 10.1603 17.0625 9.66623 17.0625 9C17.0625 8.33377 16.9758 7.83965 16.7755 7.3863C16.5885 6.96293 16.3128 6.60489 16.0134 6.21613L15.9896 6.18515C14.666 4.46565 12.3856 2.4375 9 2.4375ZM2.90191 6.87135C4.12398 5.28369 6.11277 3.5625 9 3.5625C11.8872 3.5625 13.876 5.28369 15.0981 6.87135C15.427 7.29869 15.6197 7.55404 15.7464 7.84091C15.8649 8.10901 15.9375 8.4367 15.9375 9C15.9375 9.5633 15.8649 9.89099 15.7464 10.1591C15.6197 10.446 15.427 10.7013 15.0981 11.1287C13.876 12.7163 11.8872 14.4375 9 14.4375C6.11277 14.4375 4.12398 12.7163 2.90191 11.1287C2.57298 10.7013 2.3803 10.446 2.25357 10.1591C2.13513 9.89099 2.0625 9.5633 2.0625 8.4367 2.13513 8.10901 2.25357 7.84091C2.3803 7.55404 2.57298 7.29869 2.90191 6.87135Z"
                 fill="#111111"
               />
             </svg>
@@ -177,7 +180,10 @@ const MoreButton = ({ id }: { id: string }) => {
   );
 };
 
-const columns: ColumnDef<Product>[] = [
+const columns = (
+  handleEdit: (product: Product) => void,
+  refresh: () => void,
+): ColumnDef<Product>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -203,7 +209,7 @@ const columns: ColumnDef<Product>[] = [
     cell: ({ row }) => (
       <span className="text-gray-600 -ml-6">{row.index + 1}</span>
     ),
-    size: 30,
+    size: 20,
   },
   {
     accessorKey: "name",
@@ -214,29 +220,26 @@ const columns: ColumnDef<Product>[] = [
     header: "CATEGORY",
   },
   {
-    accessorKey: "price",
+    accessorKey: "basePrice",
     header: "PRICE",
+    cell: ({ row }) => `$${row.getValue("basePrice")}`,
   },
   {
-    accessorKey: "stock",
+    accessorKey: "availableQuantity",
     header: "STOCK",
   },
   {
-    accessorKey: "status",
+    accessorKey: "isActive",
     header: "STATUS",
     cell: ({ row }) => {
-      const status = row.getValue("status") as string;
+      const isActive = row.getValue("isActive") as boolean;
       return (
         <span
           className={`px-2 py-0.5 rounded-md text-xs font-medium ${
-            status === "In Stock"
-              ? "bg-green-100 text-green-800"
-              : status === "Low Stock"
-                ? "bg-yellow-100 text-yellow-800"
-                : "bg-red-100 text-red-800"
+            isActive ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
           }`}
         >
-          {status}
+          {isActive ? "Active" : "Inactive"}
         </span>
       );
     },
@@ -247,49 +250,12 @@ const columns: ColumnDef<Product>[] = [
     accessorKey: "actions",
 
     cell: ({ row }) => (
-      // <button className="px-2 py-1 bg-gray-100 rounded hover:bg-gray-200 transition-colors">
-      //   <img src="/icons/dots.svg" className="w-5 h-5" alt="" />
-      // </button>
-      <RowActions category={row?.original} refresh={refresh} />
+      <RowActions
+        product={row.original}
+        refresh={refresh}
+        onEdit={handleEdit}
+      />
     ),
-  },
-];
-
-const productData: Product[] = [
-  {
-    name: "Premium Vodka",
-    category: "Spirits",
-    price: "$45.00",
-    stock: 125,
-    status: "In Stock",
-  },
-  {
-    name: "Craft Beer Pack",
-    category: "Beer",
-    price: "$15.00",
-    stock: 89,
-    status: "In Stock",
-  },
-  {
-    name: "Red Wine Bottle",
-    category: "Wine",
-    price: "$28.00",
-    stock: 45,
-    status: "Low Stock",
-  },
-  {
-    name: "Whiskey Premium",
-    category: "Spirits",
-    price: "$65.00",
-    stock: 0,
-    status: "Out of Stock",
-  },
-  {
-    name: "Champagne",
-    category: "Wine",
-    price: "$85.00",
-    stock: 32,
-    status: "In Stock",
   },
 ];
 
@@ -298,9 +264,8 @@ interface IActiveTab extends ITabItem {}
 const tabsItems = (): IActiveTab[] => {
   return [
     { id: "0", title: "All" },
-    { id: "1", title: "Spirits" },
-    { id: "2", title: "Wine" },
-    { id: "3", title: "Beer" },
+    { id: "1", title: "Active" },
+    { id: "2", title: "Inactive" },
   ];
 };
 
@@ -312,6 +277,7 @@ interface IQueryObject {
 
 function ProductsPage() {
   const tabsData = tabsItems();
+  const { products, fetchProducts, loading } = useGetProducts();
 
   const [queryObject, setqueryObject] = React.useState<IQueryObject>({
     search: "",
@@ -321,18 +287,49 @@ function ProductsPage() {
   const activeTab = queryObject?.activeTab;
 
   const [isAddDialogOpen, setIsAddDialogOpen] = React.useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
+  const [selectedProduct, setSelectedProduct] = React.useState<
+    Product | undefined
+  >(undefined);
+
+  const handleEdit = (product: Product) => {
+    setSelectedProduct(product);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleAddDialogOpenChange = (open: boolean) => {
+    setIsAddDialogOpen(open);
+  };
+
+  const handleEditDialogOpenChange = (open: boolean) => {
+    setIsEditDialogOpen(open);
+    if (!open) {
+      setTimeout(() => setSelectedProduct(undefined), 300); // Clear after animation
+    }
+  };
+
+  // Fetch products on mount
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   // Filter products based on search and active tab
-  const filteredProducts = productData.filter((product) => {
+  const filteredProducts = products.filter((product) => {
     const matchesSearch =
       product.name.toLowerCase().includes(queryObject.search.toLowerCase()) ||
       product.category.toLowerCase().includes(queryObject.search.toLowerCase());
 
     const matchesTab =
-      activeTab.title === "All" || product.category === activeTab.title;
+      activeTab.title === "All" ||
+      (activeTab.title === "Active" && product.isActive) ||
+      (activeTab.title === "Inactive" && !product.isActive);
 
     return matchesSearch && matchesTab;
   });
+
+  const handleProductSaved = () => {
+    fetchProducts(); // Refresh products list
+  };
 
   return (
     <DashboardLayout leftTitle="Products">
@@ -367,16 +364,31 @@ function ProductsPage() {
                 }}
               />
             </div>
-            <DataTable columns={columns} data={filteredProducts} />
+            <DataTable
+              columns={columns(handleEdit, fetchProducts)}
+              data={filteredProducts}
+            />
           </div>
         </div>
       </div>
 
       {/* Full-screen Add Product Dialog */}
+      {/* Full-screen Add Product Dialog */}
       <AddProductDialog
         open={isAddDialogOpen}
-        onOpenChange={setIsAddDialogOpen}
+        onOpenChange={handleAddDialogOpenChange}
+        onSave={handleProductSaved}
       />
+
+      {/* Full-screen Edit Product Dialog */}
+      {selectedProduct && (
+        <EditProductDialog
+          open={isEditDialogOpen}
+          onOpenChange={handleEditDialogOpenChange}
+          product={selectedProduct}
+          onSave={handleProductSaved}
+        />
+      )}
     </DashboardLayout>
   );
 }

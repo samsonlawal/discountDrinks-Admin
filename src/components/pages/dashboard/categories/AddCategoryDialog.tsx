@@ -52,6 +52,21 @@ export default function AddCategoryDialog({
     }
   }, [open, category]);
 
+  const handleInputChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const { name, value } = e.target;
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    },
+    [],
+  );
+
+  const handleSelectChange = React.useCallback(
+    (name: string, value: string) => {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    },
+    [],
+  );
+
   const handleSave = async () => {
     const categoryId = category?.id || category?._id;
 
@@ -62,7 +77,7 @@ export default function AddCategoryDialog({
           id: categoryId,
           name: formData.name,
           description: formData.description,
-          status: formData.status,
+          status: formData.status.toLowerCase(),
         },
         successCallback: () => {
           onSave?.(formData);
@@ -75,7 +90,7 @@ export default function AddCategoryDialog({
         data: {
           name: formData.name,
           description: formData.description,
-          status: formData.status,
+          status: formData.status.toLowerCase(),
         },
         successCallback: () => {
           onSave?.(formData);
@@ -100,7 +115,7 @@ export default function AddCategoryDialog({
           });
         })}
 
-        <AlertDialogContent className="sm:rounded-xl max-w-[450px] bg-white">
+        <AlertDialogContent className="sm:rounded-xl max-w-112.5 bg-white">
           <div className="p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
               {category ? "Edit Category" : "Add Category"}
@@ -109,30 +124,27 @@ export default function AddCategoryDialog({
             <div className="space-y-4">
               <FormField
                 label="Category Name"
+                name="name"
                 placeholder="Enter category name"
                 value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
+                onChange={handleInputChange}
               />
 
               <FormTextarea
                 label="Description"
+                name="description"
                 placeholder="Enter description"
                 rows={3}
                 value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
+                onChange={handleInputChange}
               />
 
               <FormSelect
                 label="Status"
+                name="status"
                 placeholder="Active/Inactive"
                 value={formData.status}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, status: value })
-                }
+                onChange={handleSelectChange}
                 options={["Active", "Inactive"]}
               />
             </div>

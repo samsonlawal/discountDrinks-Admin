@@ -4,8 +4,9 @@ import env from "@/config/env";
 import { IFetchTagQuery, ITag } from "@/types";
 
 class Service {
-  fetchTags() {
+  fetchTags(queries?: IFetchTagQuery) {
     return axios.get(env.api.tags, {
+      params: queries,
       withCredentials: true,
     });
   }

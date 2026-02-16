@@ -6,23 +6,25 @@ import { FormField } from "@/components/ui/form-field";
 import { FormSelect } from "@/components/ui/form-select";
 import { FormTextarea } from "@/components/ui/form-textarea";
 import { MultiSelect } from "@/components/ui/multi-select";
-import { useCreateProduct } from "@/hooks/api/products";
+import { useUpdateProduct } from "@/hooks/api/products";
 
 const STATUS_OPTIONS = ["Active", "Inactive"];
-const SHIPPING_CLASS_OPTIONS = ["standard", "fragile"];
+const SHIPPING_CLASS_OPTIONS = ["Standard", "Express", "Overnight"];
 const LOADING_OPTIONS = ["Loading..."];
 
-interface AddProductDialogProps {
+interface EditProductDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  product: any;
   onSave?: () => void;
 }
 
-export default function AddProductDialog({
+export default function EditProductDialog({
   open,
   onOpenChange,
+  product,
   onSave,
-}: AddProductDialogProps) {
+}: EditProductDialogProps) {
   const [images, setImages] = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>([]);
@@ -88,7 +90,7 @@ export default function AddProductDialog({
     [],
   );
 
-  const { createProduct, loading } = useCreateProduct();
+  const { updateProduct, loading } = useUpdateProduct();
 
   // Fetch categories and tags
   useEffect(() => {
@@ -119,32 +121,32 @@ export default function AddProductDialog({
   }, [open]);
 
   // Populate form data if product exists (Edit Mode)
-  // Reset form when dialog opens
+  // Populate form data if product exists (Edit Mode)
   useEffect(() => {
-    if (open) {
+    if (open && product) {
       setFormData({
-        name: "",
-        brand: "",
-        category: "",
-        subCategory: "",
-        status: "",
-        badge: "",
-        description: "",
-        basePrice: "",
-        costPrice: "",
-        availableQuantity: "",
-        lowStockThreshold: "",
-        shippingWeight: "",
-        shippingClass: "",
-        dimensions: "",
-        volume: "",
-        abv: "",
-        origin: "",
+        name: product.name || "",
+        brand: product.brand || "",
+        category: product.category || "",
+        subCategory: product.subCategory || "",
+        status: product.status || (product.isActive ? "active" : "inactive"),
+        badge: product.badge || "",
+        description: product.description || "",
+        basePrice: product.basePrice?.toString() || "",
+        costPrice: product.costPrice?.toString() || "",
+        availableQuantity: product.availableQuantity?.toString() || "",
+        lowStockThreshold: product.lowStockThreshold?.toString() || "",
+        shippingWeight: product.shippingWeight?.toString() || "",
+        shippingClass: product.shippingClass || "",
+        dimensions: product.dimensions || "",
+        volume: product.specifications?.volume || "",
+        abv: product.specifications?.abv || "",
+        origin: product.specifications?.origin || "",
       });
-      setSelectedTags([]);
-      setImages([]);
+      setSelectedTags(product.tags || []);
+      setImages(product.images || []);
     }
-  }, [open]);
+  }, [open, product]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -200,13 +202,15 @@ export default function AddProductDialog({
       },
     };
 
-    await createProduct({
-      data: productData,
-      successCallback: () => {
-        onSave?.();
-        onOpenChange(false);
-      },
-    });
+    if (product) {
+      await updateProduct({
+        data: { id: product._id, ...productData },
+        successCallback: () => {
+          onSave?.();
+          onOpenChange(false);
+        },
+      });
+    }
   };
 
   // Close on ESC
@@ -277,7 +281,7 @@ export default function AddProductDialog({
                   disabled={loading}
                   className="h-9 rounded-lg bg-black px-4 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
                 >
-                  {loading ? "Saving..." : "Save Product"}
+                  {loading ? "Saving..." : "Update Product"}
                 </button>
               </div>
             </div>
@@ -286,7 +290,7 @@ export default function AddProductDialog({
           {/* Body */}
           <div className="mx-auto max-w-7xl px-6 py-6">
             <h1 className="text-xl font-semibold text-gray-900">
-              Add New Product
+              {product ? "Edit Product" : "Product Details"}
             </h1>
 
             <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">

@@ -5,6 +5,7 @@ import DataTable from "@/components/molecules/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { useGetUsers } from "@/hooks/api/users";
 import { useGetCategories } from "@/hooks/api/categories";
+import { useGetProducts } from "@/hooks/api/products";
 import { useGetTags } from "@/hooks/api/tags";
 import React from "react";
 
@@ -65,12 +66,13 @@ const orderColumns: ColumnDef<Order>[] = [
 
 function DashboardHome() {
   const { users, fetchUsers } = useGetUsers();
-  const { categories, fetchCategories } = useGetCategories();
+  /* const { categories, fetchCategories } = useGetCategories(); */
+  const { products, fetchProducts } = useGetProducts();
   const { tags, fetchTags } = useGetTags();
 
   React.useEffect(() => {
     fetchUsers();
-    fetchCategories();
+    fetchProducts();
     fetchTags();
   }, []);
 
@@ -121,11 +123,11 @@ function DashboardHome() {
       bgColor: "bg-purple-500",
     },
     {
-      title: "Total Categories",
-      value: categories.length.toString(),
+      title: "Total Products",
+      value: products.length.toString(),
       icon: "/icons/tag.svg",
       trend: {
-        // value: `${categories.length} total categories`,
+        // value: `${products.length} total products`,
         value: "",
         isPositive: true,
       },

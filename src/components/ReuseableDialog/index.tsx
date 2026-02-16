@@ -39,7 +39,7 @@ const ReuseableDialog = ({
           });
         })}
 
-        <AlertDialogContent className="sm:rounded-[24px]">
+        <AlertDialogContent className="sm:rounded-3xl">
           <div className="p-10">
             <div>
               <div className="flex justify-center">
@@ -70,7 +70,7 @@ const ReuseableDialog = ({
               </div>
               <div className="flex justify-between gap-6 mt-8">
                 <button
-                  className="justify-center inline-flex flex-1 items-center py-3 px-2 border-solid border-[1px] bg-white font-medium font-gordita text-base leading-6 text-[#111111] rounded-[1000px] select-none"
+                  className="justify-center inline-flex flex-1 items-center py-3 px-2 border-solid border-[1px] bg-white font-medium font-gordita text-base leading-6 text-[#111111] rounded-full select-none"
                   onClick={close}
                   disabled={loading}
                 >
@@ -78,7 +78,7 @@ const ReuseableDialog = ({
                 </button>
                 <button
                   type="button"
-                  className="justify-center inline-flex flex-1 items-center py-3 px-2 border-solid border-[1px] bg-[#b10a0a] font-medium font-gordita text-base leading-6 text-white rounded-[1000px]"
+                  className="justify-center inline-flex flex-1 items-center py-3 px-2 border-solid border-[1px] bg-[#b10a0a] font-medium font-gordita text-base leading-6 text-white rounded-full"
                   onClick={() => onProceed?.(close)}
                 >
                   {loading ? <Spinner /> : proceedTitle}

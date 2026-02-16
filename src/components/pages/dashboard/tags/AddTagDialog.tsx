@@ -35,19 +35,38 @@ export default function AddTagDialog({
   const loading = creating || updating;
 
   React.useEffect(() => {
-    console.log("AddTagDialog tag:", tag);
-    if (tag) {
+    if (open && tag) {
       setFormData({
         name: tag.name,
         status: tag.isActive ? "active" : "inactive",
       });
+    } else if (open && !tag) {
+      setFormData({
+        name: "",
+        status: "Active",
+      });
     }
-  }, [tag]);
+  }, [open, tag]);
+
+  const handleInputChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const { name, value } = e.target;
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    },
+    [],
+  );
+
+  const handleSelectChange = React.useCallback(
+    (name: string, value: string) => {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    },
+    [],
+  );
 
   const handleSave = async () => {
     const payload = {
       name: formData.name,
-      status: formData.status,
+      status: formData.status.toLowerCase(),
     };
 
     if (tag) {
@@ -91,20 +110,18 @@ export default function AddTagDialog({
             <div className="space-y-4">
               <FormField
                 label="Tag Name"
+                name="name"
                 placeholder="Enter tag name"
                 value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
+                onChange={handleInputChange}
               />
 
               <FormSelect
                 label="Status"
+                name="status"
                 placeholder="Active/Inactive"
                 value={formData.status}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, status: value })
-                }
+                onChange={handleSelectChange}
                 options={["Active", "Inactive"]}
               />
             </div>
