@@ -21,7 +21,11 @@ function useAxiosDefaults({
   //Axios defauls
   //------------------------------------
   axios.defaults.headers.post["Content-Type"] = "application/json";
-  axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+  if (accessToken) {
+    axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+  } else {
+    delete axios.defaults.headers.common.Authorization;
+  }
   axios.defaults.withCredentials = true;
   console.log("refreshToken", refreshToken);
 
