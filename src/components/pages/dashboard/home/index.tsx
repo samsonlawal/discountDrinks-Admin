@@ -162,7 +162,8 @@ function DashboardHome() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Recent Orders */}
-          <Card className="lg:col-span-2 p-6">
+          {/* Recent Orders */}
+          <div className="lg:col-span-2">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900">
                 Recent Orders
@@ -175,7 +176,7 @@ function DashboardHome() {
               </a>
             </div>
             <DataTable columns={orderColumns} data={recentOrders} />
-          </Card>
+          </div>
 
           {/* Top Products */}
           <Card className="p-6">

@@ -12,6 +12,7 @@ class Service {
         ...(page ? { page } : {}),
         ...(pageSize ? { pageSize } : {}),
       },
+      withCredentials: true,
     });
   }
 

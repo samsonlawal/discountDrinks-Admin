@@ -2,6 +2,7 @@
 import React, { useEffect } from "react";
 import DashboardLayout from "@/components/layouts/dashboard";
 import DataTable from "@/components/molecules/DataTable";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 import Tabs, { ITabItem } from "@/components/molecules/Tabs";
 import { DebounceInput } from "@/components/molecules/TableFilter/TableFilterSearch/DebouceInput";
@@ -187,27 +188,30 @@ const columns = (
   {
     id: "select",
     header: ({ table }) => (
-      <input
-        type="checkbox"
+      <Checkbox
         checked={table.getIsAllPageRowsSelected()}
         onChange={(e) => table.toggleAllPageRowsSelected(!!e.target.checked)}
-        className="w-3.5 h-3.5 rounded border-gray-300"
+        aria-label="Select all"
+        className="translate-y-[2px]"
       />
     ),
     cell: ({ row }) => (
-      <input
-        type="checkbox"
+      <Checkbox
         checked={row.getIsSelected()}
         onChange={(e) => row.toggleSelected(!!e.target.checked)}
-        className="w-3.5 h-3.5 rounded border-gray-300"
+        aria-label="Select row"
+        className="translate-y-[2px]"
       />
     ),
+    enableSorting: false,
+    enableHiding: false,
+    size: 40,
   },
   {
     id: "number",
-    header: () => <span className="-ml-6">#</span>,
+    header: () => <span className="-ml-2">#</span>,
     cell: ({ row }) => (
-      <span className="text-gray-600 -ml-6">{row.index + 1}</span>
+      <span className="text-gray-600 -ml-2">{row.index + 1}</span>
     ),
     size: 20,
   },
@@ -352,7 +356,7 @@ function ProductsPage() {
 
           <div
             className={
-              "my-[4px]  relative border-t-[#EAEBF0] border-t-[1px] pt-[10px]"
+              "my-[10px]  relative border-t-[#EAEBF0] border-t-[1px] pt-[10px]"
             }
           >
             <div className="px-[20px]">

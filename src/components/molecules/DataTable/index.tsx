@@ -88,20 +88,20 @@ function DataTable<TData, TValue>({
           )}
         </div>
       )}
-      <div className=" border relative min-h-[440px] overflow-visible ">
+      <div className=" border relative min-h-[440px] overflow-x-auto ">
         {loading ? (
           <div className=" absolute flex items-center justify-center right-0 top-0 bg-white/80  h-full w-full z-[20] pt-[100px]">
             <Spinner className="w-7 h-7 text-gray-60000" />
           </div>
         ) : null}
 
-        <Table className="text-[13px] ">
+        <Table className="text-[13px] w-full">
           <TableHeader className="text-[13px]">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id} className="pl-[19px]">
+                    <TableHead key={header.id} className="pl-3">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -126,7 +126,7 @@ function DataTable<TData, TValue>({
                     {row.getVisibleCells().map((cell) => (
                       <TableCell
                         key={cell.id}
-                        className="border-b border-[#e2e8f0] pl-[19px]"
+                        className="border-b border-[#e2e8f0] pl-3"
                       >
                         {flexRender(
                           cell.column.columnDef.cell,

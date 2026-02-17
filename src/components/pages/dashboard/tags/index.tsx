@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import DashboardLayout from "@/components/layouts/dashboard";
 import DataTable from "@/components/molecules/DataTable";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 import RowActions from "./rowActions";
 import AddTagDialog from "./AddTagDialog";
@@ -146,13 +147,41 @@ export default function TagsPage() {
 
   const columns: ColumnDef<Tag>[] = [
     {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={table.getIsAllPageRowsSelected()}
+          onChange={(e) => table.toggleAllPageRowsSelected(!!e.target.checked)}
+          aria-label="Select all"
+          className="translate-y-[2px]"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onChange={(e) => row.toggleSelected(!!e.target.checked)}
+          aria-label="Select row"
+          className="translate-y-[2px]"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+      size: 40,
+    },
+    {
       id: "number",
-      header: "#",
-      cell: ({ row }) => <span className="text-gray-600">{row.index + 1}</span>,
+      header: () => <span className="-ml-2">#</span>,
+      cell: ({ row }) => (
+        <span className="text-gray-600 -ml-2">{row.index + 1}</span>
+      ),
+      size: 20,
     },
     {
       accessorKey: "name",
       header: "TAG NAME",
+      cell: ({ row }) => (
+        <span className="font-medium">{row.getValue("name")}</span>
+      ),
     },
     {
       accessorKey: "productCount",
@@ -212,7 +241,7 @@ export default function TagsPage() {
 
           <div
             className={
-              "my-[20px] relative border-t-[#EAEBF0] border-t-[1px] pt-[10px]"
+              "my-[10px] relative border-t-[#EAEBF0] border-t-[1px] pt-[10px]"
             }
           >
             <div className="px-[20px]">

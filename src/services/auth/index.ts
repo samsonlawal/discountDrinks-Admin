@@ -5,9 +5,7 @@ import { AuthInterface, TLoginService } from "./types";
 
 class Service implements AuthInterface {
   login({ payload }: TLoginService) {
-    return axios.post(env.api.auth + "/login", payload, {
-      withCredentials: true,
-    });
+    return axios.post(env.api.auth + "/login", payload);
   }
 
   logout() {
