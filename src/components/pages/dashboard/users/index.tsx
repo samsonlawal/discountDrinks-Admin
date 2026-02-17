@@ -196,15 +196,21 @@ function UsersPage() {
 
   return (
     <DashboardLayout leftTitle="Users">
-      <div className="px-6 min-h-full">
+      <div className="px-3 md:px-6 min-h-full">
         <div className="bg-white overflow-hidden">
-          <div className={"mt-[20px] px-1 pt-2 pb-1 flex justify-between "}>
-            <Search
-              value={queryObject?.search}
-              onChange={(value: string) =>
-                setqueryObject((x) => ({ ...x, search: value }))
-              }
-            />
+          <div
+            className={
+              "mt-[20px] px-1 pt-2 pb-1 flex justify-between w-full items-center"
+            }
+          >
+            <div className="hidden md:block">
+              <Search
+                value={queryObject?.search}
+                onChange={(value: string) =>
+                  setqueryObject((x) => ({ ...x, search: value }))
+                }
+              />
+            </div>
           </div>
 
           <div

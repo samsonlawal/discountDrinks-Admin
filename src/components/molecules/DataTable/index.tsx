@@ -90,18 +90,31 @@ function DataTable<TData, TValue>({
       )}
       <div className=" border relative min-h-[440px] overflow-x-auto ">
         {loading ? (
-          <div className=" absolute flex items-center justify-center right-0 top-0 bg-white/80  h-full w-full z-[20] pt-[100px]">
-            <Spinner className="w-7 h-7 text-gray-60000" />
+          <div className=" absolute flex items-center justify-center right-0 top-0 bg-[white]/86  h-full w-full z-[20] pt-[100px]">
+            <Spinner className="w-7 h-7 text-gray-600" />
           </div>
         ) : null}
 
         <Table className="text-[13px] w-full">
-          <TableHeader className="text-[13px]">
+          <TableHeader className="text-xs uppercase">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id} className="pl-3">
+                    <TableHead
+                      key={header.id}
+                      className="pl-3 whitespace-nowrap"
+                      style={{
+                        width:
+                          header.getSize() !== 150
+                            ? header.getSize()
+                            : undefined,
+                        minWidth:
+                          header.getSize() !== 150
+                            ? header.getSize()
+                            : undefined,
+                      }}
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -126,7 +139,17 @@ function DataTable<TData, TValue>({
                     {row.getVisibleCells().map((cell) => (
                       <TableCell
                         key={cell.id}
-                        className="border-b border-[#e2e8f0] pl-3"
+                        className="border-b border-[#e2e8f0] pl-3 whitespace-nowrap"
+                        style={{
+                          width:
+                            cell.column.getSize() !== 150
+                              ? cell.column.getSize()
+                              : undefined,
+                          minWidth:
+                            cell.column.getSize() !== 150
+                              ? cell.column.getSize()
+                              : undefined,
+                        }}
                       >
                         {flexRender(
                           cell.column.columnDef.cell,

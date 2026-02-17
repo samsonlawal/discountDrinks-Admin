@@ -183,7 +183,7 @@ export default function CategoriesPage() {
     },
     {
       accessorKey: "name",
-      header: "CATEGORY NAME",
+      header: "NAME",
       cell: ({ row }) => (
         <span className="whitespace-nowrap">{row.getValue("name")}</span>
       ),
@@ -240,15 +240,21 @@ export default function CategoriesPage() {
 
   return (
     <DashboardLayout leftTitle="Categories">
-      <div className="px-6 min-h-full">
+      <div className="px-3 md:px-6 min-h-full">
         <div className="bg-white overflow-hidden">
-          <div className={"mt-[20px] px-1 pt-2 pb-1 flex justify-between"}>
-            <Search
-              value={queryObject.search}
-              onChange={(value: string) =>
-                setQueryObject((x) => ({ ...x, search: value }))
-              }
-            />
+          <div
+            className={
+              "mt-[20px] px-1 pt-2 pb-1 flex justify-between w-full items-center"
+            }
+          >
+            <div className="hidden md:block">
+              <Search
+                value={queryObject.search}
+                onChange={(value: string) =>
+                  setQueryObject((x) => ({ ...x, search: value }))
+                }
+              />
+            </div>
             <AddCategoryDialog onSave={() => fetchCategories()}>
               <button className="px-4 py-1.5 text-sm bg-black text-white rounded-lg hover:bg-gray-800 transition-colors">
                 Add Category

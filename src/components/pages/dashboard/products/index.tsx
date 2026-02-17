@@ -217,7 +217,7 @@ const columns = (
   },
   {
     accessorKey: "name",
-    header: "PRODUCT",
+    header: "NAME",
   },
   {
     accessorKey: "category",
@@ -337,15 +337,21 @@ function ProductsPage() {
 
   return (
     <DashboardLayout leftTitle="Products">
-      <div className="px-6 min-h-full">
+      <div className="px-3 md:px-6 min-h-full">
         <div className="bg-white overflow-hidden">
-          <div className={"mt-[20px] px-1 pt-2 pb-1 flex justify-between "}>
-            <Search
-              value={queryObject?.search}
-              onChange={(value: string) =>
-                setqueryObject((x) => ({ ...x, search: value }))
-              }
-            />
+          <div
+            className={
+              "mt-[20px] px-1 pt-2 pb-1 flex justify-between w-full items-center"
+            }
+          >
+            <div className="hidden md:block">
+              <Search
+                value={queryObject?.search}
+                onChange={(value: string) =>
+                  setqueryObject((x) => ({ ...x, search: value }))
+                }
+              />
+            </div>
             <button
               onClick={() => setIsAddDialogOpen(true)}
               className="px-4 py-1.5 text-sm bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"

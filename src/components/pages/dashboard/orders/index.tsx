@@ -148,64 +148,7 @@ const columns: ColumnDef<Order>[] = [
   },
 ];
 
-const allOrderData: Order[] = [
-  {
-    id: "#ORD-001",
-    customer: "John Doe",
-    amount: "$125.00",
-    status: "Completed",
-    date: "2026-01-30",
-  },
-  {
-    id: "#ORD-002",
-    customer: "Jane Smith",
-    amount: "$89.50",
-    status: "Pending",
-    date: "2026-01-30",
-  },
-  {
-    id: "#ORD-003",
-    customer: "Mike Johnson",
-    amount: "$210.00",
-    status: "Processing",
-    date: "2026-01-29",
-  },
-  {
-    id: "#ORD-004",
-    customer: "Sarah Williams",
-    amount: "$156.75",
-    status: "Completed",
-    date: "2026-01-29",
-  },
-  {
-    id: "#ORD-005",
-    customer: "Tom Brown",
-    amount: "$95.00",
-    status: "Cancelled",
-    date: "2026-01-28",
-  },
-  {
-    id: "#ORD-006",
-    customer: "Emily Davis",
-    amount: "$178.25",
-    status: "Processing",
-    date: "2026-01-28",
-  },
-  {
-    id: "#ORD-007",
-    customer: "David Wilson",
-    amount: "$245.00",
-    status: "Completed",
-    date: "2026-01-27",
-  },
-  {
-    id: "#ORD-008",
-    customer: "Lisa Anderson",
-    amount: "$132.50",
-    status: "Pending",
-    date: "2026-01-27",
-  },
-];
+const allOrderData: Order[] = [];
 
 interface IActiveTab extends ITabItem {}
 
@@ -248,15 +191,21 @@ function OrdersPage() {
 
   return (
     <DashboardLayout leftTitle="Orders">
-      <div className="px-6 min-h-full">
+      <div className="px-3 md:px-6 min-h-full">
         <div className="bg-white overflow-hidden">
-          <div className={"mt-[20px] px-1 pt-2 pb-1 flex justify-between "}>
-            <Search
-              value={queryObject?.search}
-              onChange={(value: string) =>
-                setqueryObject((x) => ({ ...x, search: value }))
-              }
-            />
+          <div
+            className={
+              "mt-[20px] px-1 pt-2 pb-1 flex justify-between w-full items-center"
+            }
+          >
+            <div className="hidden md:block">
+              <Search
+                value={queryObject?.search}
+                onChange={(value: string) =>
+                  setqueryObject((x) => ({ ...x, search: value }))
+                }
+              />
+            </div>
             {/* <AddNewTag refresh={refresh}>
               <button className="inline-flex gap-[6px] px-4 py-2 rounded-[1000px] bg-dark-black text-white text-sm leading-[22px] font-medium">
                 <div>
