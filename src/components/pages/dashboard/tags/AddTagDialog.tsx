@@ -101,9 +101,9 @@ export default function AddTagDialog({
           });
         })}
 
-        <AlertDialogContent className="sm:rounded-xl max-w-md bg-white">
-          <div className="p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+        <AlertDialogContent className="rounded-xl w-[95%] sm:w-full max-w-md bg-white">
+          <div className="p-4 md:p-6">
+            <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-4">
               {tag ? "Edit Tag" : "Add Tag"}
             </h2>
 

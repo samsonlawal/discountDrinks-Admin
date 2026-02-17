@@ -115,9 +115,9 @@ export default function AddCategoryDialog({
           });
         })}
 
-        <AlertDialogContent className="sm:rounded-xl max-w-112.5 bg-white">
-          <div className="p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+        <AlertDialogContent className="rounded-xl w-[95%] sm:w-full max-w-112.5 bg-white">
+          <div className="p-4 md:p-6">
+            <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-4">
               {category ? "Edit Category" : "Add Category"}
             </h2>
 

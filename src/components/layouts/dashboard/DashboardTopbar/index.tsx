@@ -11,9 +11,7 @@ function DashboardTopbar({ leftTitle }: { leftTitle?: string }) {
           alt="menu-icon"
           className="w-[24px] h-[24px] object-contain"
         /> */}
-        <h3 className="text-[#111111] text-[18px] leading-[26px]">
-          {leftTitle}
-        </h3>
+        <h3 className="text-[#111111] text-2xl leading-[26px]">{leftTitle}</h3>
       </div>
 
       <div className="flex gap-4 items-center">

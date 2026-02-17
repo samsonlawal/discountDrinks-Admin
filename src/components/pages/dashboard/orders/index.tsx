@@ -47,7 +47,7 @@ const Search = ({
       <DebounceInput
         type="text"
         placeholder="Search"
-        className="px-[calc(3rem-1px)] py-1.5 outline-none text-[#868FA0] focus:outline-none shadow-[0_1px_1px_0px_rgba(0,0,0,0.10),0_0_0_1px_rgba(70,79,96,0.16)] w-70 rounded-[3px]"
+        className="px-[calc(3rem-1px)] py-1.5 outline-none text-[#868FA0] focus:outline-none shadow-[0_1px_1px_0px_rgba(0,0,0,0.10),0_0_0_1px_rgba(70,79,96,0.16)] w-full md:w-70 rounded-[3px]"
         value={value}
         onChange={(value: string | number) => onChange?.(value)}
       />
@@ -155,7 +155,7 @@ interface IActiveTab extends ITabItem {}
 const tabsItems = ({}: {}): IActiveTab[] => {
   return [
     { id: `0`, title: "All" },
-    { id: `1`, title: "Pending" },
+    // { id: `1`, title: "Pending" },
     { id: `2`, title: "Processing" },
     { id: `3`, title: "Completed" },
     { id: `4`, title: "Cancelled", disabled: true },
@@ -191,14 +191,14 @@ function OrdersPage() {
 
   return (
     <DashboardLayout leftTitle="Orders">
-      <div className="px-3 md:px-6 min-h-full">
+      <div className="px-2 md:px-6 min-h-full">
         <div className="bg-white overflow-hidden">
           <div
             className={
-              "mt-[20px] px-1 pt-2 pb-1 flex justify-between w-full items-center"
+              "hidden md:block mt-[20px] px-1 pt-2 pb-1 flex gap-2 justify-between items-center w-full border-b-[#EAEBF0] border-b-[1px] pb-[10px]"
             }
           >
-            <div className="hidden md:block">
+            <div className="hidden md:block flex-1 md:flex-none">
               <Search
                 value={queryObject?.search}
                 onChange={(value: string) =>
@@ -235,11 +235,7 @@ function OrdersPage() {
             </AddNewTag> */}
           </div>
 
-          <div
-            className={
-              "my-[10px]  relative border-t-[#EAEBF0] border-t-[1px] pt-[10px]"
-            }
-          >
+          <div className={"md:my-[10px] my-[40px] relative"}>
             <div className="px-[20px]">
               <Tabs
                 data={tabsData}
