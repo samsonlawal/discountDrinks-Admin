@@ -88,7 +88,8 @@ function DataTable<TData, TValue>({
           )}
         </div>
       )}
-      <div className=" border relative min-h-[440px] overflow-x-auto ">
+      {/* <div className=" border relative min-h-[440px] overflow-x-auto "> */}
+      <div className=" border relative h-fit overflow-x-auto ">
         {loading ? (
           <div className=" absolute flex items-center justify-center right-0 top-0 bg-[white]/86  h-full w-full z-[20] pt-[100px]">
             <Spinner className="w-7 h-7 text-gray-600" />
@@ -99,20 +100,28 @@ function DataTable<TData, TValue>({
           <TableHeader className="text-xs uppercase">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
+                {headerGroup.headers.map((header, index) => {
+                  const isSticky = index < 3;
+                  let stickyLeft = 0;
+                  if (index === 1) {
+                    stickyLeft = headerGroup.headers[0].getSize();
+                  } else if (index === 2) {
+                    stickyLeft =
+                      headerGroup.headers[0].getSize() +
+                      headerGroup.headers[1].getSize();
+                  }
+
                   return (
                     <TableHead
                       key={header.id}
                       className="pl-3 whitespace-nowrap"
                       style={{
-                        width:
-                          header.getSize() !== 150
-                            ? header.getSize()
-                            : undefined,
-                        minWidth:
-                          header.getSize() !== 150
-                            ? header.getSize()
-                            : undefined,
+                        width: header.getSize(),
+                        minWidth: header.getSize(),
+                        position: isSticky ? "sticky" : undefined,
+                        left: isSticky ? stickyLeft : undefined,
+                        zIndex: isSticky ? 20 : undefined,
+                        backgroundColor: isSticky ? "#f9fafb" : undefined,
                       }}
                     >
                       {header.isPlaceholder
@@ -129,34 +138,43 @@ function DataTable<TData, TValue>({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row, index) => {
+              table.getRowModel().rows.map((row) => {
                 return (
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
                     className=""
                   >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell
-                        key={cell.id}
-                        className="border-b border-[#e2e8f0] pl-3 whitespace-nowrap"
-                        style={{
-                          width:
-                            cell.column.getSize() !== 150
-                              ? cell.column.getSize()
-                              : undefined,
-                          minWidth:
-                            cell.column.getSize() !== 150
-                              ? cell.column.getSize()
-                              : undefined,
-                        }}
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    ))}
+                    {row.getVisibleCells().map((cell, index) => {
+                      const isSticky = index < 3;
+                      let stickyLeft = 0;
+                      if (index === 1) {
+                        stickyLeft = row.getVisibleCells()[0].column.getSize();
+                      } else if (index === 2) {
+                        stickyLeft =
+                          row.getVisibleCells()[0].column.getSize() +
+                          row.getVisibleCells()[1].column.getSize();
+                      }
+                      return (
+                        <TableCell
+                          key={cell.id}
+                          className="border-b border-[#e2e8f0] pl-3 whitespace-nowrap"
+                          style={{
+                            width: cell.column.getSize(),
+                            minWidth: cell.column.getSize(),
+                            position: isSticky ? "sticky" : undefined,
+                            left: isSticky ? stickyLeft : undefined,
+                            zIndex: isSticky ? 10 : undefined,
+                            backgroundColor: isSticky ? "white" : undefined,
+                          }}
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </TableCell>
+                      );
+                    })}
                   </TableRow>
                 );
               })
