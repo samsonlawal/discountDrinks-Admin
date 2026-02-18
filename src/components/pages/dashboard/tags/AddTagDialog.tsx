@@ -36,9 +36,18 @@ export default function AddTagDialog({
 
   React.useEffect(() => {
     if (open && tag) {
+      let initialStatus = "Active";
+      if (tag.status) {
+        initialStatus =
+          tag.status.charAt(0).toUpperCase() +
+          tag.status.slice(1).toLowerCase();
+      } else if (typeof tag.isActive === "boolean") {
+        initialStatus = tag.isActive ? "Active" : "Inactive";
+      }
+
       setFormData({
-        name: tag.name,
-        status: tag.isActive ? "active" : "inactive",
+        name: tag.name || "",
+        status: initialStatus,
       });
     } else if (open && !tag) {
       setFormData({
@@ -78,6 +87,7 @@ export default function AddTagDialog({
         },
       });
     } else {
+      console.log();
       await createTag({
         data: payload,
         successCallback: () => {
@@ -85,7 +95,7 @@ export default function AddTagDialog({
           setOpen(false);
           setFormData({
             name: "",
-            status: "Active",
+            status: "active",
           });
         },
       });

@@ -18,7 +18,7 @@ type Tag = {
   name: string;
   type: number;
   productCount: number;
-  isActive: boolean;
+  status: "active" | "inactive";
   createdAt: string;
 };
 
@@ -112,16 +112,16 @@ export default function TagsPage() {
 
     const matchesTab =
       activeTab.title === "All" ||
-      (activeTab.title === "Active" && tag.isActive) ||
-      (activeTab.title === "Inactive" && !tag.isActive);
+      (activeTab.title === "Active" && tag.status) ||
+      (activeTab.title === "Inactive" && !tag.status);
 
     return matchesSearch && matchesTab;
   });
 
   // Calculate counts for each tab
   const allCount = tags.length;
-  const activeCount = tags.filter((tag) => tag.isActive).length;
-  const inactiveCount = tags.filter((tag) => !tag.isActive).length;
+  const activeCount = tags.filter((tag) => tag.active).length;
+  const inactiveCount = tags.filter((tag) => !tag.active).length;
 
   // Update tabs with counts - only show badge for active tab
   const tabsWithCounts: IActiveTab[] = [
@@ -186,19 +186,19 @@ export default function TagsPage() {
       header: "PRODUCTS",
     },
     {
-      accessorKey: "isActive",
+      accessorKey: "status",
       header: "STATUS",
       cell: ({ row }) => {
-        const isActive = row.original.isActive;
+        const status = row.original.status;
         return (
           <span
             className={`px-2 py-0.5 rounded-md text-xs font-medium ${
-              isActive
+              status === "active"
                 ? "bg-green-100 text-green-800"
                 : "bg-gray-100 text-gray-800"
             }`}
           >
-            {isActive ? "Active" : "Inactive"}
+            {status}
           </span>
         );
       },
@@ -214,7 +214,7 @@ export default function TagsPage() {
       id: "actions",
       header: "ACTION",
       cell: ({ row }) => (
-        <RowActions category={row?.original} refresh={() => fetchTags()} />
+        <RowActions tag={row?.original} refresh={() => fetchTags()} />
       ),
     },
   ];

@@ -20,7 +20,13 @@ export const useGetTags = () => {
     setLoading(true);
     try {
       const res = await TagsService.fetchTags(queries);
-      setTags(res?.data?.data || []);
+      const rawData = res?.data?.data || [];
+      const mappedData = rawData.map((tag: any) => ({
+        ...tag,
+        status:
+          tag.status?.toLowerCase() || (tag.isActive ? "active" : "inactive"),
+      }));
+      setTags(mappedData);
       //  setMeta({
       //    currentPage: res?.data?.data?.currentPage,
       //    nextPage: res?.data?.data?.nextPage,
@@ -28,7 +34,7 @@ export const useGetTags = () => {
       //    totalRecords: res?.data?.data?.totalRecords,
       //  });
       console.log(res);
-      return res?.data?.data;
+      return mappedData;
     } catch (error: Error | AxiosError | any) {
       showErrorToast({
         message: error?.response?.data?.message || "Failed to fetch tags",
@@ -52,8 +58,17 @@ export const useGetTagById = () => {
     setLoading(true);
     try {
       const res = await TagsService.getTagById({ tagId: id });
-      setTag(res?.data?.data || null);
-      return res?.data?.data;
+      const rawData = res?.data?.data;
+      const mappedData = rawData
+        ? {
+            ...rawData,
+            status:
+              rawData.status?.toLowerCase() ||
+              (rawData.isActive ? "active" : "inactive"),
+          }
+        : null;
+      setTag(mappedData);
+      return mappedData;
     } catch (error: Error | AxiosError | any) {
       showErrorToast({
         message: error?.response?.data?.message || "Failed to fetch tag",

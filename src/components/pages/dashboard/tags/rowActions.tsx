@@ -10,16 +10,16 @@ import AddTagDialog from "./AddTagDialog";
 import { useDeleteTag } from "@/hooks/api/tags";
 
 interface DataTableRowActionsProps {
-  category?: any; // Using any to avoid type strictness issues during quick fix, or use ITag
+  tag?: any;
   refresh?: () => void;
 }
 
-export function RowActions({ category, refresh }: DataTableRowActionsProps) {
+export function RowActions({ tag, refresh }: DataTableRowActionsProps) {
   const { deleteTag, loading } = useDeleteTag();
 
   const onDeleteTag = (closeModal?: any) => {
     deleteTag({
-      data: { id: category.id },
+      data: { id: tag.id || tag._id },
       successCallback: () => {
         refresh?.();
         closeModal?.();
@@ -49,7 +49,7 @@ export function RowActions({ category, refresh }: DataTableRowActionsProps) {
             <span className="text-[#111111]">View</span>
           </button>
 
-          <AddTagDialog tag={category} onSave={refresh}>
+          <AddTagDialog tag={tag} onSave={refresh}>
             <button className="hover:bg-gray-200 w-full flex items-center px-3 py-2 gap-2 cursor-pointer text-[14px]">
               <img
                 src="/icons/pencil.svg"

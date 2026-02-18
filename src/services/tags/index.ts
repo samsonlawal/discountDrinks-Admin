@@ -16,7 +16,7 @@ class Service {
       env.api.tags,
       {
         name,
-        isActive: status === "Active",
+        status,
       },
       {
         withCredentials: true,
@@ -29,7 +29,7 @@ class Service {
       env.api.tags + `/` + id,
       {
         name,
-        isActive: status === "Active",
+        status,
       },
       {
         withCredentials: true,
