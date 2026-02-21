@@ -87,3 +87,18 @@ export interface IFetchCategoryQuery {
   page?: number;
   limit?: number;
 }
+
+export interface IBrand {
+  id?: string;
+  name?: string;
+  status?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface IFetchBrandQuery {
+  name?: string;
+  search?: string;
+  page?: number;
+  limit?: number;
+}

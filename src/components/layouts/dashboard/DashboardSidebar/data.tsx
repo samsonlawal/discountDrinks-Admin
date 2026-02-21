@@ -63,6 +63,13 @@ export const NAVBAR_TOP_LINKS: INavbarLink[] = [
 
   {
     id: "8",
+    title: "Brands",
+    url: "/dashboard/brands",
+    icon: "/icons/tag.svg",
+    trigger: "url",
+  },
+  {
+    id: "9",
     title: "Tags",
     url: "/dashboard/tags",
     icon: "/icons/tag.svg",
