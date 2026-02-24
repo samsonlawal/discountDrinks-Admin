@@ -8,6 +8,7 @@ import Tabs, { ITabItem } from "@/components/molecules/Tabs";
 import { DebounceInput } from "@/components/molecules/TableFilter/TableFilterSearch/DebouceInput";
 import RowActions from "./rowActions";
 import { useGetUsers } from "@/hooks/api/users";
+import ViewUserDialog from "./ViewUserDialog";
 
 type User = {
   name: string;
@@ -69,79 +70,7 @@ const Search = ({
   );
 };
 
-const columns: ColumnDef<User>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected()}
-        onChange={(e) => table.toggleAllPageRowsSelected(!!e.target.checked)}
-        aria-label="Select all"
-        className="translate-y-[2px]"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onChange={(e) => row.toggleSelected(!!e.target.checked)}
-        aria-label="Select row"
-        className="translate-y-[2px]"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-    size: 40,
-  },
-  {
-    id: "number",
-    header: () => <span className="-ml-2">#</span>,
-    cell: ({ row }) => (
-      <span className="text-gray-600 -ml-2">{row.index + 1}</span>
-    ),
-    size: 20,
-  },
-  {
-    accessorKey: "name",
-    header: "NAME",
-  },
-  {
-    accessorKey: "email",
-    header: "EMAIL",
-  },
-  {
-    accessorKey: "role",
-    header: "ROLE",
-  },
-  {
-    accessorKey: "status",
-    header: "STATUS",
-    cell: ({ row }) => {
-      const status = row.getValue("status") as string;
-      return (
-        <span
-          className={`px-2 py-0.5 rounded-md text-xs font-medium ${
-            status === "Active"
-              ? "bg-green-100 text-green-800"
-              : "bg-gray-100 text-gray-800"
-          }`}
-        >
-          {status}
-        </span>
-      );
-    },
-  },
-  {
-    accessorKey: "joined",
-    header: "JOINED",
-  },
-  {
-    id: "actions",
-    header: "ACTION",
-    cell: ({ row }) => (
-      <RowActions category={row?.original} refresh={() => {}} />
-    ),
-  },
-];
+
 
 interface IActiveTab extends ITabItem {}
 
@@ -162,6 +91,8 @@ interface IQueryObject {
 function UsersPage() {
   const { users, fetchUsers, loading } = useGetUsers();
   const tabsData = tabsItems();
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
 
   const [queryObject, setqueryObject] = React.useState<IQueryObject>({
     search: "",
@@ -193,6 +124,92 @@ function UsersPage() {
 
     return matchesSearch && matchesTab;
   });
+
+  const columns = React.useMemo<ColumnDef<User>[]>(
+    () => [
+      {
+        id: "select",
+        header: ({ table }) => (
+          <Checkbox
+            checked={table.getIsAllPageRowsSelected()}
+            onChange={(e) => table.toggleAllPageRowsSelected(!!e.target.checked)}
+            aria-label="Select all"
+            className="translate-y-[2px]"
+          />
+        ),
+        cell: ({ row }) => (
+          <Checkbox
+            checked={row.getIsSelected()}
+            onChange={(e) => row.toggleSelected(!!e.target.checked)}
+            aria-label="Select row"
+            className="translate-y-[2px]"
+          />
+        ),
+        enableSorting: false,
+        enableHiding: false,
+        size: 40,
+      },
+      {
+        id: "number",
+        header: () => <span className="-ml-2">#</span>,
+        cell: ({ row }) => (
+          <span className="text-gray-600 -ml-2">{row.index + 1}</span>
+        ),
+        size: 20,
+      },
+      {
+        accessorKey: "name",
+        header: "NAME",
+      },
+      {
+        accessorKey: "email",
+        header: "EMAIL",
+      },
+      {
+        accessorKey: "role",
+        header: "ROLE",
+      },
+      {
+        accessorKey: "status",
+        header: "STATUS",
+        cell: ({ row }) => {
+          const status = row.getValue("status") as string;
+          return (
+            <span
+              className={`px-2 py-0.5 rounded-md text-xs font-medium ${
+                status === "Active"
+                  ? "bg-green-100 text-green-800"
+                  : "bg-gray-100 text-gray-800"
+              }`}
+            >
+              {status}
+            </span>
+          );
+        },
+      },
+      {
+        accessorKey: "joined",
+        header: "JOINED",
+      },
+      {
+        id: "actions",
+        header: "ACTION",
+        cell: ({ row }) => (
+          <RowActions
+            user={row?.original}
+            refresh={() => {
+              fetchUsers({ search: queryObject.search });
+            }}
+            onView={(user) => {
+              setSelectedUser(user);
+              setIsViewDialogOpen(true);
+            }}
+          />
+        ),
+      },
+    ],
+    [fetchUsers, queryObject.search]
+  );
 
   return (
     <DashboardLayout leftTitle="Users">
@@ -231,6 +248,12 @@ function UsersPage() {
           </div>
         </div>
       </div>
+      
+      <ViewUserDialog
+        user={selectedUser}
+        open={isViewDialogOpen}
+        onOpenChange={setIsViewDialogOpen}
+      />
     </DashboardLayout>
   );
 }

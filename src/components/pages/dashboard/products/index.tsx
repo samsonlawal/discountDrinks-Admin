@@ -19,6 +19,7 @@ import RowActions from "./rowActions";
 import { refresh } from "next/cache";
 import AddProductDialog from "./AddProductDialog";
 import EditProductDialog from "./EditProductDialog";
+import ViewProductDialog from "./ViewProductDialog";
 import { useGetProducts } from "@/hooks/api/products";
 
 type Product = {
@@ -84,6 +85,7 @@ const Search = ({
 
 const columns = (
   handleEdit: (product: Product) => void,
+  handleView: (product: Product) => void,
   refresh: () => void,
 ): ColumnDef<Product>[] => [
   {
@@ -159,6 +161,7 @@ const columns = (
         product={row.original}
         refresh={refresh}
         onEdit={handleEdit}
+        onView={handleView}
       />
     ),
   },
@@ -193,6 +196,7 @@ function ProductsPage() {
 
   const [isAddDialogOpen, setIsAddDialogOpen] = React.useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
+  const [isViewDialogOpen, setIsViewDialogOpen] = React.useState(false);
   const [selectedProduct, setSelectedProduct] = React.useState<
     Product | undefined
   >(undefined);
@@ -200,6 +204,11 @@ function ProductsPage() {
   const handleEdit = (product: Product) => {
     setSelectedProduct(product);
     setIsEditDialogOpen(true);
+  };
+
+  const handleView = (product: Product) => {
+    setSelectedProduct(product);
+    setIsViewDialogOpen(true);
   };
 
   const handleAddDialogOpenChange = (open: boolean) => {
@@ -279,7 +288,7 @@ function ProductsPage() {
             </div>
             <div className="w-full overflow-x-auto">
               <DataTable
-                columns={columns(handleEdit, fetchProducts)}
+                columns={columns(handleEdit, handleView, fetchProducts)}
                 data={filteredProducts}
               />
             </div>
@@ -296,12 +305,26 @@ function ProductsPage() {
       />
 
       {/* Full-screen Edit Product Dialog */}
-      {selectedProduct && (
+      {selectedProduct && isEditDialogOpen && (
         <EditProductDialog
           open={isEditDialogOpen}
           onOpenChange={handleEditDialogOpenChange}
           product={selectedProduct}
           onSave={handleProductSaved}
+        />
+      )}
+
+      {/* Full-screen View Product Dialog */}
+      {selectedProduct && isViewDialogOpen && (
+        <ViewProductDialog
+          open={isViewDialogOpen}
+          onOpenChange={(open) => {
+            setIsViewDialogOpen(open);
+            if (!open) {
+              setTimeout(() => setSelectedProduct(undefined), 300);
+            }
+          }}
+          product={selectedProduct}
         />
       )}
     </DashboardLayout>

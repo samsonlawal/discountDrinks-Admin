@@ -12,12 +12,14 @@ interface DataTableRowActionsProps {
   product: any;
   refresh?: () => void;
   onEdit?: (product: any) => void;
+  onView?: (product: any) => void;
 }
 
 export function RowActions({
   product,
   refresh,
   onEdit,
+  onView,
 }: DataTableRowActionsProps) {
   const { deleteProduct, loading: deleting } = useDeleteProduct();
   const [open, setOpen] = useState(false);
@@ -36,13 +38,19 @@ export function RowActions({
     <>
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger asChild>
-          <button className="h-8 w-8 p-0 hover:bg-gray-100 rounded-full flex items-center justify-center transition-colors outline-none">
+          <button className="h-8 w-8 p-0 flex items-center justify-center border border-transparent hover:border-gray-200 hover:bg-gray-50 rounded-full transition-colors outline-none">
             <MoreHorizontal className="h-4 w-4 text-gray-500" />
             <span className="sr-only">Open menu</span>
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[160px] bg-white p-1">
-          <button className="w-full flex items-center px-2 py-1.5 gap-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer outline-none mb-1">
+          <button
+            onClick={() => {
+              onView?.(product);
+              setOpen(false);
+            }}
+            className="w-full flex items-center px-2 py-1.5 gap-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer outline-none mb-1"
+          >
             <Eye className="h-4 w-4" />
             <span>View</span>
           </button>

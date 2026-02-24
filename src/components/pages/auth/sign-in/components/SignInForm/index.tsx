@@ -232,7 +232,7 @@ export const SignInPageForm = () => {
                       name="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className={`w-full h-[52px] px-12 border-2 rounded-lg text-base text-gray-900 bg-white transition-all duration-200 focus:outline-none focus:border-teal-600 ${
+                      className={`w-full h-[52px] px-12 border-2 rounded-lg text-base text-gray-900 bg-white transition-all duration-200 focus:outline-none focus:border-[hsl(353,42%,32%)] ${
                         errors.email
                           ? "border-red-500 bg-red-50"
                           : "border-gray-200"
@@ -284,7 +284,7 @@ export const SignInPageForm = () => {
                       name="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className={`w-full h-[52px] px-12 border-2 rounded-lg text-base text-gray-900 bg-white transition-all duration-200 focus:outline-none focus:border-teal-600 ${
+                      className={`w-full h-[52px] px-12 border-2 rounded-lg text-base text-gray-900 bg-white transition-all duration-200 focus:outline-none focus:border-[hsl(353,42%,32%)] ${
                         errors.password
                           ? "border-red-500 bg-red-50"
                           : "border-gray-200"
@@ -297,7 +297,7 @@ export const SignInPageForm = () => {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 bg-transparent border-none text-gray-500 text-xl cursor-pointer p-2 flex items-center justify-center transition-all duration-200 hover:text-gray-900 focus:outline-teal-600 focus:outline-2 focus:outline-offset-2 rounded z-10"
+                      className="absolute right-4 bg-transparent border-none text-gray-500 text-xl cursor-pointer p-2 flex items-center justify-center transition-all duration-200 hover:text-gray-900 focus:outline-[hsl(353,42%,32%)] focus:outline-2 focus:outline-offset-2 rounded z-10"
                       aria-label="Toggle password visibility"
                     >
                       {showPassword ? (
@@ -355,13 +355,15 @@ export const SignInPageForm = () => {
                       name="remember"
                       checked={rememberMe}
                       onChange={(e) => setRememberMe(e.target.checked)}
-                      className="w-[18px] h-[18px] cursor-pointer accent-teal-600"
+                      className="w-[18px] h-[18px] cursor-pointer"
+                      style={{ accentColor: "hsl(353, 42%, 32%)" }}
                     />
                     <span>Remember me</span>
                   </label>
                   <a
                     href="#"
-                    className="text-teal-600 text-sm font-medium no-underline transition-all duration-200 hover:underline"
+                    className="text-sm font-medium no-underline transition-all duration-200 hover:underline"
+                    style={{ color: "hsl(353, 42%, 32%)" }}
                   >
                     Forgot password?
                   </a>
@@ -371,7 +373,8 @@ export const SignInPageForm = () => {
                 <button
                   type="submit"
                   disabled={authLoading}
-                  className="w-full h-[54px] cursor-pointer text-base bg-teal-600 text-white font-medium rounded-lg transition-all duration-200 hover:bg-teal-700 disabled:opacity-70 disabled:cursor-not-allowed relative"
+                  className="w-full h-[54px] cursor-pointer text-base text-white font-medium rounded-lg transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed relative"
+                  style={{ backgroundColor: "hsl(353, 42%, 32%)" }}
                 >
                   {authLoading ? (
                     <span className="inline-flex items-center">
@@ -462,7 +465,8 @@ export const SignInPageForm = () => {
                 <ul className="flex flex-col gap-5">
                   <li className="flex items-center gap-3.5 text-base">
                     <svg
-                      className="w-6 h-6 text-teal-600 flex-shrink-0"
+                      className="w-6 h-6 flex-shrink-0"
+                      style={{ color: "hsl(353, 42%, 32%)" }}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -478,7 +482,8 @@ export const SignInPageForm = () => {
                   </li>
                   <li className="flex items-center gap-3.5 text-base">
                     <svg
-                      className="w-6 h-6 text-teal-600 flex-shrink-0"
+                      className="w-6 h-6 flex-shrink-0"
+                      style={{ color: "hsl(353, 42%, 32%)" }}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -494,7 +499,8 @@ export const SignInPageForm = () => {
                   </li>
                   <li className="flex items-center gap-3.5 text-base">
                     <svg
-                      className="w-6 h-6 text-teal-600 flex-shrink-0"
+                      className="w-6 h-6 flex-shrink-0"
+                      style={{ color: "hsl(353, 42%, 32%)" }}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -510,7 +516,8 @@ export const SignInPageForm = () => {
                   </li>
                   <li className="flex items-center gap-3.5 text-base">
                     <svg
-                      className="w-6 h-6 text-teal-600 flex-shrink-0"
+                      className="w-6 h-6 flex-shrink-0"
+                      style={{ color: "hsl(353, 42%, 32%)" }}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"

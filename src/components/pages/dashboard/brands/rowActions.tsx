@@ -5,6 +5,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import ReuseableDialog from "@/components/ReuseableDialog";
+import { Trash2, MoreHorizontal } from "lucide-react";
 import AddBrandDialog from "./AddBrandDialog";
 import { useDeleteBrand } from "@/hooks/api/brands";
 
@@ -30,23 +31,12 @@ export function RowActions({ brand, refresh }: DataTableRowActionsProps) {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className="px-2 py-1 bg-gray-100 rounded hover:bg-gray-200 transition-colors">
-            <img
-              src="/icons/dots.svg"
-              alt=""
-              className="cursor-pointer rotate-90 w-5 h-5"
-            />
+          <button className="h-8 w-8 p-0 flex items-center justify-center border border-transparent hover:border-gray-200 hover:bg-gray-50 rounded-full transition-colors outline-none">
+            <MoreHorizontal className="h-4 w-4 text-gray-500" />
+            <span className="sr-only">Open menu</span>
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[146px] bg-white">
-          <button className="hover:bg-gray-200 w-full flex items-center px-3 py-2 gap-2 cursor-pointer text-[14px]">
-            <img
-              src="/icons/eye.svg"
-              alt=""
-              className="cursor-pointer w-[18px] h-[18px]"
-            />
-            <span className="text-[#111111]">View</span>
-          </button>
 
           <AddBrandDialog brand={brand} onSave={refresh}>
             <button className="hover:bg-gray-200 w-full flex items-center px-3 py-2 gap-2 cursor-pointer text-[14px]">
@@ -66,13 +56,9 @@ export function RowActions({ brand, refresh }: DataTableRowActionsProps) {
             onProceed={onDeleteBrand}
             loading={loading}
           >
-            <button className="hover:bg-gray-200 w-full flex items-center px-3 py-2 gap-2 cursor-pointer text-[14px]">
-              <img
-                src="/icons/trash.svg"
-                alt=""
-                className="cursor-pointer w-[18px] h-[18px]"
-              />
-              <span className="text-[#111111]">Delete</span>
+            <button className="hover:bg-red-50 text-red-600 w-full flex items-center px-3 py-2 gap-2 cursor-pointer text-[14px]">
+              <Trash2 className="h-[18px] w-[18px]" />
+              <span className="text-red-600">Delete</span>
             </button>
           </ReuseableDialog>
         </DropdownMenuContent>

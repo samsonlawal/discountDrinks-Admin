@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { ChevronLeft, Trash2, X, Upload } from "lucide-react";
 import CategoriesService from "@/services/categories";
 import TagsService from "@/services/tags";
+import BrandsService from "@/services/brands";
 import { FormField } from "@/components/ui/form-field";
 import { FormSelect } from "@/components/ui/form-select";
 import { FormTextarea } from "@/components/ui/form-textarea";
@@ -25,9 +26,10 @@ export default function EditProductDialog({
   product,
   onSave,
 }: EditProductDialogProps) {
-  const [images, setImages] = useState<string[]>([]);
+  const [images, setImages] = useState<{ url: string; file: File | null }[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>([]);
+  const [brands, setBrands] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -52,17 +54,10 @@ export default function EditProductDialog({
     origin: "",
   });
 
-  const brandDefaults = [
-    "Château Margaux",
-    "Johnnie Walker",
-    "Hennessy",
-    "Moët & Chandon",
-  ];
+  const brandDefaults = ["Loading..."];
   const brandOptions = React.useMemo(() => {
-    return formData.brand && !brandDefaults.includes(formData.brand)
-      ? [...brandDefaults, formData.brand]
-      : brandDefaults;
-  }, [formData.brand]);
+    return brands.length > 0 ? brands : brandDefaults;
+  }, [brands]);
 
   const originDefaults = [
     "Hamburg, Gernmany",
@@ -111,6 +106,13 @@ export default function EditProductDialog({
           const tagNames = tagsResponse.data.data.map((tag: any) => tag.name);
           setTags(tagNames);
         }
+
+        // Fetch brands
+        const brandsResponse = await BrandsService.fetchBrands();
+        if (brandsResponse.data?.success && brandsResponse.data?.data) {
+          const brandNames = brandsResponse.data.data.map((b: any) => b.name);
+          setBrands(brandNames);
+        }
       } catch (error) {
         console.error("Failed to fetch data:", error);
       }
@@ -144,7 +146,11 @@ export default function EditProductDialog({
         origin: product.specifications?.origin || "",
       });
       setSelectedTags(product.tags || []);
-      setImages(product.images || []);
+      const initialImages = (product.images || []).map((url: string) => ({
+        url,
+        file: null,
+      }));
+      setImages(initialImages);
     }
   }, [open, product]);
 
@@ -152,20 +158,25 @@ export default function EditProductDialog({
     const files = e.target.files;
     if (!files) return;
 
-    const newImages: string[] = [];
-    Array.from(files).forEach((file) => {
-      if (file.type.startsWith("image/")) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          if (event.target?.result) {
-            newImages.push(event.target.result as string);
-            if (newImages.length === files.length) {
-              setImages((prev) => [...prev, ...newImages].slice(0, 5));
-            }
-          }
-        };
-        reader.readAsDataURL(file);
-      }
+    const validFiles = Array.from(files).filter((f) => f.type.startsWith("image/"));
+    let loadedCount = 0;
+    const newImages: { url: string; file: File }[] = [];
+
+    validFiles.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          newImages.push({
+            url: event.target.result as string,
+            file: file,
+          });
+        }
+        loadedCount++;
+        if (loadedCount === validFiles.length) {
+          setImages((prev) => [...prev, ...newImages].slice(0, 5));
+        }
+      };
+      reader.readAsDataURL(file);
     });
   };
 
@@ -178,33 +189,47 @@ export default function EditProductDialog({
   };
 
   const handleSave = async () => {
-    const productData = {
-      name: formData.name,
-      brand: formData.brand,
-      category: formData.category,
-      subCategory: formData.subCategory,
-      status: formData.status.toLowerCase(),
-      badge: formData.badge,
-      tags: selectedTags,
-      description: formData.description,
-      basePrice: parseFloat(formData.basePrice) || 0,
-      costPrice: parseFloat(formData.costPrice) || 0,
-      availableQuantity: parseInt(formData.availableQuantity) || 0,
-      lowStockThreshold: parseInt(formData.lowStockThreshold) || 10,
-      shippingWeight: parseFloat(formData.shippingWeight) || 0,
-      shippingClass: (formData.shippingClass || "standard").toLowerCase(),
-      dimensions: formData.dimensions,
-      images: images,
-      specifications: {
-        volume: formData.volume,
-        abv: formData.abv,
-        origin: formData.origin,
-      },
-    };
+    const formDataObj = new FormData();
+
+    formDataObj.append("name", formData.name);
+    formDataObj.append("brand", formData.brand);
+    formDataObj.append("category", formData.category);
+    formDataObj.append("subCategory", formData.subCategory);
+    formDataObj.append("status", formData.status.toLowerCase());
+    formDataObj.append("badge", formData.badge);
+    formDataObj.append("description", formData.description);
+    
+    formDataObj.append("basePrice", String(parseFloat(formData.basePrice) || 0));
+    formDataObj.append("costPrice", String(parseFloat(formData.costPrice) || 0));
+    formDataObj.append("availableQuantity", String(parseInt(formData.availableQuantity) || 0));
+    formDataObj.append("lowStockThreshold", String(parseInt(formData.lowStockThreshold) || 10));
+    formDataObj.append("shippingWeight", String(parseFloat(formData.shippingWeight) || 0));
+    formDataObj.append("shippingClass", (formData.shippingClass || "standard").toLowerCase());
+    formDataObj.append("dimensions", formData.dimensions);
+
+    formDataObj.append("tags", JSON.stringify(selectedTags));
+    
+    formDataObj.append("specifications", JSON.stringify({
+      volume: formData.volume,
+      abv: formData.abv,
+      origin: formData.origin,
+    }));
+
+    images.forEach((img) => {
+      if (!img.file) {
+        formDataObj.append("existingImages[]", img.url);
+      }
+    });
+
+    images.forEach((img) => {
+      if (img.file) {
+        formDataObj.append("images", img.file);
+      }
+    });
 
     if (product) {
       await updateProduct({
-        data: { id: product._id, ...productData },
+        data: { id: product._id, formData: formDataObj } as any,
         successCallback: () => {
           onSave?.();
           onOpenChange(false);
@@ -478,7 +503,7 @@ export default function EditProductDialog({
                         {images[index] ? (
                           <>
                             <img
-                              src={images[index]}
+                              src={images[index].url}
                               alt={`Product ${index + 1}`}
                               className="w-full h-full object-cover rounded-lg overflow-hidden"
                             />

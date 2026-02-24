@@ -21,7 +21,15 @@ class Service {
     });
   }
 
-  updateProduct({ id, ...data }: { id: string; [key: string]: any }) {
+  updateProduct(payload: any) {
+    const id = payload.id;
+    let data;
+    if (payload.formData) {
+      data = payload.formData;
+    } else {
+      const { id: _id, ...rest } = payload;
+      data = rest;
+    }
     return axios.put(`${env.api.products}/${id}`, data, {
       withCredentials: true,
     });
