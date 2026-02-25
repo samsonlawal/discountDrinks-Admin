@@ -65,7 +65,7 @@ const DashboardSidebar = () => {
 
       {/* Mobile Bottom Navigation */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-[#111] z-50 px-4 py-2 flex items-center justify-around border-t border-[#292929]">
-        {NAVBAR_TOP_LINKS.map((item) => (
+        {NAVBAR_TOP_LINKS.filter((item) => item.id !== "1").map((item) => (
           <SidebarLink
             key={item.id}
             item={item}

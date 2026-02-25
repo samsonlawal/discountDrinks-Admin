@@ -15,9 +15,12 @@ class Service {
     });
   }
 
-  createProduct(data: any) {
+  createProduct(data: FormData) {
     return axios.post(env.api.products, data, {
       withCredentials: true,
+      headers: {
+      "Content-Type": "multipart/form-data", // Forces the browser to handle the boundary
+    },
     });
   }
 

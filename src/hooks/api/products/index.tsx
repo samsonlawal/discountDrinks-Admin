@@ -75,9 +75,12 @@ export const useCreateProduct = () => {
   const createProduct = async ({
     data,
     successCallback,
+    errorCallback
   }: {
-    data: any;
+    data: FormData;
     successCallback?: () => void;
+    errorCallback?: () => void;
+
   }) => {
     setLoading(true);
     try {

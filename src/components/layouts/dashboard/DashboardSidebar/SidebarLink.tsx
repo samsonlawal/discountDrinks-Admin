@@ -29,16 +29,27 @@ function SidebarLink({
       : "hover:bg-[#292929]/30 hover:text-white"
   }`;
 
+  const isStringIcon = typeof item?.icon === 'string';
+  const IconComponent = typeof item?.icon !== 'string' ? item?.icon : null;
+
   const content = (
     <>
-      <img
-        src={item?.icon}
-        alt="icon"
-        className={cn(
-          "object-contain",
-          isMobile ? "w-[20px] h-[20px]" : "w-[18px] h-[18px]",
-        )}
-      />
+      {isStringIcon ? (
+        <img
+          src={item?.icon as string}
+          alt="icon"
+          className={cn(
+            "object-contain",
+            isMobile ? "w-[20px] h-[20px]" : "w-[18px] h-[18px]",
+          )}
+        />
+      ) : IconComponent ? (
+        <IconComponent 
+          className={cn(
+            isMobile ? "w-[20px] h-[20px]" : "w-[18px] h-[18px]",
+          )} 
+        />
+      ) : null}
       <span
         className={cn(
           "text-inherit",

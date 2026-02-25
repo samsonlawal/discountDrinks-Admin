@@ -1,10 +1,13 @@
+import React from "react";
+import { Wine, Shapes } from "lucide-react";
+
 export type TNavbarLinkTrigger = "url" | "action";
 export type TNavbarLinkAction = "logout";
 
 export interface INavbarLink {
   id: string;
   title: string;
-  icon: string;
+  icon: string | React.ElementType;
   trigger: TNavbarLinkTrigger;
   url?: string;
   action?: TNavbarLinkAction;
@@ -32,7 +35,7 @@ export const NAVBAR_TOP_LINKS: INavbarLink[] = [
     id: "3",
     title: "Products",
     url: "/dashboard/products",
-    icon: "/icons/tag.svg",
+    icon: Wine,
     trigger: "url",
   },
 
@@ -65,7 +68,7 @@ export const NAVBAR_TOP_LINKS: INavbarLink[] = [
     id: "8",
     title: "Brands",
     url: "/dashboard/brands",
-    icon: "/icons/tag.svg",
+    icon: Shapes,
     trigger: "url",
   },
   {

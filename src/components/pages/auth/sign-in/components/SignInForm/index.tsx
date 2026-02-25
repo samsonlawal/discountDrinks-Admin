@@ -1,91 +1,4 @@
-// import React from "react";
-// import Link from "next/link";
-// import { useRouter } from "next/navigation";
-// import { Formik, Form } from "formik";
-// import {
-//   FormFieldEmail,
-//   FormFieldPassword,
-// } from "@/components/layouts/auth/reusables/FormFields";
-// import { FormAuthButton } from "@/components/layouts/auth/reusables/FormAuthButton";
-// import { FormFieldCheckBox } from "@/components/layouts/auth/reusables/FormFields/FormFieldCheckBox";
-// import {
-//   authSchema,
-//   authInitialValues,
-//   SignInFormValues,
-// } from "@/lib/auth/yupAuthSchema";
-// import AuthService from "@/services/auth";
-// import { useLoginUser } from "@/hooks/api/auth";
-
-// export const SignInPageForm = () => {
-//   const router = useRouter();
-
-//   const { loading, onLogin } = useLoginUser({ Service: AuthService });
-//   const submit = ({ email, password, rememberMe }: SignInFormValues) => {
-//     onLogin({
-//       payload: { email, password },
-//       successCallback: () => router.replace("/dashboard"),
-//     });
-//   };
-
-//   return (
-//     <div className="mt-12 md:w-[510px] md:mx-auto">
-//       <div>
-//         <Formik
-//           initialValues={authInitialValues.signIn}
-//           validationSchema={authSchema.signIn}
-//           onSubmit={submit}
-//         >
-//           {({ isValid }) => (
-//             <Form name="signUpForm" className="flex flex-col">
-//               <div className="flex flex-col gap-y-4">
-//                 <FormFieldEmail
-//                   fieldName="email"
-//                   fieldLabel="Email Address"
-//                   autoComplete="off"
-//                   classInput="peer/email"
-//                   classInputFocus="peer-focus/email:top-0 peer-focus/email:-translate-y-1/2 peer-focus/email:scale-75 peer-placeholder-shown/email:top-1/2 peer-placeholder-shown/email:-translate-y-1/2 peer-placeholder-shown/email:scale-100"
-//                   type="email"
-//                 />
-
-//                 <FormFieldPassword
-//                   fieldName="password"
-//                   fieldLabel="Password"
-//                   classInput="peer/password"
-//                   classInputFocus="peer-focus/password:top-0 peer-focus/password:-translate-y-1/2 peer-focus/password:scale-75 peer-placeholder-shown/password:top-1/2 peer-placeholder-shown/password:-translate-y-1/2 peer-placeholder-shown/password:scale-100"
-//                   type="password"
-//                 />
-//               </div>
-//               <div className="mt-6 flex flex-col gap-y-6">
-//                 <div className="flex justify-between">
-//                   <FormFieldCheckBox
-//                     name="rememberMe"
-//                     id="rememberMe"
-//                     label="Remember me"
-//                   />
-//                   <Link
-//                     href="/auth/reset-password"
-//                     className="text-base lg:text-sm font-medium font-gordita leading-[22px] text-[#111111] dark:text-white"
-//                   >
-//                     Forgot Password?
-//                   </Link>
-//                 </div>
-//                 <FormAuthButton
-//                   type="submit"
-//                   label="Sign In"
-//                   id="signinFormButton"
-//                   disabled={!isValid || loading}
-//                   loading={loading}
-//                 />
-//               </div>
-//             </Form>
-//           )}
-//         </Formik>
-//       </div>
-//     </div>
-//   );
-// };
-
-import { useLoginUser } from "@/hooks/api/auth";
+ import { useLoginUser } from "@/hooks/api/auth";
 import AuthService from "@/services/auth";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -547,7 +460,7 @@ export const SignInPageForm = () => {
         </div>
       </main>
 
-      <style jsx>{`
+      {/* <style jsx>{`
         @keyframes slideDown {
           from {
             opacity: 0;
@@ -562,7 +475,7 @@ export const SignInPageForm = () => {
         .animate-slideDown {
           animation: slideDown 0.3s ease;
         }
-      `}</style>
+      `}</style> */}
     </div>
   );
 };
