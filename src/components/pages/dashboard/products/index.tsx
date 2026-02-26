@@ -290,6 +290,7 @@ function ProductsPage() {
               <DataTable
                 columns={columns(handleEdit, handleView, fetchProducts)}
                 data={filteredProducts}
+                loading={loading}
               />
             </div>
           </div>
