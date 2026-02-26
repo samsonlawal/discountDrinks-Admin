@@ -8,6 +8,7 @@ import { FormSelect } from "@/components/ui/form-select";
 import { FormTextarea } from "@/components/ui/form-textarea";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { useCreateProduct } from "@/hooks/api/products";
+import countries from "world-countries";
 
 const STATUS_OPTIONS = ["Active", "Inactive"];
 const SHIPPING_CLASS_OPTIONS = ["standard", "fragile"];
@@ -25,7 +26,7 @@ export default function AddProductDialog({
   onSave,
 }: AddProductDialogProps) {
   const [images, setImages] = useState<{ url: string; file: File | null }[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [tags, setTags] = useState<string[]>([]);
   const [brands, setBrands] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -57,15 +58,14 @@ export default function AddProductDialog({
     return brands.length > 0 ? brands : brandDefaults;
   }, [brands]);
 
-  const originDefaults = [
-    "Hamburg, Gernmany",
-    "Bordeaux, France",
-    "Lagos, Nigeria",
-  ];
   const originOptions = React.useMemo(() => {
-    return formData.origin && !originDefaults.includes(formData.origin)
-      ? [...originDefaults, formData.origin]
-      : originDefaults;
+    const list = countries
+      .map((c) => `${c.flag} ${c.name.common}`)
+      .sort((a, b) => a.localeCompare(b));
+    if (formData.origin && !list.includes(formData.origin)) {
+      return [formData.origin, ...list];
+    }
+    return list;
   }, [formData.origin]);
 
   const handleInputChange = React.useCallback(
@@ -92,10 +92,7 @@ export default function AddProductDialog({
         // Fetch categories
         const categoriesResponse = await CategoriesService.fetchCategories();
         if (categoriesResponse.data?.success && categoriesResponse.data?.data) {
-          const categoryNames = categoriesResponse.data.data.map(
-            (cat: any) => cat.name,
-          );
-          setCategories(categoryNames);
+          setCategories(categoriesResponse.data.data);
         }
 
         // Fetch tags
@@ -206,7 +203,9 @@ export default function AddProductDialog({
     formDataObj.append("specifications", JSON.stringify({
       volume: formData.volume,
       abv: formData.abv,
-      origin: formData.origin,
+      // The dropdown value looks like "🇺🇸 United States", so we strip out everything up to the first space.
+      // Flags are made of multiple unicode characters which can cause partial matching issues with simple regex.
+      origin: formData.origin ? formData.origin.substring(formData.origin.indexOf(" ") + 1) : "",
     }));
 
     images.forEach((img) => {
@@ -334,7 +333,9 @@ export default function AddProductDialog({
                       value={formData.category}
                       onChange={handleSelectChange}
                       options={
-                        categories.length > 0 ? categories : ["Loading..."]
+                        categories.length > 0
+                          ? categories.map((c) => c.name)
+                          : ["Loading..."]
                       }
                     />
                     <FormSelect
@@ -342,9 +343,16 @@ export default function AddProductDialog({
                       name="subCategory"
                       value={formData.subCategory}
                       onChange={handleSelectChange}
-                      options={
-                        categories.length > 0 ? categories : ["Loading..."]
-                      }
+                      options={(() => {
+                        if (categories.length === 0) return ["Loading..."];
+                        const selectedCat = categories.find(
+                          (c) => c.name === formData.category
+                        );
+                        if (!selectedCat || !selectedCat.subCategories || selectedCat.subCategories.length === 0) {
+                          return ["None"];
+                        }
+                        return selectedCat.subCategories;
+                      })()}
                     />
                     <FormSelect
                       label="Status"

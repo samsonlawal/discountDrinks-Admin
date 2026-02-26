@@ -16,6 +16,7 @@ type Category = {
   id: string;
   name: string;
   description: string;
+  subCategories?: string[];
   productCount: number;
   status: string;
   createdDate: string;
@@ -188,17 +189,40 @@ export default function CategoriesPage() {
         <span className="whitespace-nowrap">{row.getValue("name")}</span>
       ),
     },
+    // {
+    //   accessorKey: "description",
+    //   header: "DESCRIPTION",
+    //   cell: ({ row }) => (
+    //     <div
+    //       className="max-w-[300px] truncate"
+    //       title={row.getValue("description")}
+    //     >
+    //       {row.getValue("description")}
+    //     </div>
+    //   ),
+    // },
     {
-      accessorKey: "description",
-      header: "DESCRIPTION",
-      cell: ({ row }) => (
-        <div
-          className="max-w-[300px] truncate"
-          title={row.getValue("description")}
-        >
-          {row.getValue("description")}
-        </div>
-      ),
+      accessorKey: "subCategories",
+      header: "SUB-CATEGORIES",
+      cell: ({ row }) => {
+        const subCategories = row.original.subCategories || [];
+        if (subCategories.length === 0) return <span className="text-gray-400 text-sm">None</span>;
+        
+        return (
+          <div className="flex flex-wrap gap-1 max-w-[250px]">
+            {subCategories.slice(0, 3).map((subCategory, i) => (
+              <span key={i} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
+                {subCategory}
+              </span>
+            ))}
+            {subCategories.length > 3 && (
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-50 text-gray-500 border border-gray-200">
+                +{subCategories.length - 3}
+              </span>
+            )}
+          </div>
+        );
+      },
     },
     // {
     //   accessorKey: "productCount",

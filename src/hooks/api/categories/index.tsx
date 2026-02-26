@@ -74,6 +74,7 @@ export const useCreateCategory = () => {
       name: string;
       description?: string;
       parent_category_id?: string;
+      subCategories?: string[];
       status?: string;
     };
     successCallback?: () => void;
@@ -114,6 +115,7 @@ export const useUpdateCategory = () => {
       name?: string;
       description?: string;
       parent_category_id?: string;
+      subCategories?: string[];
       status?: string;
     };
     successCallback?: () => void;

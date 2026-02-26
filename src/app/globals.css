@@ -4,6 +4,7 @@
   --background: #ffffff;
   --foreground: #ffffff;
   --radius: 0.5rem;
+  --font-jost: "Jost", sans-serif;
 }
 
 @theme inline {

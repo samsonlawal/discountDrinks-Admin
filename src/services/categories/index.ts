@@ -19,11 +19,12 @@ class Service {
     return axios.get(`${env.api.categories}/${categoryId}`);
   }
 
-  createCategory({ name, description, parent_category_id, status }: ICategory) {
+  createCategory({ name, description, parent_category_id, subCategories, status }: ICategory) {
     return axios.post(env.api.categories, {
       name,
       description,
       parent_category_id,
+      subCategories,
       isActive: status === "Active",
     });
   }
@@ -33,12 +34,14 @@ class Service {
     name,
     description,
     parent_category_id,
+    subCategories,
     status,
   }: ICategory) {
     return axios.put(`${env.api.categories}/${id}`, {
       name,
       description,
       parent_category_id,
+      subCategories,
       isActive: status === "Active",
     });
   }

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ChevronLeft, Package, Tag, DollarSign, Weight, CheckCircle, XCircle } from "lucide-react";
 
 interface ViewProductDialogProps {
@@ -12,6 +12,8 @@ export default function ViewProductDialog({
   onOpenChange,
   product,
 }: ViewProductDialogProps) {
+  const [selectedImageIdx, setSelectedImageIdx] = useState(0);
+
   // Close on ESC
   useEffect(() => {
     if (!open) return;
@@ -65,145 +67,151 @@ export default function ViewProductDialog({
               <ChevronLeft className="h-4 w-4" />
               Back to Products
             </button>
-            
-            <div className="flex items-center gap-2">
-              <span className={`px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 ${isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
-                {isActive ? <CheckCircle className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
-                {isActive ? "Active" : "Inactive"}
-              </span>
-            </div>
           </div>
         </div>
 
         {/* Body */}
-        <div className="mx-auto max-w-7xl px-6 py-8">
+        <div className="mx-auto max-w-7xl px-10 py-8">
           <div className="flex items-start justify-between mb-8">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">{product.name || "-"}</h1>
-              <p className="text-gray-500 mt-1">{product.brand || "No Brand"}</p>
+            <div className="flex items-center gap-4">
+              <h1 className="text-xl font-medium text-gray-900">{product.name || "-"}</h1>
+              <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
+                {isActive ? "Active" : "Inactive"}
+              </span>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-5 px-2">
             {/* LEFT SIDE - Details */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="lg:col-span-3 space-y-10">
               {/* Product Information */}
-              <section className="rounded-xl border bg-white p-6 shadow-sm">
-                <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-5 flex items-center gap-2">
+              <section className="bg-transparent">
+                <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
                   <Package className="w-4 h-4 text-gray-400" />
                   Product Information
                 </h2>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-y-6 gap-x-4">
-                  <div>
-                    <span className="block text-xs font-medium text-gray-500 mb-1">Category</span>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-4">
+                    <span className="w-32 text-sm text-gray-500">Product ID</span>
+                    <span className="text-sm text-gray-900">{product._id || "-"}</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="w-32 text-sm text-gray-500">Brand Name</span>
+                    <span className="text-sm text-gray-900">{product.brand || "-"}</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="w-32 text-sm text-gray-500">Category</span>
                     <span className="text-sm text-gray-900">{product.category || "-"}</span>
                   </div>
-                  <div>
-                    <span className="block text-xs font-medium text-gray-500 mb-1">Sub-Category</span>
+                  <div className="flex items-center gap-4">
+                    <span className="w-32 text-sm text-gray-500">Sub-Category</span>
                     <span className="text-sm text-gray-900">{product.subCategory || "-"}</span>
                   </div>
-                  <div>
-                    <span className="block text-xs font-medium text-gray-500 mb-1">Badge</span>
+                  <div className="flex items-center gap-4">
+                    <span className="w-32 text-sm text-gray-500">Badge</span>
                     <span className="text-sm text-gray-900">{product.badge || "-"}</span>
                   </div>
                 </div>
 
-                <div className="mt-6 pt-6 border-t border-gray-100">
-                  <span className="block text-xs font-medium text-gray-500 mb-2">Description</span>
-                  <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
-                    {product.description || "No description available."}
-                  </p>
+                <div className="mt-2.5">
+                  <div className="flex items-start gap-4">
+                    <span className="w-32 shrink-0 text-sm text-gray-500 mt-0.5">Description</span>
+                    <p className="text-sm text-gray-900 whitespace-pre-wrap leading-relaxed">
+                      {product.description || "No description available."}
+                    </p>
+                  </div>
                 </div>
                 
                 {product.tags && product.tags.length > 0 && (
-                  <div className="mt-6 pt-6 border-t border-gray-100">
-                    <span className="block text-xs font-medium text-gray-500 mb-2">Tags</span>
-                    <div className="flex flex-wrap gap-2">
-                      {product.tags.map((tag: string, index: number) => (
-                        <span key={index} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gray-100 text-gray-700 text-xs font-medium border border-gray-200">
-                          <Tag className="w-3 h-3 text-gray-400" />
-                          {tag}
-                        </span>
-                      ))}
+                  <div className="mt-2.5">
+                    <div className="flex items-start gap-4">
+                      <span className="w-32 shrink-0 text-sm text-gray-500 mt-0.5">Tags</span>
+                      <div className="flex flex-wrap gap-2">
+                        {product.tags.map((tag: string, index: number) => (
+                          <span key={index} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gray-100 text-gray-700 text-xs font-medium border border-gray-200">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 )}
               </section>
 
               {/* Pricing & Inventory */}
-              <section className="rounded-xl border bg-white p-6 shadow-sm">
-                <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-5 flex items-center gap-2">
+              <section className="bg-transparent">
+                <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
                   <DollarSign className="w-4 h-4 text-gray-400" />
                   Pricing & Inventory
                 </h2>
 
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-6 gap-x-4">
-                  <div>
-                    <span className="block text-xs font-medium text-gray-500 mb-1">Base Price</span>
-                    <span className="text-lg text-gray-900">${product.basePrice || "0.00"}</span>
+                <div className="space-y-2.5">
+                  <div className="flex items-center gap-4">
+                    <span className="w-32 text-sm text-gray-500">Base Price</span>
+                    <span className="text-sm text-gray-900">${product.basePrice || "0.00"}</span>
                   </div>
-                  <div>
-                    <span className="block text-xs font-medium text-gray-500 mb-1">Cost Price</span>
-                    <span className="text-sm text-gray-600">${product.costPrice || "0.00"}</span>
+                  <div className="flex items-center gap-4">
+                    <span className="w-32 text-sm text-gray-500">Cost Price</span>
+                    <span className="text-sm text-gray-900">${product.costPrice || "0.00"}</span>
                   </div>
-                  <div>
-                    <span className="block text-xs font-medium text-gray-500 mb-1">Stock</span>
+                  <div className="flex items-center gap-4">
+                    <span className="w-32 text-sm text-gray-500">Stock</span>
                     <span className={`text-sm ${
                       (product.availableQuantity || 0) <= (product.lowStockThreshold || 0)
-                        ? 'text-red-600'
+                        ? 'text-red-500'
                         : 'text-green-600'
                     }`}>
                       {product.availableQuantity || 0} units
                     </span>
                   </div>
-                  <div>
-                    <span className="block text-xs font-medium text-gray-500 mb-1">Low Stock Alert</span>
-                    <span className="text-sm text-gray-600">At {product.lowStockThreshold || 10} units</span>
+                  <div className="flex items-center gap-4">
+                    <span className="w-32 text-sm text-gray-500">Low Stock Alert</span>
+                    <span className="text-sm text-gray-900">At {product.lowStockThreshold || 10} units</span>
                   </div>
                 </div>
               </section>
 
               {/* Shipping & Specs */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <section className="rounded-xl border bg-white p-6 shadow-sm">
-                  <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-5 flex items-center gap-2">
+              <div className="grid grid-cols-1 gap-10">
+                <section className="bg-transparent">
+                  <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
                     <Weight className="w-4 h-4 text-gray-400" />
                     Shipping
                   </h2>
 
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center border-b border-gray-50 pb-3">
-                      <span className="text-sm text-gray-500">Weight</span>
+                  <div className="space-y-2.5">
+                    <div className="flex items-center gap-4">
+                      <span className="w-32 text-sm text-gray-500">Weight</span>
                       <span className="text-sm text-gray-900">{product.shippingWeight || 0} kg</span>
                     </div>
-                    <div className="flex justify-between items-center border-b border-gray-50 pb-3">
-                      <span className="text-sm text-gray-500">Class</span>
+                    <div className="flex items-center gap-4">
+                      <span className="w-32 text-sm text-gray-500">Class</span>
                       <span className="text-sm text-gray-900 capitalize">{product.shippingClass || "-"}</span>
                     </div>
-                    <div className="flex justify-between items-center pt-1">
-                      <span className="text-sm text-gray-500">Dimensions</span>
+                    <div className="flex items-center gap-4">
+                      <span className="w-32 text-sm text-gray-500">Dimensions</span>
                       <span className="text-sm text-gray-900">{product.dimensions || "-"}</span>
                     </div>
                   </div>
                 </section>
 
-                <section className="rounded-xl border bg-white p-6 shadow-sm">
-                  <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-5">
+                <section className="bg-transparent">
+                  <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">
                     Specifications
                   </h2>
 
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center border-b border-gray-50 pb-3">
-                      <span className="text-sm text-gray-500">Volume</span>
+                  <div className="space-y-2.5">
+                    <div className="flex items-center gap-4">
+                      <span className="w-32 text-sm text-gray-500">Volume</span>
                       <span className="text-sm text-gray-900">{product.specifications?.volume || "-"}</span>
                     </div>
-                    <div className="flex justify-between items-center border-b border-gray-50 pb-3">
-                      <span className="text-sm text-gray-500">ABV</span>
+                    <div className="flex items-center gap-4">
+                      <span className="w-32 text-sm text-gray-500">ABV</span>
                       <span className="text-sm text-gray-900">{product.specifications?.abv || "-"}</span>
                     </div>
-                    <div className="flex justify-between items-center pt-1">
-                      <span className="text-sm text-gray-500">Origin</span>
+                    <div className="flex items-center gap-4">
+                      <span className="w-32 text-sm text-gray-500">Origin</span>
                       <span className="text-sm text-gray-900">{product.specifications?.origin || "-"}</span>
                     </div>
                   </div>
@@ -212,37 +220,56 @@ export default function ViewProductDialog({
             </div>
 
             {/* RIGHT SIDE - Images */}
-            <div className="space-y-6">
-              <section className="rounded-xl border bg-white p-6 shadow-sm sticky top-24">
-                <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-5">
+            <div className="lg:col-span-2 space-y-6">
+              <section className="bg-transparent sticky top-24">
+                <div className="w-4/5 mx-auto">
+                <h2 className="text-sm-bold text-gray-900 uppercase tracking-wider mb-5">
                   Images
                 </h2>
+                </div>
 
                 {product.images && product.images.length > 0 ? (
-                  <div className="space-y-3">
+                  <div className="space-y-3 w-4/5 mx-auto">
                     {/* Main Image */}
-                    <div className="aspect-square rounded-xl border border-gray-200 overflow-hidden bg-gray-50">
+                    <div className="aspect-square rounded-xl border border-gray-200 overflow-hidden bg-white p-4">
                       <img
-                        src={product.images[0]}
-                        alt={product.name}
+                        src={product.images[selectedImageIdx]}
+                        alt={`${product.name} - Image ${selectedImageIdx + 1}`}
                         className="w-full h-full object-contain"
                       />
                     </div>
+                    
+                    <div className="text-xs text-center text-gray-500 font-medium">
+                      Image {selectedImageIdx + 1} of {product.images.length}
+                    </div>
 
-                    {/* Thumbnails */}
-                    {product.images.length > 1 && (
-                      <div className="grid grid-cols-4 gap-2">
-                        {product.images.slice(1).map((img: string, idx: number) => (
-                          <div key={idx} className="aspect-square rounded-lg border border-gray-200 overflow-hidden bg-gray-50">
-                            <img
-                              src={img}
-                              alt={`${product.name} - ${idx + 2}`}
-                              className="w-full h-full object-cover"
-                            />
+                    {/* 5 Thumbnail Boxes */}
+                    <div className="grid grid-cols-5 gap-2">
+                      {Array.from({ length: 5 }).map((_, idx) => {
+                        const hasImage = idx < product.images.length;
+                        const isSelected = selectedImageIdx === idx;
+                        
+                        return (
+                          <div 
+                            key={idx} 
+                            onClick={() => hasImage && setSelectedImageIdx(idx)}
+                            className={`aspect-square rounded-lg border overflow-hidden ${
+                              hasImage ? 'bg-white cursor-pointer hover:border-gray-300' : 'bg-gray-100 border-dashed border-gray-200 cursor-default'
+                            } ${
+                              isSelected ? 'border-gray-900 ring-1 ring-gray-900' : 'border-gray-200'
+                            }`}
+                          >
+                            {hasImage && (
+                              <img
+                                src={product.images[idx]}
+                                alt={`Thumbnail ${idx + 1}`}
+                                className={`w-full h-full object-cover transition-opacity ${isSelected ? 'opacity-100' : 'opacity-60 hover:opacity-100'}`}
+                              />
+                            )}
                           </div>
-                        ))}
-                      </div>
-                    )}
+                        );
+                      })}
+                    </div>
                   </div>
                 ) : (
                   <div className="aspect-square rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 flex items-center justify-center flex-col text-gray-400">

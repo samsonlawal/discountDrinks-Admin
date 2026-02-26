@@ -76,6 +76,7 @@ export interface ICategory {
   name?: string;
   description?: string;
   parent_category_id?: string;
+  subCategories?: string[];
   status?: string;
   createdAt?: string;
   updatedAt?: string;

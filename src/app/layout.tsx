@@ -1,14 +1,6 @@
 import type { Metadata } from "next";
-import { Jost } from "next/font/google";
 import Initializers from "./initializers";
 import "./globals.css";
-
-const jost = Jost({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-  variable: "--font-jost",
-});
 
 export const metadata: Metadata = {
   title: "Discount Drinks | Admin",
@@ -21,8 +13,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${jost.variable}`} suppressHydrationWarning>
-      <body className={jost.className}>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet" />
+      </head>
+      <body>
         <Initializers>{children}</Initializers>
       </body>
     </html>
