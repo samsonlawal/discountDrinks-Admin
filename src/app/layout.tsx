@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Jost } from "next/font/google";
 import Initializers from "./initializers";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const jost = Jost({
@@ -24,6 +25,7 @@ export default function RootLayout({
     <html lang="en" className={`${jost.variable}`} suppressHydrationWarning>
       <body className={jost.className}>
         <Initializers>{children}</Initializers>
+        <Analytics />
       </body>
     </html>
   );
