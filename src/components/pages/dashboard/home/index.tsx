@@ -1,12 +1,11 @@
 "use client";
 import DashboardLayout from "@/components/layouts/dashboard";
 import { StatCard, Card } from "@/components/molecules/Card";
-import DataTable from "@/components/molecules/DataTable";
+import HomeTable from "./HomeTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { useGetUsers } from "@/hooks/api/users";
-import { useGetCategories } from "@/hooks/api/categories";
 import { useGetProducts } from "@/hooks/api/products";
-import { useGetTags } from "@/hooks/api/tags";
+import { useGetOrders } from "@/hooks/api/orders";
 import React from "react";
 
 type Order = {
@@ -14,13 +13,17 @@ type Order = {
   customer: string;
   amount: string;
   status: string;
-  date: string;
+  orderId: string;
 };
 
 const orderColumns: ColumnDef<Order>[] = [
   {
-    accessorKey: "id",
-    header: "Order ID",
+    accessorKey: "orderId",
+    header: "#",
+    size: 100,
+    cell: ({ row }) => (
+      <span className="text-xs font-medium text-gray-700">#{row.getValue("orderId")}</span>
+    ),
   },
   {
     accessorKey: "customer",
@@ -29,6 +32,10 @@ const orderColumns: ColumnDef<Order>[] = [
   {
     accessorKey: "amount",
     header: "Amount",
+    cell: ({ row }) => {
+      const amount = row.getValue("amount");
+      return <span>₦{Number(amount).toLocaleString()}</span>;
+    },
   },
   {
     accessorKey: "status",
@@ -58,31 +65,21 @@ const orderColumns: ColumnDef<Order>[] = [
       );
     },
   },
-  {
-    accessorKey: "date",
-    header: "Date",
-  },
 ];
 
 function DashboardHome() {
   const { users, fetchUsers } = useGetUsers();
-  /* const { categories, fetchCategories } = useGetCategories(); */
   const { products, fetchProducts } = useGetProducts();
-  const { tags, fetchTags } = useGetTags();
+  const { orders: recentOrders, fetchOrders } = useGetOrders();
 
   React.useEffect(() => {
     fetchUsers();
     fetchProducts();
-    fetchTags();
+    fetchOrders({ limit: 10 });
   }, []);
 
-  // Real data from API
-  const recentOrders: Order[] = [];
-
-  // Calculate total sales from orders
-  const totalSales = recentOrders.reduce((sum, order) => {
-    const amount = parseFloat(order.amount.replace("$", "").replace(",", ""));
-    return sum + amount;
+  const totalSales = recentOrders.reduce((sum: number, order: any) => {
+    return sum + (Number(order.amount) || 0);
   }, 0);
 
   const totalOrders = recentOrders.length;
@@ -175,7 +172,7 @@ function DashboardHome() {
                 View all
               </a>
             </div>
-            <DataTable columns={orderColumns} data={recentOrders} />
+            <HomeTable columns={orderColumns} data={recentOrders} />
           </div>
 
           {/* Top Products */}

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import DashboardLayout from "@/components/layouts/dashboard";
-import DataTable from "@/components/molecules/DataTable";
+import CategoriesTable from "./CategoriesTable";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 import RowActions from "./rowActions";
@@ -176,15 +176,16 @@ export default function CategoriesPage() {
     },
     {
       id: "number",
-      header: () => <span className="-ml-2">#</span>,
+      header: () => <span className="">#</span>,
       cell: ({ row }) => (
-        <span className="text-gray-600 -ml-2">{row.index + 1}</span>
+        <span className="text-gray-600">{row.index + 1}</span>
       ),
-      size: 20,
+      size: 10,
     },
     {
       accessorKey: "name",
       header: "NAME",
+      size: 120,
       cell: ({ row }) => (
         <span className="whitespace-nowrap">{row.getValue("name")}</span>
       ),
@@ -204,20 +205,21 @@ export default function CategoriesPage() {
     {
       accessorKey: "subCategories",
       header: "SUB-CATEGORIES",
+      size: 300,
       cell: ({ row }) => {
         const subCategories = row.original.subCategories || [];
         if (subCategories.length === 0) return <span className="text-gray-400 text-sm">None</span>;
         
         return (
-          <div className="flex flex-wrap gap-1 max-w-[250px]">
-            {subCategories.slice(0, 3).map((subCategory, i) => (
+          <div className="flex flex-wrap gap-1 max-w-[380px]">
+            {subCategories.slice(0, 4).map((subCategory, i) => (
               <span key={i} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
                 {subCategory}
               </span>
             ))}
-            {subCategories.length > 3 && (
+            {subCategories.length > 4 && (
               <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-50 text-gray-500 border border-gray-200">
-                +{subCategories.length - 3}
+                +{subCategories.length - 4}
               </span>
             )}
           </div>
@@ -231,6 +233,7 @@ export default function CategoriesPage() {
     {
       accessorKey: "status",
       header: "STATUS",
+      size: 100,
       cell: ({ row }) => {
         const status = row.getValue("status") as string;
         return (
@@ -249,10 +252,12 @@ export default function CategoriesPage() {
     {
       accessorKey: "createdDate",
       header: "CREATED DATE",
+      size: 150,
     },
     {
       id: "actions",
       header: "ACTION",
+      size: 100,
       cell: ({ row }) => (
         <RowActions
           category={row?.original}
@@ -288,10 +293,10 @@ export default function CategoriesPage() {
 
           <div
             className={
-              "my-[10px] relative border-t-[#EAEBF0] border-t-[1px] pt-[10px]"
+              "relative pt-4"
             }
           >
-            <div className="px-[20px]">
+            <div className="pb-4">
               <Tabs
                 data={tabsWithCounts}
                 activeTab={activeTab}
@@ -300,7 +305,7 @@ export default function CategoriesPage() {
                 }}
               />
             </div>
-            <DataTable
+            <CategoriesTable
               columns={columns}
               data={filteredCategories}
               loading={loading}

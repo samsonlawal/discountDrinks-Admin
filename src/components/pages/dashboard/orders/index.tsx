@@ -1,7 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DashboardLayout from "@/components/layouts/dashboard";
-import DataTable from "@/components/molecules/DataTable";
+import OrdersTable from "./OrdersTable";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 import Tabs, { ITabItem } from "@/components/molecules/Tabs";
@@ -9,11 +9,13 @@ import { IFetchTagQuery } from "@/types";
 import { TableFilter } from "@/components/molecules/TableFilter";
 import { DebounceInput } from "@/components/molecules/TableFilter/TableFilterSearch/DebouceInput";
 import RowActions from "./rowActions";
+import { useGetOrders } from "@/hooks/api/orders";
+import ViewOrderDialog from "./ViewOrderDialog";
 
 type Order = {
   id: string;
   customer: string;
-  amount: string;
+  amount: number;
   status: string;
   date: string;
 };
@@ -70,7 +72,10 @@ const Search = ({
   );
 };
 
-const columns: ColumnDef<Order>[] = [
+const columns = (
+  handleView: (order: Order) => void,
+  refresh: () => void,
+): ColumnDef<Order>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -86,32 +91,56 @@ const columns: ColumnDef<Order>[] = [
         checked={row.getIsSelected()}
         onChange={(e) => row.toggleSelected(!!e.target.checked)}
         aria-label="Select row"
-        className="translate-y-[2px]"
+        className="translate-y-[2px] z-100"
       />
     ),
     enableSorting: false,
     enableHiding: false,
     size: 40,
   },
-  {
-    id: "number",
-    header: () => <span className="-ml-2">#</span>,
-    cell: ({ row }) => (
-      <span className="text-gray-600 -ml-2">{row.index + 1}</span>
-    ),
-    size: 20,
+  // {
+  //   id: "number",
+  //   header: () => <span className="-ml-2">#</span>,
+  //   cell: ({ row }) => (
+  //     <span className="text-gray-600 -ml-2">{row.index + 1}</span>
+  //   ),
+  //   size: 20,
+  // },
+    {
+    accessorKey: "orderId",
+    header: "#",
+    size: 130,
+    cell: ({ row }) => {
+      const orderId = row.getValue("orderId") as string;
+      return (
+        <span
+          className={`py-0.5 rounded-md text-xs text-black font-medium`}
+        >
+          #{orderId}
+        </span>
+      );
+    },
   },
-  {
-    accessorKey: "id",
-    header: "Order ID",
-  },
+  // {
+  //   accessorKey: "orderId",
+  //   header: "Order ID",
+  // },
   {
     accessorKey: "customer",
     header: "Customer",
+    size: 200,
   },
   {
     accessorKey: "amount",
     header: "Amount",
+    size: 150,
+    meta: {
+      className: "",
+    },
+    cell: ({ row }) => {
+      const amount = row.getValue("amount") as number;
+      return `$${Number(amount || 0).toFixed(2)}`;
+    }
   },
   {
     accessorKey: "status",
@@ -120,16 +149,29 @@ const columns: ColumnDef<Order>[] = [
       const status = row.getValue("status") as string;
       return (
         <span
-          className={`px-2 py-0.5 rounded-md text-xs font-medium ${
-            status === "Completed"
+          className={`px-2 py-0.5 rounded-md text-xs capitalize flex flex-row gap-1 w-fit items-center justify-center ${
+            status === "completed"
               ? "bg-green-100 text-green-800"
-              : status === "Pending"
-                ? "bg-yellow-100 text-yellow-800"
-                : status === "Processing"
+              : status === "pending"
+                ? "bg-yellow-100/60 text-yellow-600 border border-yellow-600"
+                : status === "processing"
                   ? "bg-blue-100 text-blue-800"
                   : "bg-red-100 text-red-800"
           }`}
         >
+          <div 
+          className={`h-1.5 w-1.5 rounded-full ${
+            status === "completed"
+              ? "bg-green-100 text-green-800"
+              : status === "pending"
+                ? " bg-yellow-600"
+                : status === "processing"
+                  ? "bg-blue-100 text-blue-800"
+                  : "bg-red-100 text-red-800"
+          }`}
+          >
+
+            </div>
           {status}
         </span>
       );
@@ -143,12 +185,10 @@ const columns: ColumnDef<Order>[] = [
     id: "actions",
     header: "ACTION",
     cell: ({ row }) => (
-      <RowActions category={row?.original} refresh={() => {}} />
+      <RowActions order={row?.original} refresh={refresh} onView={handleView} />
     ),
   },
 ];
-
-const allOrderData: Order[] = [];
 
 interface IActiveTab extends ITabItem {}
 
@@ -169,6 +209,7 @@ interface IQueryObject extends IFetchTagQuery {
 
 function OrdersPage() {
   const tabsData = tabsItems({});
+  const { orders, fetchOrders, loading } = useGetOrders();
 
   const [queryObject, setqueryObject] = React.useState<IQueryObject>({
     search: "",
@@ -177,17 +218,45 @@ function OrdersPage() {
   });
   const activeTab = queryObject?.activeTab;
 
+  const [isViewDialogOpen, setIsViewDialogOpen] = React.useState(false);
+  const [selectedOrder, setSelectedOrder] = React.useState<any>(undefined);
+
+  const handleView = (order: any) => {
+    setSelectedOrder(order);
+    setIsViewDialogOpen(true);
+  };
+
+  React.useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  useEffect(() => {
+    console.log(orders)
+  }, [orders])
+
   // Filter orders based on search and active tab
-  const filteredOrders = allOrderData.filter((order) => {
+  const filteredOrders = orders.filter((order) => {
     const matchesSearch =
-      order.customer.toLowerCase().includes(queryObject.search.toLowerCase()) ||
-      order.id.toLowerCase().includes(queryObject.search.toLowerCase());
+      (order.customer || "").toLowerCase().includes(queryObject.search.toLowerCase()) ||
+      (order.orderId || "").toString().toLowerCase().includes(queryObject.search.toLowerCase());
 
     const matchesTab =
-      activeTab.title === "All" || order.status === activeTab.title;
+      activeTab?.title === "All" || order.status === activeTab?.title?.toLowerCase();
 
     return matchesSearch && matchesTab;
   });
+
+  const allCount = orders.length;
+  const processingCount = orders.filter((o) => o.status === "processing").length;
+  const completedCount = orders.filter((o) => o.status === "completed").length;
+  const cancelledCount = orders.filter((o) => o.status === "cancelled").length;
+
+  const tabsWithCounts: IActiveTab[] = [
+    { id: `0`, title: "All", badge: String(allCount), showBadge: activeTab?.id === "0" },
+    { id: `2`, title: "Processing", badge: String(processingCount), showBadge: activeTab?.id === "2" },
+    { id: `3`, title: "Completed", badge: String(completedCount), showBadge: activeTab?.id === "3" },
+    { id: `4`, title: "Cancelled", badge: String(cancelledCount), showBadge: activeTab?.id === "4", disabled: true },
+  ];
 
   return (
     <DashboardLayout leftTitle="Orders">
@@ -195,7 +264,7 @@ function OrdersPage() {
         <div className="bg-white overflow-hidden">
           <div
             className={
-              "hidden md:block mt-[20px] px-1 pt-2 pb-1 flex gap-2 justify-between items-center w-full border-b-[#EAEBF0] border-b-[1px] pb-[10px]"
+              "hidden md:block mt-[20px] px-1 pt-2 flex gap-2 justify-between items-center w-full pb-4"
             }
           >
             <div className="hidden md:block flex-1 md:flex-none">
@@ -206,49 +275,39 @@ function OrdersPage() {
                 }
               />
             </div>
-            {/* <AddNewTag refresh={refresh}>
-              <button className="inline-flex gap-[6px] px-4 py-2 rounded-[1000px] bg-dark-black text-white text-sm leading-[22px] font-medium">
-                <div>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                  >
-                    <path
-                      d="M10.625 7.49996C10.625 7.15478 10.3451 6.87496 9.99996 6.87496C9.65478 6.87496 9.37496 7.15478 9.37496 7.49996L9.37496 9.37498H7.49996C7.15478 9.37498 6.87496 9.6548 6.87496 9.99998C6.87496 10.3452 7.15478 10.625 7.49996 10.625H9.37496V12.5C9.37496 12.8451 9.65478 13.125 9.99996 13.125C10.3451 13.125 10.625 12.8451 10.625 12.5L10.625 10.625H12.5C12.8451 10.625 13.125 10.3452 13.125 9.99998C13.125 9.6548 12.8451 9.37498 12.5 9.37498H10.625V7.49996Z"
-                      fill="white"
-                      fillOpacity="0.8"
-                    />
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M9.99996 1.04163C5.05241 1.04163 1.04163 5.05241 1.04163 9.99996C1.04163 14.9475 5.05241 18.9583 9.99996 18.9583C14.9475 18.9583 18.9583 14.9475 18.9583 9.99996C18.9583 5.05241 14.9475 1.04163 9.99996 1.04163ZM2.29163 9.99996C2.29163 5.74276 5.74276 2.29163 9.99996 2.29163C14.2572 2.29163 17.7083 5.74276 17.7083 9.99996C17.7083 14.2572 14.2572 17.7083 9.99996 17.7083C5.74276 17.7083 2.29163 14.2572 2.29163 9.99996Z"
-                      fill="white"
-                      fillOpacity="0.8"
-                    />
-                  </svg>
-                </div>
-                New Tag
-              </button>
-            </AddNewTag> */}
           </div>
 
-          <div className={"md:my-[10px] my-[40px] relative"}>
-            <div className="px-[20px]">
+          <div className={"relative pt-4"}>
+            <div className="pb-4">
               <Tabs
-                data={tabsData}
+                data={tabsWithCounts}
                 activeTab={activeTab}
                 onChangeTab={({ item }) => {
                   setqueryObject((x) => ({ ...x, activeTab: item }));
                 }}
               />
             </div>
-            <DataTable columns={columns} data={filteredOrders} />
+            <OrdersTable 
+              columns={columns(handleView, fetchOrders)} 
+              data={filteredOrders} 
+              loading={loading}
+            />
           </div>
         </div>
       </div>
+
+      {selectedOrder && isViewDialogOpen && (
+        <ViewOrderDialog
+          open={isViewDialogOpen}
+          onOpenChange={(open) => {
+            setIsViewDialogOpen(open);
+            if (!open) {
+              setTimeout(() => setSelectedOrder(undefined), 300);
+            }
+          }}
+          orderSummary={selectedOrder}
+        />
+      )}
     </DashboardLayout>
   );
 }

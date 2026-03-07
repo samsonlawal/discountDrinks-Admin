@@ -9,20 +9,22 @@ import ReuseableDialog from "@/components/ReuseableDialog";
 import { Trash2, MoreHorizontal } from "lucide-react";
 
 interface DataTableRowActionsProps {
-  category?: any; //to be edited with proper type/interface
-  isPendingcategory?: boolean;
+  order?: any; 
   refresh?: () => void;
+  onView?: (order: any) => void;
 }
 
-export function RowActions({ category, refresh }: DataTableRowActionsProps) {
-  const onDeleteCategory = (closeModal?: any) => {
+export function RowActions({ order, refresh, onView }: DataTableRowActionsProps) {
+  const [open, setOpen] = React.useState(false);
+
+  const onDeleteOrder = (closeModal?: any) => {
     refresh?.();
     closeModal?.();
   };
 
   return (
     <>
-      <DropdownMenu>
+      <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger asChild>
           <button className="h-8 w-8 p-0 flex items-center justify-center border border-transparent hover:border-gray-200 hover:bg-gray-50 rounded-full transition-colors outline-none">
             <MoreHorizontal className="h-4 w-4 text-gray-500" />
@@ -30,7 +32,13 @@ export function RowActions({ category, refresh }: DataTableRowActionsProps) {
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[146px] bg-white">
-          <button className="hover:bg-gray-100 w-full flex items-center px-3 py-2 gap-2 cursor-pointer text-[14px] text-[#111111] transition-colors">
+          <button 
+            onClick={() => {
+              onView?.(order);
+              setOpen(false);
+            }} 
+            className="hover:bg-gray-100 w-full flex items-center px-3 py-2 gap-2 cursor-pointer text-[14px] text-[#111111] transition-colors"
+          >
             <img
               src="/icons/eye.svg"
               alt=""
@@ -51,7 +59,7 @@ export function RowActions({ category, refresh }: DataTableRowActionsProps) {
             title="Delete Order"
             description="Are you sure you want to delete this order?"
             proceedTitle="Delete"
-            onProceed={onDeleteCategory}
+            onProceed={onDeleteOrder}
             loading={false}
           >
             <button className="hover:bg-red-50 text-red-600 w-full flex items-center px-3 py-2 gap-2 cursor-pointer text-[14px] transition-colors">

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import DashboardLayout from "@/components/layouts/dashboard";
-import DataTable from "@/components/molecules/DataTable";
+import TagsTable from "./TagsTable";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 import RowActions from "./rowActions";
@@ -179,11 +179,13 @@ export default function TagsPage() {
     {
       accessorKey: "name",
       header: "NAME",
+      size: 90,
       cell: ({ row }) => <span className="">{row.getValue("name")}</span>,
     },
     {
       accessorKey: "productCount",
       header: "PRODUCTS",
+      size: 90,
     },
     {
       accessorKey: "status",
@@ -245,10 +247,10 @@ export default function TagsPage() {
 
           <div
             className={
-              "my-[10px] relative border-t-[#EAEBF0] border-t-[1px] pt-[10px]"
+              "relative pt-4"
             }
           >
-            <div className="px-[20px]">
+            <div className="pb-4">
               <Tabs
                 data={tabsWithCounts}
                 activeTab={activeTab}
@@ -257,7 +259,7 @@ export default function TagsPage() {
                 }}
               />
             </div>
-            <DataTable
+            <TagsTable
               columns={columns}
               data={filteredTags}
               loading={loading}

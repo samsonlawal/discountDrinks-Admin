@@ -16,7 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import Spinner from "../Spinner";
+import Spinner from "@/components/molecules/Spinner";
 
 import {
   DropdownMenu,
@@ -34,7 +34,7 @@ interface DataTableProps<TData, TValue> {
   showFilterColumn?: boolean;
 }
 
-function DataTable<TData, TValue>({
+function OrdersTable<TData, TValue>({
   columns,
   data,
   loading,
@@ -50,7 +50,7 @@ function DataTable<TData, TValue>({
   return (
     <>
       {!showFilterColumn && !leftTopChild ? null : (
-        <div className="flex w-full pb-[16px] items-end justify-center ">
+        <div className="flex w-full pb-[16px] items-end justify-center">
           {leftTopChild ? (
             <div className="flex-1 flex items-end justify-start">
               {leftTopChild}
@@ -89,15 +89,15 @@ function DataTable<TData, TValue>({
         </div>
       )}
       {/* <div className=" border relative min-h-[440px] overflow-x-auto "> */}
-      <div className=" border relative h-fit overflow-x-auto ">
+      <div className=" border relative h-fit overflow-x-auto rounded-lg ">
         {loading ? (
           <div className=" absolute flex items-center justify-center right-0 top-0 bg-[white]/86  h-full w-full z-[20] pt-[100px]">
             <Spinner className="w-7 h-7 text-gray-600" />
           </div>
         ) : null}
 
-        <Table className="text-[13px] w-full" style={{ minWidth: table.getTotalSize() }}>
-          <TableHeader className="text-xs uppercase">
+        <Table className="text-[13px] w-full rounded-sm" style={{ minWidth: table.getTotalSize() }}>
+          <TableHeader className="text-xs uppercase rounded-sm">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header, index) => {
@@ -115,8 +115,8 @@ function DataTable<TData, TValue>({
                     <TableHead
                       key={header.id}
                       className={`pl-3 whitespace-nowrap ${
-                        isSticky ? "sticky z-20 !bg-[#f9fafb]" : ""
-                      } ${index === 1 ? "pr-0" : ""}`}
+                        isSticky ? "sticky z-20 bg-[#f9fafb]" : ""
+                      } ${(header.column.columnDef.meta as any)?.className || ""}`}
                       style={{
                         width: header.getSize(),
                         minWidth: header.getSize(),
@@ -158,8 +158,8 @@ function DataTable<TData, TValue>({
                         <TableCell
                           key={cell.id}
                           className={`border-b border-[#e2e8f0] pl-3 whitespace-nowrap ${
-                            isSticky ? "sticky z-10 !bg-white" : ""
-                          } ${index === 1 ? "pr-0" : ""}`}
+                            isSticky ? "sticky z-10 bg-white" : ""
+                          } ${(cell.column.columnDef.meta as any)?.className || ""}`}
                           style={{
                             width: cell.column.getSize(),
                             minWidth: cell.column.getSize(),
@@ -192,4 +192,4 @@ function DataTable<TData, TValue>({
     </>
   );
 }
-export default DataTable;
+export default OrdersTable;

@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import DashboardLayout from "@/components/layouts/dashboard";
-import DataTable from "@/components/molecules/DataTable";
+import UsersTable from "./UsersTable";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 import Tabs, { ITabItem } from "@/components/molecules/Tabs";
@@ -125,6 +125,16 @@ function UsersPage() {
     return matchesSearch && matchesTab;
   });
 
+  const allCount = transformedUsers.length;
+  const activeCount = transformedUsers.filter((u) => u.status === "Active").length;
+  const inactiveCount = transformedUsers.filter((u) => u.status === "Inactive").length;
+
+  const tabsWithCounts: IActiveTab[] = [
+    { id: "0", title: "All", badge: String(allCount), showBadge: activeTab?.id === "0" },
+    { id: "1", title: "Active", badge: String(activeCount), showBadge: activeTab?.id === "1" },
+    { id: "2", title: "Inactive", badge: String(inactiveCount), showBadge: activeTab?.id === "2" },
+  ];
+
   const columns = React.useMemo<ColumnDef<User>[]>(
     () => [
       {
@@ -217,7 +227,7 @@ function UsersPage() {
         <div className="bg-white overflow-hidden">
           <div
             className={
-              "hidden md:block mt-[20px] px-1 pt-2 pb-1 flex gap-2 justify-between items-center w-full border-b-[#EAEBF0] border-b-[1px] pb-[10px]"
+              "hidden md:block mt-[20px] px-1 pt-2 flex gap-2 justify-between items-center w-full pb-4"
             }
           >
             <div className="md:flex-none hidden md:block flex-1">
@@ -230,17 +240,17 @@ function UsersPage() {
             </div>
           </div>
 
-          <div className={"md:my-[10px] my-[40px]"}>
-            <div className="px-[20px]">
+          <div className={"md:my-[10px] my-[40px] pt-4"}>
+            <div className="pb-4">
               <Tabs
-                data={tabsData}
+                data={tabsWithCounts}
                 activeTab={activeTab}
                 onChangeTab={({ item }) => {
                   setqueryObject((x) => ({ ...x, activeTab: item }));
                 }}
               />
             </div>
-            <DataTable
+            <UsersTable
               columns={columns}
               data={filteredUsers}
               loading={loading}

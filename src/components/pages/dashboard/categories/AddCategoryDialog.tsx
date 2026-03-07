@@ -139,8 +139,8 @@ export default function AddCategoryDialog({
           });
         })}
 
-        <AlertDialogContent className="rounded-xl w-[95%] sm:w-full max-w-112.5 bg-white">
-          <div className="p-4 md:p-6">
+        <AlertDialogContent className="rounded-xl w-[95%] sm:w-full max-w-140 bg-white">
+          <div className="p-4 md:p-4">
             <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-4">
               {category ? "Edit Category" : "Add Category"}
             </h2>
@@ -198,7 +198,7 @@ export default function AddCategoryDialog({
               <FormSelect
                 label="Status"
                 name="status"
-                placeholder="Active/Inactive"
+                placeholder="Active or Inactive"
                 value={formData.status}
                 onChange={handleSelectChange}
                 options={["Active", "Inactive"]}

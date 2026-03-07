@@ -16,7 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import Spinner from "../Spinner";
+import Spinner from "@/components/molecules/Spinner";
 
 import {
   DropdownMenu,
@@ -34,7 +34,7 @@ interface DataTableProps<TData, TValue> {
   showFilterColumn?: boolean;
 }
 
-function DataTable<TData, TValue>({
+function ProductsTable<TData, TValue>({
   columns,
   data,
   loading,
@@ -192,4 +192,4 @@ function DataTable<TData, TValue>({
     </>
   );
 }
-export default DataTable;
+export default ProductsTable;

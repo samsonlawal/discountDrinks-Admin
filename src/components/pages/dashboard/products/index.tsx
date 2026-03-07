@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect } from "react";
 import DashboardLayout from "@/components/layouts/dashboard";
-import DataTable from "@/components/molecules/DataTable";
+import ProductsTable from "./ProductsTable";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 import Tabs, { ITabItem } from "@/components/molecules/Tabs";
@@ -241,6 +241,16 @@ function ProductsPage() {
     return matchesSearch && matchesTab;
   });
 
+  const allCount = products.length;
+  const activeCount = products.filter((p) => p.isActive).length;
+  const inactiveCount = products.filter((p) => !p.isActive).length;
+
+  const tabsWithCounts: IActiveTab[] = [
+    { id: "0", title: "All", badge: String(allCount), showBadge: activeTab?.id === "0" },
+    { id: "1", title: "Active", badge: String(activeCount), showBadge: activeTab?.id === "1" },
+    { id: "2", title: "Inactive", badge: String(inactiveCount), showBadge: activeTab?.id === "2" },
+  ];
+
   const handleProductSaved = () => {
     fetchProducts(); // Refresh products list
   };
@@ -274,12 +284,12 @@ function ProductsPage() {
 
           <div
             className={
-              "my-[10px] relative border-t-[#EAEBF0] border-t-[1px] pt-[10px]"
+              "relative pt-4"
             }
           >
-            <div className="px-[20px]">
+            <div className="pb-4">
               <Tabs
-                data={tabsData}
+                data={tabsWithCounts}
                 activeTab={activeTab}
                 onChangeTab={({ item }) => {
                   setqueryObject((x) => ({ ...x, activeTab: item }));
@@ -287,7 +297,7 @@ function ProductsPage() {
               />
             </div>
             <div className="w-full overflow-x-auto">
-              <DataTable
+              <ProductsTable
                 columns={columns(handleEdit, handleView, fetchProducts)}
                 data={filteredProducts}
                 loading={loading}

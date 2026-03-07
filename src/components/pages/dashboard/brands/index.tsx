@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import DashboardLayout from "@/components/layouts/dashboard";
-import DataTable from "@/components/molecules/DataTable";
+import BrandsTable from "./BrandsTable";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 import RowActions from "./rowActions";
@@ -164,7 +164,7 @@ export default function BrandsPage() {
       id: "number",
       header: () => <span className="-ml-2">#</span>,
       cell: ({ row }) => (
-        <span className="text-gray-600 -ml-2">{row.index + 1}</span>
+        <span className="text-gray-600">{row.index + 1}</span>
       ),
       size: 20,
     },
@@ -233,10 +233,10 @@ export default function BrandsPage() {
 
           <div
             className={
-              "my-[10px] relative border-t-[#EAEBF0] border-t-[1px] pt-[10px]"
+              "relative pt-4"
             }
           >
-            <div className="px-[20px]">
+            <div className="pb-4">
               <Tabs
                 data={tabsWithCounts}
                 activeTab={activeTab}
@@ -245,7 +245,7 @@ export default function BrandsPage() {
                 }}
               />
             </div>
-            <DataTable
+            <BrandsTable
               columns={columns}
               data={filteredBrands}
               loading={loading}
