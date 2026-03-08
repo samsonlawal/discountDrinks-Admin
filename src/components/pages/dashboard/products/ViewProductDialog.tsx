@@ -71,7 +71,7 @@ export default function ViewProductDialog({
         </div>
 
         {/* Body */}
-        <div className="mx-auto max-w-7xl px-10 py-8">
+        <div className="mx-auto max-w-7xl md:px-10 px-6 py-8">
           <div className="flex items-start justify-between mb-8">
             <div className="flex items-center gap-4">
               <h1 className="text-xl font-medium text-gray-900">{product.name || "-"}</h1>
@@ -81,11 +81,12 @@ export default function ViewProductDialog({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-5 px-2">
+          <div className="grid grid-cols-1 md:gap-8 lg:grid-cols-5 px-2">
             {/* LEFT SIDE - Details */}
             <div className="lg:col-span-3 space-y-10">
+
               {/* Product Information */}
-              <section className="bg-transparent">
+              <section className="bg-transparent md:pb-0 pb-6">
                 <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
                   <Package className="w-4 h-4 text-gray-400" />
                   Product Information
@@ -140,7 +141,7 @@ export default function ViewProductDialog({
               </section>
 
               {/* Pricing & Inventory */}
-              <section className="bg-transparent">
+              <section className="bg-transparent md:pb-0 pb-6">
                 <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
                   <DollarSign className="w-4 h-4 text-gray-400" />
                   Pricing & Inventory
@@ -173,8 +174,8 @@ export default function ViewProductDialog({
               </section>
 
               {/* Shipping & Specs */}
-              <div className="grid grid-cols-1 gap-10">
-                <section className="bg-transparent">
+              <div className="grid grid-cols-1 gap-10 md:pb-0 pb-6">
+                <section className="bg-transparent md:pb-0 pb-6">
                   <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
                     <Weight className="w-4 h-4 text-gray-400" />
                     Shipping
@@ -196,7 +197,7 @@ export default function ViewProductDialog({
                   </div>
                 </section>
 
-                <section className="bg-transparent">
+                <section className="bg-transparent md:pb-0 pb-6">
                   <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">
                     Specifications
                   </h2>
@@ -221,15 +222,15 @@ export default function ViewProductDialog({
 
             {/* RIGHT SIDE - Images */}
             <div className="lg:col-span-2 space-y-6">
-              <section className="bg-transparent sticky top-24">
-                <div className="w-4/5 mx-auto">
-                <h2 className="text-sm-bold text-gray-900 uppercase tracking-wider mb-5">
+              <section className="bg-transparent sticky md:top-24">
+                <div className="w-full md:w-4/5 mx-auto">
+                <h2 className="text-sm-bold font-bold text-gray-900 uppercase tracking-wider mb-5">
                   Images
                 </h2>
                 </div>
 
                 {product.images && product.images.length > 0 ? (
-                  <div className="space-y-3 w-4/5 mx-auto">
+                  <div className="space-y-3 w-full md:w-4/5 mx-auto">
                     {/* Main Image */}
                     <div className="aspect-square rounded-xl border border-gray-200 overflow-hidden bg-white p-4">
                       <img

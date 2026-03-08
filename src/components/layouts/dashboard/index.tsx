@@ -12,7 +12,7 @@ function DashboardLayout({
   return (
     <div className="w-full h-screen overflow-hidden relative flex p-0 m-0">
       <DashboardSidebar />
-      <div className="relative flex-1 m-0 p-0 w-full">
+      <div className="relative flex-1 min-w-0 m-0 p-0 w-full">
         <DashboardTopbar leftTitle={leftTitle} />
         <DashboardContent>{children}</DashboardContent>
       </div>

@@ -89,7 +89,7 @@ function OrdersTable<TData, TValue>({
         </div>
       )}
       {/* <div className=" border relative min-h-[440px] overflow-x-auto "> */}
-      <div className=" border relative h-fit overflow-x-auto rounded-lg ">
+      <div className=" border relative min-h-[350px] overflow-x-auto rounded-lg ">
         {loading ? (
           <div className=" absolute flex items-center justify-center right-0 top-0 bg-[white]/86  h-full w-full z-[20] pt-[100px]">
             <Spinner className="w-7 h-7 text-gray-600" />
@@ -101,14 +101,10 @@ function OrdersTable<TData, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header, index) => {
-                  const isSticky = index < 3;
+                  const isSticky = index < 2;
                   let stickyLeft = 0;
                   if (index === 1) {
                     stickyLeft = headerGroup.headers[0].getSize();
-                  } else if (index === 2) {
-                    stickyLeft =
-                      headerGroup.headers[0].getSize() +
-                      headerGroup.headers[1].getSize();
                   }
 
                   return (
@@ -145,14 +141,10 @@ function OrdersTable<TData, TValue>({
                     className=""
                   >
                     {row.getVisibleCells().map((cell, index) => {
-                      const isSticky = index < 3;
+                      const isSticky = index < 2;
                       let stickyLeft = 0;
                       if (index === 1) {
                         stickyLeft = row.getVisibleCells()[0].column.getSize();
-                      } else if (index === 2) {
-                        stickyLeft =
-                          row.getVisibleCells()[0].column.getSize() +
-                          row.getVisibleCells()[1].column.getSize();
                       }
                       return (
                         <TableCell

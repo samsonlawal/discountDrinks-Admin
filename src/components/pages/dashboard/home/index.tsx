@@ -6,6 +6,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { useGetUsers } from "@/hooks/api/users";
 import { useGetProducts } from "@/hooks/api/products";
 import { useGetOrders } from "@/hooks/api/orders";
+import { Checkbox } from "@/components/ui/checkbox";
 import React from "react";
 
 type Order = {
@@ -17,6 +18,28 @@ type Order = {
 };
 
 const orderColumns: ColumnDef<Order>[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={table.getIsAllPageRowsSelected()}
+        onChange={(e) => table.toggleAllPageRowsSelected(!!e.target.checked)}
+        aria-label="Select all"
+        className="translate-y-[2px]"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onChange={(e) => row.toggleSelected(!!e.target.checked)}
+        aria-label="Select row"
+        className="translate-y-[2px] z-100"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+    size: 30,
+  },
   {
     accessorKey: "orderId",
     header: "#",
@@ -34,7 +57,7 @@ const orderColumns: ColumnDef<Order>[] = [
     header: "Amount",
     cell: ({ row }) => {
       const amount = row.getValue("amount");
-      return <span>₦{Number(amount).toLocaleString()}</span>;
+      return <span>${Number(amount).toLocaleString()}</span>;
     },
   },
   {
@@ -45,20 +68,20 @@ const orderColumns: ColumnDef<Order>[] = [
       const getStatusColor = (status: string) => {
         switch (status.toLowerCase()) {
           case "completed":
-            return "bg-green-100 text-green-800";
+            return "bg-green-100 border border-green-800 text-green-800";
           case "pending":
-            return "bg-yellow-100 text-yellow-800";
+            return "bg-yellow-100 border border-yellow-600 text-yellow-600";
           case "processing":
-            return "bg-blue-100 text-blue-800";
+            return "bg-blue-100 border border-blue-800 text-blue-800";
           case "cancelled":
-            return "bg-red-100 text-red-800";
+            return "bg-red-100 border border-red-800 text-red-800";
           default:
-            return "bg-gray-100 text-gray-800";
+            return "bg-gray-100 border border-gray-800 text-gray-800";
         }
       };
       return (
         <span
-          className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(status)}`}
+          className={`px-2 py-0.5 rounded-sm text-xs font-medium capitalize w-fit ${getStatusColor(status)}`}
         >
           {status}
         </span>
@@ -159,15 +182,14 @@ function DashboardHome() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Recent Orders */}
-          {/* Recent Orders */}
           <div className="lg:col-span-2">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-lg font-medium text-gray-900">
                 Recent Orders
               </h2>
               <a
                 href="/dashboard/orders"
-                className="text-sm text-blue-600 hover:text-blue-800"
+                className="text-[14px] text-black border border-gray-100 hover:text-white hover:bg-black bg-gray-100 transition duration-100 ease-in-out px-3 py-1 rounded-md cursor-pointer"
               >
                 View all
               </a>
@@ -176,11 +198,13 @@ function DashboardHome() {
           </div>
 
           {/* Top Products */}
-          <Card className="p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              Top Products
-            </h2>
-            <div className="space-y-4">
+          <Card className="">
+            <div className="flex items-center justify-between px-4 py-3 bg-gray-100/50">
+              <h2 className="text-lg font-medium text-gray-900">
+                Top Products
+              </h2>
+            </div>
+            <div className="space-y-4 p-4">
               {topProducts.map((product, index) => (
                 <div key={index} className="flex items-center justify-between">
                   <div className="flex-1">

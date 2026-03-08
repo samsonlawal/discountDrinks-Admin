@@ -308,7 +308,6 @@ function ProductsPage() {
       </div>
 
       {/* Full-screen Add Product Dialog */}
-      {/* Full-screen Add Product Dialog */}
       <AddProductDialog
         open={isAddDialogOpen}
         onOpenChange={handleAddDialogOpenChange}

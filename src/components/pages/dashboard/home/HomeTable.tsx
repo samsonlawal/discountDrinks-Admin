@@ -89,15 +89,15 @@ function HomeTable<TData, TValue>({
         </div>
       )}
       {/* <div className=" border relative min-h-[440px] overflow-x-auto "> */}
-      <div className=" border relative h-fit overflow-x-auto ">
+      <div className=" border relative min-h-[400px] overflow-x-auto rounded-lg ">
         {loading ? (
           <div className=" absolute flex items-center justify-center right-0 top-0 bg-[white]/86  h-full w-full z-[20] pt-[100px]">
             <Spinner className="w-7 h-7 text-gray-600" />
           </div>
         ) : null}
 
-        <Table className="text-[13px] w-full" style={{ minWidth: table.getTotalSize() }}>
-          <TableHeader className="text-xs uppercase">
+        <Table className="text-[13px] w-full rounded-sm" style={{ minWidth: table.getTotalSize() }}>
+          <TableHeader className="text-xs uppercase rounded-sm">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header, index) => {

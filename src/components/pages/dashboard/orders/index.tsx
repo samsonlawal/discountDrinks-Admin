@@ -277,7 +277,7 @@ function OrdersPage() {
             </div>
           </div>
 
-          <div className={"relative pt-4"}>
+          <div className={"md:my-[10px] my-[40px] pt-4"}>
             <div className="pb-4">
               <Tabs
                 data={tabsWithCounts}
