@@ -16,6 +16,7 @@ interface FormSelectProps {
   onValueChange?: (value: string) => void;
   onChange?: (name: string, value: string) => void;
   className?: string;
+  isClearable?: boolean;
 }
 
 export const FormSelect = React.memo(
@@ -28,6 +29,7 @@ export const FormSelect = React.memo(
     onValueChange,
     onChange,
     className = "",
+    isClearable = true,
   }: FormSelectProps) => {
     const validValue = React.useMemo(() => {
       if (!value) return undefined;
@@ -46,9 +48,10 @@ export const FormSelect = React.memo(
         <Select
           value={validValue}
           onValueChange={(val) => {
-            onValueChange?.(val);
+            const finalValue = val === "___none___" ? "" : val;
+            onValueChange?.(finalValue);
             if (name && onChange) {
-              onChange(name, val);
+              onChange(name, finalValue);
             }
           }}
         >
@@ -58,6 +61,11 @@ export const FormSelect = React.memo(
             />
           </SelectTrigger>
           <SelectContent>
+            {isClearable && (
+              <SelectItem value="___none___" className="text-gray-400 italic">
+                None
+              </SelectItem>
+            )}
             {options.map((option) => (
               <SelectItem key={option} value={option}>
                 {option}

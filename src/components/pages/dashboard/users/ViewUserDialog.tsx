@@ -1,100 +1,181 @@
-import React from "react";
-import { AlertDialog, AlertDialogContent } from "@/components/ui/alert-dialog";
-import { X } from "lucide-react";
+import React, { useEffect } from "react";
+import { ChevronLeft, User, Mail, Calendar, Shield, Activity, Phone, MapPin, Clock } from "lucide-react";
 
 interface ViewUserDialogProps {
   children?: React.ReactNode;
   user: any;
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 export default function ViewUserDialog({
-  children,
   user,
-  open: externalOpen,
-  onOpenChange: externalOnOpenChange,
+  open,
+  onOpenChange,
 }: ViewUserDialogProps) {
-  const [internalOpen, setInternalOpen] = React.useState(false);
-  
-  const isControlled = externalOpen !== undefined && externalOnOpenChange !== undefined;
-  const open = isControlled ? externalOpen : internalOpen;
-  const setOpen = isControlled ? externalOnOpenChange : setInternalOpen;
+  // Close on ESC
+  useEffect(() => {
+    if (!open) return;
 
-  if (!user) return null;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onOpenChange(false);
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open, onOpenChange]);
+
+  // Lock background scroll
+  useEffect(() => {
+    if (!open) return;
+
+    const original = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = original;
+    };
+  }, [open]);
+
+  if (!open || !user) return null;
+
+  const isActive = user.status?.toLowerCase() === "active" || user.isActive;
+  const joinedDate = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : (user.joined || "-");
 
   return (
-    <>
-      <AlertDialog open={open} onOpenChange={setOpen}>
-        {!isControlled && children && React.Children.map(children, (child: any) => {
-          return React.cloneElement(child, {
-            onClick: () => setOpen(true),
-          });
-        })}
+    <div className="fixed inset-0 z-50 flex">
+      {/* Overlay */}
+      <button
+        aria-label="Close dialog overlay"
+        onClick={() => onOpenChange(false)}
+        className="absolute inset-0 bg-black/40 cursor-default"
+      />
 
-        <AlertDialogContent className="rounded-xl w-[95%] sm:w-full max-w-md bg-white p-0 overflow-hidden">
-          {/* Header */}
-          <div className="flex items-center justify-between border-b px-6 py-4 bg-gray-50/50">
-            <h2 className="text-lg font-semibold text-gray-900">User Details</h2>
+      {/* Sidebar spacer - 240px to match sidebar width */}
+      <div className="w-[240px] shrink-0 hidden md:block relative z-10" />
+
+      {/* Dialog Panel */}
+      <div className="flex-1 h-full overflow-auto bg-gray-50 relative z-10 shadow-xl border-l border-gray-200">
+        {/* Top Header */}
+        <div className="sticky top-0 z-20 border-b bg-white">
+          <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
             <button
-              onClick={() => setOpen(false)}
-              className="text-gray-400 hover:text-gray-600 transition-colors rounded-full p-1 hover:bg-gray-100"
+              type="button"
+              onClick={() => onOpenChange(false)}
+              className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
             >
-              <X className="h-5 w-5" />
+              <ChevronLeft className="h-4 w-4" />
+              Back to Users
             </button>
           </div>
+        </div>
 
-          {/* Body */}
-          <div className="p-6 space-y-6">
-            <div className="space-y-4">
-              <div className="grid grid-cols-3 gap-4 border-b border-gray-100 pb-4">
-                <span className="text-sm font-medium text-gray-500">Name</span>
-                <span className="col-span-2 text-sm text-gray-900">{user.name || "-"}</span>
+        {/* Body */}
+        <div className="mx-auto max-w-7xl md:px-10 px-6 py-8 flex flex-col md:flex-row md:gap-12">
+          <div className="flex items-start justify-between mb-8">
+            <div className="flex items-center gap-4">
+              <div className="h-32 w-32 rounded-md bg-gray-200 flex items-center justify-center text-gray-400">
+                <User className="h-6 w-6" />
               </div>
-              
-              <div className="grid grid-cols-3 gap-4 border-b border-gray-100 pb-4">
-                <span className="text-sm font-medium text-gray-500">Email</span>
-                <span className="col-span-2 text-sm text-gray-900 truncate" title={user.email}>{user.email || "-"}</span>
-              </div>
-              
-              <div className="grid grid-cols-3 gap-4 border-b border-gray-100 pb-4">
-                <span className="text-sm font-medium text-gray-500">Role</span>
-                <span className="col-span-2 text-sm text-gray-900 capitalize">{user.role || "-"}</span>
-              </div>
-              
-              <div className="grid grid-cols-3 gap-4 border-b border-gray-100 pb-4">
-                <span className="text-sm font-medium text-gray-500">Status</span>
-                <div className="col-span-2">
-                  <span
-                    className={`inline-flex px-2 py-0.5 rounded-md text-xs font-medium ${
-                      user.status === "Active" || user.isActive
-                        ? "bg-green-100 text-green-800"
-                        : "bg-gray-100 text-gray-800"
-                    }`}
-                  >
-                    {user.status || (user.isActive ? "Active" : "Inactive")}
-                  </span>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-3 gap-4">
-                <span className="text-sm font-medium text-gray-500">Joined</span>
-                <span className="col-span-2 text-sm text-gray-900">{user.joined || "-"}</span>
-              </div>
-            </div>
-            
-            {/* Actions */}
-            <div className="pt-2">
-              <button
-                onClick={() => setOpen(false)}
-                className="w-full px-4 py-2 bg-gray-100 text-gray-900 rounded-lg hover:bg-gray-200 transition-colors font-medium text-sm"
-              >
-                Close
-              </button>
+              {/* <div>
+                <h1 className="text-xl font-medium text-gray-900">{user.name || "-"}</h1>
+                <p className="text-sm text-gray-500">{user.email || "-"}</p>
+              </div> */}
+
             </div>
           </div>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
+
+          <div className="grid grid-cols-1 md:gap-8 lg:grid-cols-5 px-2">
+            {/* LEFT SIDE - Details */}
+            <div className="lg:col-span-3 space-y-10">
+
+              {/* Personal Information */}
+              <section className="bg-transparent md:pb-0 pb-6">
+                <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
+                  <User className="w-4 h-4 text-gray-400" />
+                  Personal Information
+                </h2>
+
+                <div className="space-y-3">
+                  <div className="flex items-center gap-4">
+                    <span className="w-32 text-sm text-gray-500">Full Name</span>
+                    <span className="text-sm text-gray-900">{user.name || "-"}</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="w-32 text-sm text-gray-500">Email Address</span>
+                    <span className="text-sm text-gray-900">{user.email || "-"}</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="w-32 text-sm text-gray-500">Phone Number</span>
+                    <span className="text-sm text-gray-900">{user.phone || "-"}</span>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <span className="w-32 text-sm text-gray-500 mt-0.5">Address</span>
+                    <span className="text-sm text-gray-900 max-w-xs">{user.address || "-"}</span>
+                  </div>
+                </div>
+              </section>
+
+              {/* Account Details */}
+              <section className="bg-transparent md:pb-0 pb-6">
+                <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-gray-400" />
+                  Account Details
+                </h2>
+
+                <div className="space-y-3">
+                  <div className="flex items-center gap-4">
+                    <span className="w-32 text-sm text-gray-500">User ID</span>
+                    <span className="text-[10px] font-mono text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">{user._id || user.id || "-"}</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="w-32 text-sm text-gray-500">Role</span>
+                    <span className="text-sm text-gray-900 capitalize font-medium">{user.role || "-"}</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="w-32 text-sm text-gray-500">Account Type</span>
+                    <span className="text-sm text-gray-900">{user.type || "Standard"}</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="w-32 text-sm text-gray-500">Joined Date</span>
+                    <span className="text-sm text-gray-900">{joinedDate}</span>
+                  </div>
+                </div>
+              </section>
+
+              {/* Activity & Logs */}
+              <section className="bg-transparent md:pb-0 pb-6">
+                <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
+                  <Activity className="w-4 h-4 text-gray-400" />
+                  Activity & Insights
+                </h2>
+
+                <div className="space-y-3">
+                  <div className="flex items-center gap-4">
+                    <span className="w-32 text-sm text-gray-500">Last Active</span>
+                    <span className="text-sm text-gray-900">{user.lastLogin ? new Date(user.lastLogin).toLocaleString() : "-"}</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="w-32 text-sm text-gray-500">Orders Placed</span>
+                    <span className="text-sm text-gray-900 font-medium">{user.totalOrders || 0}</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="w-32 text-sm text-gray-500">Total Spend</span>
+                    <span className="text-sm text-emerald-600 font-bold">${user.totalSpend?.toFixed(2) || "0.00"}</span>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            {/* RIGHT SIDE - Additional Info or Sidebar */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* This section is currently empty or can be used for extra info later */}
+            </div>
+          </div>
+
+          <div className="h-10" />
+        </div>
+      </div>
+    </div>
   );
 }
