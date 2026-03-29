@@ -98,7 +98,7 @@ function DashboardHome() {
   React.useEffect(() => {
     fetchUsers();
     fetchProducts();
-    fetchOrders({ limit: 10 });
+    fetchOrders({ limit: 6 });
   }, []);
 
   const totalSales = recentOrders.reduce((sum: number, order: any) => {
