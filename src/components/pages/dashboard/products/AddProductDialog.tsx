@@ -397,14 +397,14 @@ export default function AddProductDialog({
 
                   <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
                     <FormField
-                      label="Base Price ($)"
+                      label="Base Price (£)"
                       name="basePrice"
                       placeholder="4.99"
                       value={formData.basePrice}
                       onChange={handleInputChange}
                     />
                     <FormField
-                      label="Cost Price ($)"
+                      label="Cost Price (£)"
                       name="costPrice"
                       placeholder="2.99"
                       value={formData.costPrice}

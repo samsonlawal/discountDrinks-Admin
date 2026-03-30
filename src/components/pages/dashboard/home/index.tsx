@@ -57,7 +57,7 @@ const orderColumns: ColumnDef<Order>[] = [
     header: "Amount",
     cell: ({ row }) => {
       const amount = row.getValue("amount");
-      return <span>${Number(amount).toLocaleString()}</span>;
+      return <span>£{Number(amount).toLocaleString()}</span>;
     },
   },
   {
@@ -98,7 +98,7 @@ function DashboardHome() {
   React.useEffect(() => {
     fetchUsers();
     fetchProducts();
-    fetchOrders({ limit: 6 });
+    fetchOrders({ limit: 50 });
   }, []);
 
   const totalSales = recentOrders.reduce((sum: number, order: any) => {
@@ -111,7 +111,7 @@ function DashboardHome() {
   const stats = [
     {
       title: "Total Sales",
-      value: `$${totalSales.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      value: `£${totalSales.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       icon: "/icons/receipt.svg",
       trend: {
         // value: `From ${totalOrders} orders`,
@@ -156,11 +156,11 @@ function DashboardHome() {
   ];
 
   const topProducts = [
-    { name: "Premium Vodka", sales: 145, revenue: "$2,175" },
-    { name: "Craft Beer Pack", sales: 132, revenue: "$1,980" },
-    { name: "Red Wine Bottle", sales: 98, revenue: "$1,470" },
-    { name: "Whiskey Premium", sales: 87, revenue: "$2,610" },
-    { name: "Champagne", sales: 76, revenue: "$3,040" },
+    { name: "Premium Vodka", sales: 145, revenue: "£2,175" },
+    { name: "Craft Beer Pack", sales: 132, revenue: "£1,980" },
+    { name: "Red Wine Bottle", sales: 98, revenue: "£1,470" },
+    { name: "Whiskey Premium", sales: 87, revenue: "£2,610" },
+    { name: "Champagne", sales: 76, revenue: "£3,040" },
   ];
 
   return (
@@ -194,7 +194,7 @@ function DashboardHome() {
                 View all
               </a>
             </div>
-            <HomeTable columns={orderColumns} data={recentOrders} />
+            <HomeTable columns={orderColumns} data={recentOrders.slice(0, 6)} />
           </div>
 
           {/* Top Products */}

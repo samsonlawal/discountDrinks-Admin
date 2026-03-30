@@ -14,6 +14,12 @@ class Service {
       withCredentials: true,
     });
   }
+
+  updateOrderStatus({ orderId, status }: { orderId: string; status: string }) {
+    return axios.patch(`${env.api.orders}/${orderId}/status`, { status }, {
+      withCredentials: true,
+    });
+  }
 }
 
 const OrdersService = new Service();

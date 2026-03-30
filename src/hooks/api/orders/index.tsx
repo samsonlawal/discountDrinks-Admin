@@ -61,3 +61,25 @@ export const useGetOrderById = () => {
 
   return { loading, order, fetchOrder };
 };
+
+export const useUpdateOrderStatus = () => {
+  const [loading, setLoading] = useState(false);
+
+  const updateStatus = async ({ id, status }: { id: string; status: string }) => {
+    setLoading(true);
+    try {
+      const res = await OrdersService.updateOrderStatus({ orderId: id, status });
+      return res?.data?.data || res?.data;
+    } catch (error: Error | AxiosError | any) {
+      showErrorToast({
+        message: error?.response?.data?.message || "Failed to update order status",
+        description: error?.response?.data?.description || "",
+      });
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { loading, updateStatus };
+};

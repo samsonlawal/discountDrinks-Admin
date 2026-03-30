@@ -161,7 +161,7 @@ export default function ViewUserDialog({
                   </div>
                   <div className="flex items-center gap-4">
                     <span className="w-32 text-sm text-gray-500">Total Spend</span>
-                    <span className="text-sm text-emerald-600 font-bold">${user.totalSpend?.toFixed(2) || "0.00"}</span>
+                    <span className="text-sm text-emerald-600 font-bold">£{user.totalSpend?.toFixed(2) || "0.00"}</span>
                   </div>
                 </div>
               </section>

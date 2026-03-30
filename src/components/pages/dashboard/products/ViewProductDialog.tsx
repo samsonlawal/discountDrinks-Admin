@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ChevronLeft, Package, Tag, DollarSign, Weight, CheckCircle, XCircle } from "lucide-react";
+import { ChevronLeft, Package, Tag, PoundSterling, Weight, CheckCircle, XCircle } from "lucide-react";
 
 interface ViewProductDialogProps {
   open: boolean;
@@ -143,18 +143,18 @@ export default function ViewProductDialog({
               {/* Pricing & Inventory */}
               <section className="bg-transparent md:pb-0 pb-6">
                 <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
-                  <DollarSign className="w-4 h-4 text-gray-400" />
+                  <PoundSterling className="w-4 h-4 text-gray-400" />
                   Pricing & Inventory
                 </h2>
 
                 <div className="space-y-2.5">
                   <div className="flex items-center gap-4">
                     <span className="w-32 text-sm text-gray-500">Base Price</span>
-                    <span className="text-sm text-gray-900">${product.basePrice || "0.00"}</span>
+                    <span className="text-sm text-gray-900">£{product.basePrice || "0.00"}</span>
                   </div>
                   <div className="flex items-center gap-4">
                     <span className="w-32 text-sm text-gray-500">Cost Price</span>
-                    <span className="text-sm text-gray-900">${product.costPrice || "0.00"}</span>
+                    <span className="text-sm text-gray-900">£{product.costPrice || "0.00"}</span>
                   </div>
                   <div className="flex items-center gap-4">
                     <span className="w-32 text-sm text-gray-500">Stock</span>

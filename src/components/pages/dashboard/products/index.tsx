@@ -129,7 +129,7 @@ const columns = (
   {
     accessorKey: "basePrice",
     header: "PRICE",
-    cell: ({ row }) => `$${row.getValue("basePrice")}`,
+    cell: ({ row }) => `£${row.getValue("basePrice")}`,
   },
   {
     accessorKey: "availableQuantity",
