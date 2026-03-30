@@ -147,31 +147,29 @@ const columns = (
     header: "Status",
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
+      const getStatusColor = (status: string) => {
+        switch (status.toLowerCase()) {
+          case "pending":
+            return "bg-amber-100 text-amber-700 border-amber-200";
+          case "processing":
+            return "bg-blue-100 text-blue-700 border-blue-200";
+          case "dispatched":
+            return "bg-violet-100 text-violet-700 border-violet-200";
+          case "shipped":
+            return "bg-indigo-100 text-indigo-700 border-indigo-200";
+          case "delivered":
+          case "completed":
+            return "bg-emerald-100 text-emerald-700 border-emerald-200";
+          case "cancelled":
+            return "bg-rose-100 text-rose-700 border-rose-200";
+          default:
+            return "bg-gray-100 text-gray-700 border-gray-200";
+        }
+      };
       return (
         <span
-          className={`px-2 py-0.5 rounded-md text-xs capitalize flex flex-row gap-1 w-fit items-center justify-center ${
-            status === "completed"
-              ? "bg-green-100 text-green-800"
-              : status === "pending"
-                ? "bg-yellow-100/60 text-yellow-600 border border-yellow-600"
-                : status === "processing"
-                  ? "bg-blue-100 text-blue-800"
-                  : "bg-red-100 text-red-800"
-          }`}
+          className={`px-2.5 py-1 rounded-sm text-[10px] font-bold uppercase tracking-wider border w-fit ${getStatusColor(status)}`}
         >
-          <div 
-          className={`h-1.5 w-1.5 rounded-full ${
-            status === "completed"
-              ? "bg-green-100 text-green-800"
-              : status === "pending"
-                ? " bg-yellow-600"
-                : status === "processing"
-                  ? "bg-blue-100 text-blue-800"
-                  : "bg-red-100 text-red-800"
-          }`}
-          >
-
-            </div>
           {status}
         </span>
       );
@@ -198,7 +196,7 @@ const tabsItems = ({}: {}): IActiveTab[] => {
     // { id: `1`, title: "Pending" },
     { id: `2`, title: "Processing" },
     { id: `3`, title: "Completed" },
-    { id: `4`, title: "Cancelled", disabled: true },
+    { id: `4`, title: "Cancelled" },
   ];
 };
 
@@ -255,7 +253,7 @@ function OrdersPage() {
     { id: `0`, title: "All", badge: String(allCount), showBadge: activeTab?.id === "0" },
     { id: `2`, title: "Processing", badge: String(processingCount), showBadge: activeTab?.id === "2" },
     { id: `3`, title: "Completed", badge: String(completedCount), showBadge: activeTab?.id === "3" },
-    { id: `4`, title: "Cancelled", badge: String(cancelledCount), showBadge: activeTab?.id === "4", disabled: true },
+    { id: `4`, title: "Cancelled", badge: String(cancelledCount), showBadge: activeTab?.id === "4" },
   ];
 
   return (

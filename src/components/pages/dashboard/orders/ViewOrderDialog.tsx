@@ -134,14 +134,20 @@ export default function ViewOrderDialog({
               </h1>
               {order && (
                 <span
-                  className={`px-2.5 py-0.5 rounded-sm text-xs capitalize ${
-                    order.status === "completed"
-                      ? "bg-green-100 text-green-700"
-                      : order.status === "pending"
-                        ? "bg-yellow-100 text-yellow-700"
-                        : order.status === "processing"
-                          ? "bg-blue-100 text-blue-700"
-                          : "bg-gray-100 text-gray-700"
+                  className={`px-2.5 py-1 rounded-sm text-[10px] font-bold uppercase tracking-wider border capitalize ${
+                    order.status === "pending"
+                      ? "bg-amber-100 text-amber-700 border-amber-200"
+                      : order.status === "processing"
+                        ? "bg-blue-100 text-blue-700 border-blue-200"
+                        : order.status === "dispatched"
+                          ? "bg-violet-100 text-violet-700 border-violet-200"
+                          : order.status === "shipped"
+                            ? "bg-indigo-100 text-indigo-700 border-indigo-200"
+                            : order.status === "delivered" || order.status === "completed"
+                              ? "bg-emerald-100 text-emerald-700 border-emerald-200"
+                              : order.status === "cancelled"
+                                ? "bg-rose-100 text-rose-700 border-rose-200"
+                                : "bg-gray-100 text-gray-700 border-gray-200"
                   }`}
                 >
                   {order.status || "Pending"}
@@ -251,8 +257,14 @@ export default function ViewOrderDialog({
                           </div>
                           <div className="flex flex-row items-center justify-start gap-1">
                             <p className="text-sm text-gray-500 w-[120px]">Payment Status:</p>{" "}
-                            <span className={`text-xs px-2 py-0.5 rounded-sm capitalize ${
-                              order?.paymentStatus === 'paid' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                            <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-sm border ${
+                              order?.paymentStatus === 'paid' 
+                                ? 'bg-emerald-100 text-emerald-700 border-emerald-200' 
+                                : order?.paymentStatus === 'failed'
+                                  ? 'bg-rose-100 text-rose-700 border-rose-200'
+                                  : order?.paymentStatus === 'refunded'
+                                    ? 'bg-blue-100 text-blue-700 border-blue-200'
+                                    : 'bg-amber-100 text-amber-700 border-amber-200'
                             }`}>
                               {order?.paymentStatus || "Pending"}
                             </span>

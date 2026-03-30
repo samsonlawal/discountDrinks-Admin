@@ -67,21 +67,26 @@ const orderColumns: ColumnDef<Order>[] = [
       const status = row.getValue("status") as string;
       const getStatusColor = (status: string) => {
         switch (status.toLowerCase()) {
-          case "completed":
-            return "bg-green-100 border border-green-800 text-green-800";
           case "pending":
-            return "bg-yellow-100 border border-yellow-600 text-yellow-600";
+            return "bg-amber-100 text-amber-700 border-amber-200";
           case "processing":
-            return "bg-blue-100 border border-blue-800 text-blue-800";
+            return "bg-blue-100 text-blue-700 border-blue-200";
+          case "dispatched":
+            return "bg-violet-100 text-violet-700 border-violet-200";
+          case "shipped":
+            return "bg-indigo-100 text-indigo-700 border-indigo-200";
+          case "delivered":
+          case "completed":
+            return "bg-emerald-100 text-emerald-700 border-emerald-200";
           case "cancelled":
-            return "bg-red-100 border border-red-800 text-red-800";
+            return "bg-rose-100 text-rose-700 border-rose-200";
           default:
-            return "bg-gray-100 border border-gray-800 text-gray-800";
+            return "bg-gray-100 text-gray-700 border-gray-200";
         }
       };
       return (
         <span
-          className={`px-2 py-0.5 rounded-sm text-xs font-medium capitalize w-fit ${getStatusColor(status)}`}
+          className={`px-2.5 py-1 rounded-sm text-[10px] font-bold uppercase tracking-wider border w-fit ${getStatusColor(status)}`}
         >
           {status}
         </span>
