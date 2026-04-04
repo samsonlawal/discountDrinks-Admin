@@ -9,6 +9,7 @@ import { DebounceInput } from "@/components/molecules/TableFilter/TableFilterSea
 import RowActions from "./rowActions";
 import { useGetUsers } from "@/hooks/api/users";
 import ViewUserDialog from "./ViewUserDialog";
+import CustomPagination from "@/components/molecules/CustomPagination";
 
 type User = {
   name: string;
@@ -89,7 +90,7 @@ interface IQueryObject {
 }
 
 function UsersPage() {
-  const { users, fetchUsers, loading } = useGetUsers();
+  const { users, fetchUsers, loading, pagination } = useGetUsers();
   const tabsData = tabsItems();
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
@@ -101,9 +102,17 @@ function UsersPage() {
   });
   const activeTab = queryObject?.activeTab;
 
+  const handleFetch = () => {
+    fetchUsers({
+      search: queryObject.search,
+      page: queryObject.page,
+      limit: 10,
+    });
+  };
+
   React.useEffect(() => {
-    fetchUsers({ search: queryObject.search });
-  }, [queryObject.search]);
+    handleFetch();
+  }, [queryObject.search, queryObject.page, queryObject.activeTab]);
 
   // Transform and filter users based on search and active tab
   const transformedUsers = users.map((user: any) => ({
@@ -250,11 +259,23 @@ function UsersPage() {
                 }}
               />
             </div>
-            <UsersTable
-              columns={columns}
-              data={filteredUsers}
-              loading={loading}
-            />
+            <div className="flex-1">
+              <UsersTable
+                columns={columns}
+                data={filteredUsers}
+                loading={loading}
+              />
+            </div>
+            
+            <div className="mt-auto border-t border-gray-100">
+               <CustomPagination
+                  fetchedCount={users.length}
+                  totalCount={pagination.total}
+                  pageSize={pagination.limit}
+                  page={queryObject.page}
+                  onChangePage={(val) => setqueryObject((x) => ({ ...x, page: val }))}
+               />
+            </div>
           </div>
         </div>
       </div>

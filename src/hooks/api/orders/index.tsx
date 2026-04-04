@@ -6,6 +6,12 @@ import OrdersService from "@/services/orders";
 export const useGetOrders = () => {
   const [loading, setLoading] = useState(false);
   const [orders, setOrders] = useState<any[]>([]);
+  const [pagination, setPagination] = useState({
+    total: 0,
+    page: 1,
+    limit: 10,
+    pages: 0,
+  });
 
   const fetchOrders = async (query?: any) => {
     setLoading(true);
@@ -23,6 +29,14 @@ export const useGetOrders = () => {
         };
       });
       setOrders(transformedData);
+      
+      if (res?.data?.pagination) {
+        setPagination(res.data.pagination);
+      } else if (res?.data?.meta) {
+        // Fallback for different API structure
+        setPagination(res.data.meta);
+      }
+
       return transformedData;
     } catch (error: Error | AxiosError | any) {
       showErrorToast({
@@ -35,7 +49,7 @@ export const useGetOrders = () => {
     }
   };
 
-  return { loading, orders, fetchOrders };
+  return { loading, orders, pagination, fetchOrders };
 };
 
 export const useGetOrderById = () => {

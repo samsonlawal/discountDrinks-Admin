@@ -8,12 +8,25 @@ import UsersService from "@/services/users";
 export const useGetUsers = () => {
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState<any[]>([]);
+  const [pagination, setPagination] = useState({
+    total: 0,
+    page: 1,
+    limit: 10,
+    pages: 0,
+  });
 
   const fetchUsers = async (query?: IFetchUserQuery) => {
     setLoading(true);
     try {
       const res = await UsersService.fetchUsers(query || {});
       setUsers(res?.data?.data || []);
+      
+      if (res?.data?.pagination) {
+        setPagination(res.data.pagination);
+      } else if (res?.data?.meta) {
+        setPagination(res.data.meta);
+      }
+
       return res?.data?.data;
     } catch (error: Error | AxiosError | any) {
       showErrorToast({
@@ -26,7 +39,7 @@ export const useGetUsers = () => {
     }
   };
 
-  return { loading, users, fetchUsers };
+  return { loading, users, pagination, fetchUsers };
 };
 
 // Hook for fetching a single user by ID

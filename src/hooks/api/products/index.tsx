@@ -7,6 +7,12 @@ import ProductsService from "@/services/products";
 export const useGetProducts = () => {
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState<any[]>([]);
+  const [pagination, setPagination] = useState({
+    total: 0,
+    page: 1,
+    limit: 10,
+    pages: 0,
+  });
 
   const fetchProducts = async (query?: any) => {
     setLoading(true);
@@ -28,6 +34,13 @@ export const useGetProducts = () => {
         };
       });
       setProducts(transformedData);
+      
+      if (res?.data?.pagination) {
+        setPagination(res.data.pagination);
+      } else if (res?.data?.meta) {
+        setPagination(res.data.meta);
+      }
+
       return transformedData;
     } catch (error: Error | AxiosError | any) {
       showErrorToast({
@@ -40,7 +53,7 @@ export const useGetProducts = () => {
     }
   };
 
-  return { loading, products, fetchProducts };
+  return { loading, products, pagination, fetchProducts };
 };
 
 // Hook for fetching a single product by ID

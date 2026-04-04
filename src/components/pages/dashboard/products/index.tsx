@@ -21,6 +21,7 @@ import AddProductDialog from "./AddProductDialog";
 import EditProductDialog from "./EditProductDialog";
 import ViewProductDialog from "./ViewProductDialog";
 import { useGetProducts } from "@/hooks/api/products";
+import CustomPagination from "@/components/molecules/CustomPagination";
 
 type Product = {
   _id: string;
@@ -185,7 +186,7 @@ interface IQueryObject {
 
 function ProductsPage() {
   const tabsData = tabsItems();
-  const { products, fetchProducts, loading } = useGetProducts();
+  const { products, fetchProducts, loading, pagination } = useGetProducts();
 
   const [queryObject, setqueryObject] = React.useState<IQueryObject>({
     search: "",
@@ -222,10 +223,18 @@ function ProductsPage() {
     }
   };
 
-  // Fetch products on mount
+  const handleFetch = () => {
+    fetchProducts({
+      search: queryObject.search,
+      page: queryObject.page,
+      limit: 10,
+    });
+  };
+
+  // Fetch products on query object changes
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    handleFetch();
+  }, [queryObject.search, queryObject.page, queryObject.activeTab]);
 
   // Filter products based on search and active tab
   const filteredProducts = products.filter((product) => {
@@ -302,6 +311,16 @@ function ProductsPage() {
                 data={filteredProducts}
                 loading={loading}
               />
+            </div>
+            
+            <div className="mt-auto border-t border-gray-100 pt-4">
+               <CustomPagination
+                  fetchedCount={products.length}
+                  totalCount={pagination.total}
+                  pageSize={pagination.limit}
+                  page={queryObject.page}
+                  onChangePage={(val) => setqueryObject((x) => ({ ...x, page: val }))}
+               />
             </div>
           </div>
         </div>

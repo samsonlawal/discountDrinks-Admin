@@ -11,6 +11,7 @@ import { DebounceInput } from "@/components/molecules/TableFilter/TableFilterSea
 import RowActions from "./rowActions";
 import { useGetOrders } from "@/hooks/api/orders";
 import ViewOrderDialog from "./ViewOrderDialog";
+import CustomPagination from "@/components/molecules/CustomPagination";
 
 type Order = {
   id: string;
@@ -210,6 +211,7 @@ const columns = (
   {
     id: "actions",
     header: "ACTION",
+    size: 70,
     cell: ({ row }) => (
       <RowActions order={row?.original} refresh={refresh} onView={handleView} />
     ),
@@ -231,11 +233,12 @@ const tabsItems = ({}: {}): IActiveTab[] => {
 interface IQueryObject extends IFetchTagQuery {
   search: string;
   activeTab: IActiveTab;
+  page: number;
 }
 
 function OrdersPage() {
   const tabsData = tabsItems({});
-  const { orders, fetchOrders, loading } = useGetOrders();
+  const { orders, fetchOrders, loading, pagination } = useGetOrders();
 
   const [queryObject, setqueryObject] = React.useState<IQueryObject>({
     search: "",
@@ -252,27 +255,21 @@ function OrdersPage() {
     setIsViewDialogOpen(true);
   };
 
+  const handleFetch = () => {
+    const status = activeTab?.title === "All" ? undefined : activeTab?.title?.toLowerCase();
+    fetchOrders({ 
+      page: queryObject.page, 
+      limit: 10, 
+      search: queryObject.search,
+      status 
+    });
+  }
+
   React.useEffect(() => {
-    fetchOrders();
-  }, []);
+    handleFetch();
+  }, [queryObject.page, queryObject.search, queryObject.activeTab]);
 
-  useEffect(() => {
-    console.log(orders)
-  }, [orders])
-
-  // Filter orders based on search and active tab
-  const filteredOrders = orders.filter((order) => {
-    const matchesSearch =
-      (order.customer || "").toLowerCase().includes(queryObject.search.toLowerCase()) ||
-      (order.orderId || "").toString().toLowerCase().includes(queryObject.search.toLowerCase());
-
-    const matchesTab =
-      activeTab?.title === "All" || order.status === activeTab?.title?.toLowerCase();
-
-    return matchesSearch && matchesTab;
-  });
-
-  const allCount = orders.length;
+  const allCount = pagination.total;
   const processingCount = orders.filter((o) => o.status === "processing").length;
   const completedCount = orders.filter((o) => o.status === "completed").length;
   const cancelledCount = orders.filter((o) => o.status === "cancelled").length;
@@ -287,7 +284,7 @@ function OrdersPage() {
   return (
     <DashboardLayout leftTitle="Orders">
       <div className="px-2 md:px-6 min-h-full">
-        <div className="bg-white overflow-hidden">
+        <div className="bg-white overflow-hidden flex flex-col min-h-[calc(100vh-140px)]">
           <div
             className={
               "hidden md:block mt-[20px] px-1 pt-2 flex gap-2 justify-between items-center w-full pb-4"
@@ -297,27 +294,39 @@ function OrdersPage() {
               <Search
                 value={queryObject?.search}
                 onChange={(value: string) =>
-                  setqueryObject((x) => ({ ...x, search: value }))
+                  setqueryObject((x) => ({ ...x, search: value, page: 1 }))
                 }
               />
             </div>
           </div>
 
-          <div className={"md:my-[10px] my-[40px] pt-4"}>
+          <div className={"md:my-[10px] my-[40px] pt-4 flex-1 flex flex-col"}>
             <div className="pb-4">
               <Tabs
                 data={tabsWithCounts}
                 activeTab={activeTab}
                 onChangeTab={({ item }) => {
-                  setqueryObject((x) => ({ ...x, activeTab: item }));
+                  setqueryObject((x) => ({ ...x, activeTab: item, page: 1 }));
                 }}
               />
             </div>
-            <OrdersTable 
-              columns={columns(handleView, fetchOrders)} 
-              data={filteredOrders} 
-              loading={loading}
-            />
+            
+            <div className="flex-1">
+              <OrdersTable 
+                columns={columns(handleView, handleFetch)} 
+                data={orders} 
+                loading={loading}
+              />
+                             <CustomPagination
+                  fetchedCount={orders.length}
+                  totalCount={pagination.total}
+                  pageSize={pagination.limit}
+                  page={queryObject.page}
+                  onChangePage={(val) => setqueryObject((x) => ({ ...x, page: val }))}
+               />
+            </div>
+
+
           </div>
         </div>
       </div>
