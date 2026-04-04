@@ -5,12 +5,12 @@ import { IFetchUserQuery } from "@/types";
 
 class Service {
   fetchUsers(query?: IFetchUserQuery) {
-    const { search, page, pageSize } = query || {};
+    const { search, page, limit } = query || {};
     return axios.get(env.api.users, {
       params: {
         ...(search ? { search } : {}),
         ...(page ? { page } : {}),
-        ...(pageSize ? { pageSize } : {}),
+        ...(limit ? { limit } : {}),
       },
       withCredentials: true,
     });

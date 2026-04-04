@@ -26,7 +26,7 @@ export type TAuthContextProps = {
 export interface IFetchUserQuery {
   search?: string;
   page?: number;
-  pageSize?: number;
+  limit?: number;
 }
 
 // export type TUser = {
