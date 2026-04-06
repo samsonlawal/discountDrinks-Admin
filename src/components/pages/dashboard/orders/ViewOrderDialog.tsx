@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { ChevronLeft, Package, Calendar, User, Truck, PoundSterling, Activity, Loader2 } from "lucide-react";
+import { ChevronLeft, Package, Calendar, User, Truck, PoundSterling, Activity, Loader2, ShieldCheck } from "lucide-react";
 import { useGetOrderById, useUpdateOrderStatus } from "@/hooks/api/orders";
 import { showSuccessToast } from "@/utils/toaster";
 import {
@@ -214,26 +214,59 @@ export default function ViewOrderDialog({
                       <div className="p-6">
                         <div className="space-y-3">
                           <div className="flex flex-row items-center justify-start gap-1">
-                            <p className="text-sm text-gray-500 w-[80px]">Name:</p>{" "}
+                            <p className="text-sm text-gray-500 w-[100px]">Name:</p>{" "}
                             <p className="text-sm text-gray-900">
                               {order.user?.name || "Guest"}
                             </p>
                           </div>
                           <div className="flex flex-row items-center justify-start gap-1">
-                            <p className="text-sm text-gray-500 w-[80px]">Email:</p>{" "}
+                            <p className="text-sm text-gray-500 w-[100px]">Email:</p>{" "}
                             <p className="text-sm text-gray-900">
                               {order.user?.email || "-"}
                             </p>
                           </div>
                           <div className="flex flex-row items-center justify-start gap-1">
-                            <p className="text-sm text-gray-500 w-[80px]">Phone:</p>{" "}
+                            <p className="text-sm text-gray-500 w-[100px]">Phone:</p>{" "}
                             <p className="text-sm text-gray-900">
                               {order.user?.phone || "-"}
                             </p>
                           </div>
+                          <div className="flex flex-row items-center justify-start gap-1">
+                            <p className="text-sm text-gray-500 w-[100px]">DOB:</p>{" "}
+                            <p className="text-sm text-gray-900">
+                              {order.user?.dob ? new Date(order.user.dob).toLocaleDateString() : "-"}
+                            </p>
+                          </div>
+                          
+                          {/* Age Verification Section */}
+                          {order.ageVerification?.isVerified && (
+                            <div className="pt-2 mt-2 border-t border-gray-50 space-y-3">
+                              <div className="flex flex-row items-center justify-start gap-1">
+                                <p className="text-sm text-gray-500 w-[100px]">Age Status:</p>
+                                <div className="flex items-center gap-1 text-gray-900 text-sm">
+                                  <p className="text-sm text-gray-900">
+                                  {order.ageVerification.isVerified ? "Verified" : "Not Verified"}
+                                </p>
+                                </div>
+                              </div>
+                              <div className="flex flex-row items-center justify-start gap-1">
+                                <p className="text-sm text-gray-500 w-[100px]">IP Address:</p>
+                                <p className="text-sm text-gray-900 font-mono">
+                                  {order.ageVerification.ipAddress || "-"}
+                                </p>
+                              </div>
+                              <div className="flex flex-row items-center justify-start gap-1">
+                                <p className="text-sm text-gray-500 w-[100px]">Timestamp:</p>
+                                <p className="text-sm text-gray-900">
+                                  {order.ageVerification.timestamp ? new Date(order.ageVerification.timestamp).toLocaleString() : "-"}
+                                </p>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
+
 
                     {/* Payment Details Box */}
                     <div className="bg-white border border-gray-100 rounded-sm overflow-hidden">
@@ -293,16 +326,23 @@ export default function ViewOrderDialog({
                       </div>
                       <div className="p-6">
                         <div className="space-y-4">
-                          {order.shippingAddress?.addressLine1 ? (
-                            <div className="flex flex-row justify-start gap-2">
-                              <p className="text-sm text-gray-500 w-[120px] shrink-0">Address:</p>
-                              <div className="text-sm text-gray-900 leading-relaxed">
-                                {order.shippingAddress.addressLine1}
-                                {order.shippingAddress.addressLine2 && <><br />{order.shippingAddress.addressLine2}</>}
-                                <br />{order.shippingAddress.city}, {order.shippingAddress.postCode}
-                                <br />{order.shippingAddress.country}
+                          {order.shippingAddress?.addressLine1 || order.shippingAddress?.addressLine2 ? (
+                            <>
+                              <div className="flex flex-row justify-start gap-2">
+                                <p className="text-sm text-gray-500 w-[120px] shrink-0">Address:</p>
+                                <div className="text-sm text-gray-900 leading-relaxed">
+                                  {order.shippingAddress.addressLine1 || order.shippingAddress.addressLine2}
+                                  <br />{order.shippingAddress.city}, {order.shippingAddress.postCode}
+                                  <br />{order.shippingAddress.country}
+                                </div>
                               </div>
-                            </div>
+                              <div className="flex flex-row items-center justify-start gap-2">
+                                <p className="text-sm text-gray-500 w-[120px]">Phone:</p>
+                                <p className="text-sm text-gray-900">
+                                  {order.shippingAddress.phone || "-"}
+                                </p>
+                              </div>
+                            </>
                           ) : (
                             <div className="flex flex-row items-center gap-2">
                               <p className="text-sm text-gray-500 w-[120px]">Method:</p>
@@ -390,11 +430,6 @@ export default function ViewOrderDialog({
                           })}
                         </div>
                         
-                        {!nextStep && status === 'delivered' && (
-                          <div className="mt-8 p-3 bg-gray-50 rounded border border-gray-100 flex items-center justify-center gap-2">
-                            <span className="text-xs font-bold text-gray-700 uppercase tracking-widest">Order Completed</span>
-                          </div>
-                        )}
                       </div>
                     </div>
                   </div>
