@@ -8,6 +8,12 @@ import BrandsService from "@/services/brands";
 export const useGetBrands = () => {
   const [loading, setLoading] = useState(false);
   const [brands, setBrands] = useState<any[]>([]);
+  const [pagination, setPagination] = useState({
+    total: 0,
+    page: 1,
+    limit: 10,
+    pages: 0,
+  });
 
   const fetchBrands = async (queries?: IFetchBrandQuery) => {
     setLoading(true);
@@ -20,6 +26,21 @@ export const useGetBrands = () => {
           brand.status?.toLowerCase() || (brand.isActive ? "active" : "inactive"),
       }));
       setBrands(mappedData);
+
+      if (res?.data?.pagination) {
+        setPagination(res.data.pagination);
+      } else if (res?.data?.meta) {
+        setPagination(res.data.meta);
+      } else {
+        // Fallback: if no pagination/meta, use the length of the returned data
+        setPagination({
+          total: mappedData.length,
+          page: queries?.page || 1,
+          limit: queries?.limit || 10,
+          pages: 1,
+        });
+      }
+
       return mappedData;
     } catch (error: Error | AxiosError | any) {
       showErrorToast({
@@ -32,7 +53,7 @@ export const useGetBrands = () => {
     }
   };
 
-  return { loading, brands, fetchBrands };
+  return { loading, brands, pagination, fetchBrands };
 };
 
 // Hook for fetching a single brand by ID

@@ -197,7 +197,7 @@ const columns = (
       };
       return (
         <span
-          className={`px-2.5 py-1 rounded-sm text-[10px] font-bold uppercase tracking-wider border w-fit ${getStatusColor(status)}`}
+          className={`px-2.5 py-1 rounded-sm text-[10px] font-bold uppercase tracking-wider border w-fit capitalize ${getStatusColor(status)}`}
         >
           {status}
         </span>
@@ -256,7 +256,14 @@ function OrdersPage() {
   };
 
   const handleFetch = () => {
-    const status = activeTab?.title === "All" ? undefined : activeTab?.title?.toLowerCase();
+    let status = activeTab?.title === "All" ? undefined : activeTab?.title?.toLowerCase();
+    
+    // If "Completed" is selected, we might want to fetch both "completed" and "delivered"
+    // For now, if the user requested "delivered" to be shown in "Completed", we can set status to "delivered" or a list
+    if (status === "completed") {
+      status = "delivered"; // User specifically asked for delivered orders to show here
+    }
+
     fetchOrders({ 
       page: queryObject.page, 
       limit: 10, 
@@ -270,9 +277,11 @@ function OrdersPage() {
   }, [queryObject.page, queryObject.search, queryObject.activeTab]);
 
   const allCount = pagination.total;
-  const processingCount = orders.filter((o) => o.status === "processing").length;
-  const completedCount = orders.filter((o) => o.status === "completed").length;
-  const cancelledCount = orders.filter((o) => o.status === "cancelled").length;
+  const processingCount = orders.filter((o) => o.status?.toLowerCase() === "processing").length;
+  const completedCount = orders.filter((o) => 
+    o.status?.toLowerCase() === "completed" || o.status?.toLowerCase() === "delivered"
+  ).length;
+  const cancelledCount = orders.filter((o) => o.status?.toLowerCase() === "cancelled").length;
 
   const tabsWithCounts: IActiveTab[] = [
     { id: `0`, title: "All", badge: String(allCount), showBadge: activeTab?.id === "0" },
@@ -321,7 +330,7 @@ function OrdersPage() {
                   fetchedCount={orders.length}
                   totalCount={pagination.total}
                   pageSize={pagination.limit}
-                  page={queryObject.page}
+                  page={queryObject.page ?? 1}
                   onChangePage={(val) => setqueryObject((x) => ({ ...x, page: val }))}
                />
             </div>

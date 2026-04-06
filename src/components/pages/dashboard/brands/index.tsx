@@ -11,6 +11,7 @@ import { DebounceInput } from "@/components/molecules/TableFilter/TableFilterSea
 import { useGetBrands } from "@/hooks/api/brands";
 import Tabs, { ITabItem } from "@/components/molecules/Tabs";
 import { IFetchBrandQuery, IBrand } from "@/types";
+import CustomPagination from "@/components/molecules/CustomPagination";
 
 const Search = ({
   value,
@@ -43,7 +44,7 @@ const Search = ({
       <DebounceInput
         type="text"
         placeholder="Search"
-        className="px-[calc(3rem-1px)] py-1.5 outline-none text-[#868FA0] focus:outline-none shadow-[0_1px_1px_0px_rgba(0,0,0,0.10),0_0_0_1px_rgba(70,79,96,0.16)] w-full md:w-70 rounded-[3px]"
+        className="px-11.75 py-1.5 outline-none text-[#868FA0] focus:outline-none shadow-[0_1px_1px_0px_rgba(0,0,0,0.10),0_0_0_1px_rgba(70,79,96,0.16)] w-full md:w-70 rounded-[3px]"
         value={value}
         onChange={(value: string | number) => onChange?.(value)}
       />
@@ -74,7 +75,7 @@ interface IQueryObject extends IFetchBrandQuery {
 }
 
 export default function BrandsPage() {
-  const { brands, fetchBrands, loading } = useGetBrands();
+  const { brands, fetchBrands, loading, pagination } = useGetBrands();
 
   const tabsData: IActiveTab[] = [
     { id: "0", title: "All" },
@@ -90,9 +91,17 @@ export default function BrandsPage() {
 
   const activeTab = queryObject?.activeTab;
 
+  const handleFetch = () => {
+    fetchBrands({ 
+      search: queryObject.search,
+      page: queryObject.page,
+      limit: 10,
+    });
+  };
+
   React.useEffect(() => {
-    fetchBrands({ search: queryObject.search });
-  }, [queryObject.search]);
+    handleFetch();
+  }, [queryObject.search, queryObject.page, queryObject.activeTab]);
 
   // Filter brands based on search and active tab
   const filteredBrands = brands.filter((brand) => {
@@ -111,9 +120,9 @@ export default function BrandsPage() {
   });
 
   // Calculate counts for each tab
-  const allCount = brands.length;
-  const activeCount = brands.filter((brand) => brand.status === "active").length;
-  const inactiveCount = brands.filter((brand) => brand.status !== "active").length;
+  const allCount = pagination.total;
+  const activeCount = brands.filter((brand) => brand.status?.toLowerCase() === "active").length;
+  const inactiveCount = brands.filter((brand) => brand.status?.toLowerCase() !== "active").length;
 
   // Update tabs with counts - only show badge for active tab
   const tabsWithCounts: IActiveTab[] = [
@@ -145,7 +154,7 @@ export default function BrandsPage() {
           checked={table.getIsAllPageRowsSelected()}
           onChange={(e) => table.toggleAllPageRowsSelected(!!e.target.checked)}
           aria-label="Select all"
-          className="translate-y-[2px]"
+          className="translate-y-0.5"
         />
       ),
       cell: ({ row }) => (
@@ -153,7 +162,7 @@ export default function BrandsPage() {
           checked={row.getIsSelected()}
           onChange={(e) => row.toggleSelected(!!e.target.checked)}
           aria-label="Select row"
-          className="translate-y-[2px]"
+          className="translate-y-0.5"
         />
       ),
       enableSorting: false,
@@ -202,7 +211,7 @@ export default function BrandsPage() {
       id: "actions",
       header: "ACTION",
       cell: ({ row }) => (
-        <RowActions brand={row?.original} refresh={() => fetchBrands()} />
+        <RowActions brand={row?.original} refresh={handleFetch} />
       ),
     },
   ];
@@ -210,21 +219,21 @@ export default function BrandsPage() {
   return (
     <DashboardLayout leftTitle="Brands">
       <div className="px-2 md:px-6 min-h-full">
-        <div className="bg-white overflow-hidden">
+        <div className="bg-white overflow-hidden flex flex-col min-h-[calc(100vh-140px)]">
           <div
             className={
-              "mt-[20px] px-1 pt-2 pb-1 flex gap-2 justify-between w-full items-center"
+              "mt-5 px-1 pt-2 pb-1 flex gap-2 justify-between w-full items-center"
             }
           >
             <div className="hidden md:block flex-1 md:flex-none">
               <Search
                 value={queryObject.search}
                 onChange={(value: string) =>
-                  setQueryObject((x) => ({ ...x, search: value }))
+                  setQueryObject((x) => ({ ...x, search: value, page: 1 }))
                 }
               />
             </div>
-            <AddBrandDialog onSave={() => fetchBrands()}>
+            <AddBrandDialog onSave={handleFetch}>
               <button className="px-4 py-1.5 text-sm bg-black text-white rounded-lg hover:bg-gray-800 transition-colors">
                 Add Brand
               </button>
@@ -233,7 +242,7 @@ export default function BrandsPage() {
 
           <div
             className={
-              "relative pt-4"
+              "relative pt-4 flex-1 flex flex-col"
             }
           >
             <div className="pb-4">
@@ -241,14 +250,23 @@ export default function BrandsPage() {
                 data={tabsWithCounts}
                 activeTab={activeTab}
                 onChangeTab={({ item }) => {
-                  setQueryObject((x) => ({ ...x, activeTab: item }));
+                  setQueryObject((x) => ({ ...x, activeTab: item, page: 1 }));
                 }}
               />
             </div>
-            <BrandsTable
-              columns={columns}
-              data={filteredBrands}
-              loading={loading}
+            <div className="flex-1">
+              <BrandsTable
+                columns={columns}
+                data={filteredBrands}
+                loading={loading}
+              />
+            </div>
+            <CustomPagination
+              fetchedCount={brands.length}
+              totalCount={pagination.total}
+              pageSize={pagination.limit}
+              page={queryObject.page ?? 1}
+              onChangePage={(val) => setQueryObject((x) => ({ ...x, page: val }))}
             />
           </div>
         </div>

@@ -25,7 +25,7 @@ class Service {
       description,
       parent_category_id,
       subCategories,
-      isActive: status === "Active",
+      status,
     });
   }
 
@@ -42,7 +42,7 @@ class Service {
       description,
       parent_category_id,
       subCategories,
-      isActive: status === "Active",
+      status,
     });
   }
 

@@ -103,12 +103,12 @@ function CustomPagination({
    const end = Math.min(page * pageSize, totalCount);
 
    return (
-      <div className="flex flex-col md:flex-row items-center gap-3 w-full justify-between py-[12px] border-t border-gray-100 px-[20px]">
+      <div className="flex flex-col md:flex-row items-center gap-3 w-full justify-between py-3 border-t border-gray-100 px-5">
          <div className="flex-1 text-gray-600 text-sm font-normal">
             Showing <span className="font-normal">{start}</span> - <span className="font-normal">{end}</span> of <span className="font-normal">{totalCount}</span> results
          </div>
-         <Pagination className=" flex justify-end flex-[2]">
-            <PaginationContent className="max-sm:gap-0">
+         <Pagination className="flex md:justify-end justify-center flex-2">
+            <PaginationContent className="gap-1">
                <PaginationItem className="cursor-pointer">
                   <PaginationPrevious
                      onClick={() => buildLink(Math.max(page - 1, 1))}

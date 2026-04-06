@@ -11,6 +11,7 @@ import { DebounceInput } from "@/components/molecules/TableFilter/TableFilterSea
 import { useGetCategories } from "@/hooks/api/categories";
 import Tabs, { ITabItem } from "@/components/molecules/Tabs";
 import { IFetchCategoryQuery } from "@/types";
+import CustomPagination from "@/components/molecules/CustomPagination";
 
 type Category = {
   id: string;
@@ -53,7 +54,7 @@ const Search = ({
       <DebounceInput
         type="text"
         placeholder="Search"
-        className="px-[calc(3rem-1px)] py-1.5 outline-none text-[#868FA0] focus:outline-none shadow-[0_1px_1px_0px_rgba(0,0,0,0.10),0_0_0_1px_rgba(70,79,96,0.16)] w-full md:w-70 rounded-[3px]"
+        className="px-11.75 py-1.5 outline-none text-[#868FA0] focus:outline-none shadow-[0_1px_1px_0px_rgba(0,0,0,0.10),0_0_0_1px_rgba(70,79,96,0.16)] w-full md:w-70 rounded-[3px]"
         value={value}
         onChange={(value: string | number) => onChange?.(value)}
       />
@@ -84,7 +85,7 @@ interface IQueryObject extends IFetchCategoryQuery {
 }
 
 export default function CategoriesPage() {
-  const { categories, fetchCategories, loading } = useGetCategories();
+  const { categories, fetchCategories, loading, pagination } = useGetCategories();
 
   const tabsData: IActiveTab[] = [
     { id: "0", title: "All" },
@@ -100,33 +101,46 @@ export default function CategoriesPage() {
 
   const activeTab = queryObject?.activeTab;
 
+  const handleFetch = () => {
+    fetchCategories({ 
+      search: queryObject.search,
+      page: queryObject.page,
+      limit: 10,
+    });
+  };
+
   React.useEffect(() => {
-    fetchCategories({ search: queryObject.search });
-  }, [queryObject.search]);
+    handleFetch();
+  }, [queryObject.search, queryObject.page, queryObject.activeTab]);
 
   // Filter categories based on search and active tab
   const filteredCategories = categories.filter((category) => {
+    if (!category) return false;
+    
+    const categoryName = category.name || "";
+    const categoryDescription = category.description || "";
+    const categoryStatus = category.status || "";
+
     const matchesSearch =
-      category.name.toLowerCase().includes(queryObject.search.toLowerCase()) ||
-      category.description
-        ?.toLowerCase()
-        .includes(queryObject.search.toLowerCase());
+      categoryName.toLowerCase().includes(queryObject.search.toLowerCase()) ||
+      categoryDescription.toLowerCase().includes(queryObject.search.toLowerCase());
 
     const matchesTab =
-      activeTab.title === "All" ||
-      (activeTab.title === "Active" && category.status === "Active") ||
-      (activeTab.title === "Inactive" && category.status === "Inactive");
+      !activeTab || 
+      activeTab.title?.toLowerCase() === "all" ||
+      (activeTab.title?.toLowerCase() === "active" && categoryStatus.toLowerCase() === "active") ||
+      (activeTab.title?.toLowerCase() === "inactive" && categoryStatus.toLowerCase() === "inactive");
 
     return matchesSearch && matchesTab;
   });
 
   // Calculate counts for each tab
-  const allCount = categories.length;
+  const allCount = pagination.total;
   const activeCount = categories.filter(
-    (cat) => cat.status === "Active",
+    (cat) => cat?.status?.toLowerCase() === "active",
   ).length;
   const inactiveCount = categories.filter(
-    (cat) => cat.status === "Inactive",
+    (cat) => cat?.status?.toLowerCase() === "inactive",
   ).length;
 
   // Update tabs with counts - only show badge for active tab
@@ -134,20 +148,20 @@ export default function CategoriesPage() {
     {
       id: "0",
       title: "All",
-      badge: String(allCount),
-      showBadge: activeTab.id === "0",
+      badge: String(allCount || 0),
+      showBadge: activeTab?.id === "0",
     },
     {
       id: "1",
       title: "Active",
-      badge: String(activeCount),
-      showBadge: activeTab.id === "1",
+      badge: String(activeCount || 0),
+      showBadge: activeTab?.id === "1",
     },
     {
       id: "2",
       title: "Inactive",
-      badge: String(inactiveCount),
-      showBadge: activeTab.id === "2",
+      badge: String(inactiveCount || 0),
+      showBadge: activeTab?.id === "2",
     },
   ];
 
@@ -159,7 +173,7 @@ export default function CategoriesPage() {
           checked={table.getIsAllPageRowsSelected()}
           onChange={(e) => table.toggleAllPageRowsSelected(!!e.target.checked)}
           aria-label="Select all"
-          className="translate-y-[2px]"
+          className="translate-y-0.5"
         />
       ),
       cell: ({ row }) => (
@@ -167,7 +181,7 @@ export default function CategoriesPage() {
           checked={row.getIsSelected()}
           onChange={(e) => row.toggleSelected(!!e.target.checked)}
           aria-label="Select row"
-          className="translate-y-[2px]"
+          className="translate-y-0.5"
         />
       ),
       enableSorting: false,
@@ -211,7 +225,7 @@ export default function CategoriesPage() {
         if (subCategories.length === 0) return <span className="text-gray-400 text-sm">None</span>;
         
         return (
-          <div className="flex flex-wrap gap-1 max-w-[380px]">
+          <div className="flex flex-wrap gap-1 max-w-95">
             {subCategories.slice(0, 4).map((subCategory, i) => (
               <span key={i} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
                 {subCategory}
@@ -238,8 +252,8 @@ export default function CategoriesPage() {
         const status = row.getValue("status") as string;
         return (
           <span
-            className={`px-2 py-0.5 rounded-md text-xs font-medium ${
-              status === "Active"
+            className={`px-2 py-0.5 rounded-md text-xs font-medium capitalize ${
+              status?.toLowerCase() === "active"
                 ? "bg-green-100 text-green-800"
                 : "bg-gray-100 text-gray-800"
             }`}
@@ -261,7 +275,7 @@ export default function CategoriesPage() {
       cell: ({ row }) => (
         <RowActions
           category={row?.original}
-          refresh={() => fetchCategories()}
+          refresh={handleFetch}
         />
       ),
     },
@@ -270,21 +284,21 @@ export default function CategoriesPage() {
   return (
     <DashboardLayout leftTitle="Categories">
       <div className="px-2 md:px-6 min-h-full">
-        <div className="bg-white overflow-hidden">
+        <div className="bg-white overflow-hidden flex flex-col min-h-[calc(100vh-140px)]">
           <div
             className={
-              "mt-[20px] px-1 pt-2 pb-1 flex gap-2 justify-between w-full items-center"
+              "mt-5 px-1 pt-2 pb-1 flex gap-2 justify-between w-full items-center"
             }
           >
             <div className="hidden md:block flex-1 md:flex-none">
               <Search
                 value={queryObject.search}
                 onChange={(value: string) =>
-                  setQueryObject((x) => ({ ...x, search: value }))
+                  setQueryObject((x) => ({ ...x, search: value, page: 1 }))
                 }
               />
             </div>
-            <AddCategoryDialog onSave={() => fetchCategories()}>
+            <AddCategoryDialog onSave={handleFetch}>
               <button className="px-4 py-1.5 text-sm bg-black text-white rounded-lg hover:bg-gray-800 transition-colors">
                 Add Category
               </button>
@@ -293,7 +307,7 @@ export default function CategoriesPage() {
 
           <div
             className={
-              "relative pt-4"
+              "relative pt-4 flex-1 flex flex-col"
             }
           >
             <div className="pb-4">
@@ -301,14 +315,23 @@ export default function CategoriesPage() {
                 data={tabsWithCounts}
                 activeTab={activeTab}
                 onChangeTab={({ item }) => {
-                  setQueryObject((x) => ({ ...x, activeTab: item }));
+                  setQueryObject((x) => ({ ...x, activeTab: item, page: 1 }));
                 }}
               />
             </div>
-            <CategoriesTable
-              columns={columns}
-              data={filteredCategories}
-              loading={loading}
+            <div className="flex-1">
+              <CategoriesTable
+                columns={columns}
+                data={filteredCategories}
+                loading={loading}
+              />
+            </div>
+            <CustomPagination
+              fetchedCount={categories.length}
+              totalCount={pagination.total}
+              pageSize={pagination.limit}
+              page={queryObject.page ?? 1}
+              onChangePage={(val) => setQueryObject((x) => ({ ...x, page: val }))}
             />
           </div>
         </div>

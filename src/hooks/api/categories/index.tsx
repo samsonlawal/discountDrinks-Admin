@@ -8,20 +8,50 @@ import CategoriesService from "@/services/categories";
 export const useGetCategories = () => {
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<any[]>([]);
+  const [pagination, setPagination] = useState({
+    total: 0,
+    page: 1,
+    limit: 10,
+    pages: 0,
+  });
 
   const fetchCategories = async (query?: IFetchCategoryQuery) => {
     setLoading(true);
     try {
       const res = await CategoriesService.fetchCategories(query || {});
       // Transform the data to match expected format
-      const transformedData = (res?.data?.data || []).map((category: any) => ({
-        ...category,
-        status: category.isActive ? "Active" : "Inactive",
-        createdDate: category.createdAt
-          ? new Date(category.createdAt).toLocaleDateString()
-          : "",
-      }));
+      const transformedData = (res?.data?.data || []).map((category: any) => {
+        let status = "Inactive";
+        if (category.status) {
+          status = category.status.charAt(0).toUpperCase() + category.status.slice(1).toLowerCase();
+        } else if (category.isActive !== undefined) {
+          status = category.isActive ? "Active" : "Inactive";
+        }
+        
+        return {
+          ...category,
+          status,
+          createdDate: category.createdAt
+            ? new Date(category.createdAt).toLocaleDateString()
+            : "",
+        };
+      });
       setCategories(transformedData);
+
+      if (res?.data?.pagination) {
+        setPagination(res.data.pagination);
+      } else if (res?.data?.meta) {
+        setPagination(res.data.meta);
+      } else {
+        // Fallback: if no pagination/meta, use the length of the returned data
+        setPagination({
+          total: transformedData.length,
+          page: query?.page || 1,
+          limit: query?.limit || 10,
+          pages: 1,
+        });
+      }
+
       return transformedData;
     } catch (error: Error | AxiosError | any) {
       showErrorToast({
@@ -34,7 +64,7 @@ export const useGetCategories = () => {
     }
   };
 
-  return { loading, categories, fetchCategories };
+  return { loading, categories, pagination, fetchCategories };
 };
 
 // Hook for fetching a single category by ID

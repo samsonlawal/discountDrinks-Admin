@@ -8,13 +8,12 @@ import TagsService from "@/services/tags";
 export const useGetTags = () => {
   const [loading, setLoading] = useState(false);
   const [tags, setTags] = useState<any[]>([]);
-
-  //  const [meta, setMeta] = useState<{
-  //    currentPage: number;
-  //    nextPage: number;
-  //    totalPages: number;
-  //    totalRecords: number;
-  //  }>();
+  const [pagination, setPagination] = useState({
+    total: 0,
+    page: 1,
+    limit: 10,
+    pages: 0,
+  });
 
   const fetchTags = async (queries?: IFetchTagQuery) => {
     setLoading(true);
@@ -27,12 +26,21 @@ export const useGetTags = () => {
           tag.status?.toLowerCase() || (tag.isActive ? "active" : "inactive"),
       }));
       setTags(mappedData);
-      //  setMeta({
-      //    currentPage: res?.data?.data?.currentPage,
-      //    nextPage: res?.data?.data?.nextPage,
-      //    totalPages: res?.data?.data?.totalPages,
-      //    totalRecords: res?.data?.data?.totalRecords,
-      //  });
+
+      if (res?.data?.pagination) {
+        setPagination(res.data.pagination);
+      } else if (res?.data?.meta) {
+        setPagination(res.data.meta);
+      } else {
+        // Fallback: if no pagination/meta, use the length of the returned data
+        setPagination({
+          total: mappedData.length,
+          page: queries?.page || 1,
+          limit: queries?.limit || 10,
+          pages: 1,
+        });
+      }
+
       console.log(res);
       return mappedData;
     } catch (error: Error | AxiosError | any) {
@@ -46,7 +54,7 @@ export const useGetTags = () => {
     }
   };
 
-  return { loading, tags, fetchTags };
+  return { loading, tags, pagination, fetchTags };
 };
 
 // Hook for fetching a single tag by ID

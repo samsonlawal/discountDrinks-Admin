@@ -318,7 +318,7 @@ function ProductsPage() {
                   fetchedCount={products.length}
                   totalCount={pagination.total}
                   pageSize={pagination.limit}
-                  page={queryObject.page}
+                  page={queryObject.page ?? 1}
                   onChangePage={(val) => setqueryObject((x) => ({ ...x, page: val }))}
                />
             </div>

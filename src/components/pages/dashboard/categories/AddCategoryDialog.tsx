@@ -41,17 +41,24 @@ export default function AddCategoryDialog({
   // Update form when category prop changes or dialog opens
   useEffect(() => {
     if (open && category) {
+      let initialStatus = "";
+      if (category.status) {
+        initialStatus = category.status.toLowerCase();
+      } else if (category.isActive !== undefined) {
+        initialStatus = category.isActive ? "active" : "inactive";
+      }
+      
       setFormData({
         name: category.name || "",
         description: category.description || "",
-        status: category.status ? category.status.toLowerCase() : "",
+        status: initialStatus,
       });
       setSubCategories(category.subCategories || []);
     } else if (open && !category) {
       setFormData({
         name: "",
         description: "",
-        status: "",
+        status: "Active",
       });
       setSubCategories([]);
     }

@@ -12,6 +12,7 @@ import { useGetTags } from "@/hooks/api/tags";
 import TagsService from "@/services/tags";
 import Tabs, { ITabItem } from "@/components/molecules/Tabs";
 import { IFetchTagQuery } from "@/types";
+import CustomPagination from "@/components/molecules/CustomPagination";
 
 type Tag = {
   id: string;
@@ -53,7 +54,7 @@ const Search = ({
       <DebounceInput
         type="text"
         placeholder="Search"
-        className="px-[calc(3rem-1px)] py-1.5 outline-none text-[#868FA0] focus:outline-none shadow-[0_1px_1px_0px_rgba(0,0,0,0.10),0_0_0_1px_rgba(70,79,96,0.16)] w-full md:w-70 rounded-[3px]"
+        className="px-11.75 py-1.5 outline-none text-[#868FA0] focus:outline-none shadow-[0_1px_1px_0px_rgba(0,0,0,0.10),0_0_0_1px_rgba(70,79,96,0.16)] w-full md:w-70 rounded-[3px]"
         value={value}
         onChange={(value: string | number) => onChange?.(value)}
       />
@@ -84,7 +85,7 @@ interface IQueryObject extends IFetchTagQuery {
 }
 
 export default function TagsPage() {
-  const { tags, fetchTags, loading } = useGetTags();
+  const { tags, fetchTags, loading, pagination } = useGetTags();
 
   const tabsData: IActiveTab[] = [
     { id: "0", title: "All" },
@@ -100,9 +101,17 @@ export default function TagsPage() {
 
   const activeTab = queryObject?.activeTab;
 
+  const handleFetch = () => {
+    fetchTags({ 
+      search: queryObject.search,
+      page: queryObject.page,
+      limit: 10,
+    });
+  };
+
   React.useEffect(() => {
-    fetchTags({ search: queryObject.search });
-  }, [queryObject.search]);
+    handleFetch();
+  }, [queryObject.search, queryObject.page, queryObject.activeTab]);
 
   // Filter tags based on search and active tab
   const filteredTags = tags.filter((tag) => {
@@ -112,16 +121,16 @@ export default function TagsPage() {
 
     const matchesTab =
       activeTab.title === "All" ||
-      (activeTab.title === "Active" && tag.status) ||
-      (activeTab.title === "Inactive" && !tag.status);
+      (activeTab.title === "Active" && tag.status === "active") ||
+      (activeTab.title === "Inactive" && tag.status === "inactive");
 
     return matchesSearch && matchesTab;
   });
 
   // Calculate counts for each tab
-  const allCount = tags.length;
-  const activeCount = tags.filter((tag) => tag.active).length;
-  const inactiveCount = tags.filter((tag) => !tag.active).length;
+  const allCount = pagination.total;
+  const activeCount = tags.filter((tag) => tag.status?.toLowerCase() === "active").length;
+  const inactiveCount = tags.filter((tag) => tag.status?.toLowerCase() !== "active").length;
 
   // Update tabs with counts - only show badge for active tab
   const tabsWithCounts: IActiveTab[] = [
@@ -153,7 +162,7 @@ export default function TagsPage() {
           checked={table.getIsAllPageRowsSelected()}
           onChange={(e) => table.toggleAllPageRowsSelected(!!e.target.checked)}
           aria-label="Select all"
-          className="translate-y-[2px]"
+          className="translate-y-0.5"
         />
       ),
       cell: ({ row }) => (
@@ -161,7 +170,7 @@ export default function TagsPage() {
           checked={row.getIsSelected()}
           onChange={(e) => row.toggleSelected(!!e.target.checked)}
           aria-label="Select row"
-          className="translate-y-[2px]"
+          className="translate-y-0.5"
         />
       ),
       enableSorting: false,
@@ -216,7 +225,7 @@ export default function TagsPage() {
       id: "actions",
       header: "ACTION",
       cell: ({ row }) => (
-        <RowActions tag={row?.original} refresh={() => fetchTags()} />
+        <RowActions tag={row?.original} refresh={handleFetch} />
       ),
     },
   ];
@@ -224,21 +233,21 @@ export default function TagsPage() {
   return (
     <DashboardLayout leftTitle="Tags">
       <div className="px-2 md:px-6 min-h-full">
-        <div className="bg-white overflow-hidden">
+        <div className="bg-white overflow-hidden flex flex-col min-h-[calc(100vh-140px)]">
           <div
             className={
-              "mt-[20px] px-1 pt-2 pb-1 flex gap-2 justify-between w-full items-center"
+              "mt-5 px-1 pt-2 pb-1 flex gap-2 justify-between w-full items-center"
             }
           >
             <div className="hidden md:block flex-1 md:flex-none">
               <Search
                 value={queryObject.search}
                 onChange={(value: string) =>
-                  setQueryObject((x) => ({ ...x, search: value }))
+                  setQueryObject((x) => ({ ...x, search: value, page: 1 }))
                 }
               />
             </div>
-            <AddTagDialog onSave={() => fetchTags()}>
+            <AddTagDialog onSave={handleFetch}>
               <button className="px-4 py-1.5 text-sm bg-black text-white rounded-lg hover:bg-gray-800 transition-colors">
                 Add Tag
               </button>
@@ -247,7 +256,7 @@ export default function TagsPage() {
 
           <div
             className={
-              "relative pt-4"
+              "relative pt-4 flex-1 flex flex-col"
             }
           >
             <div className="pb-4">
@@ -255,14 +264,23 @@ export default function TagsPage() {
                 data={tabsWithCounts}
                 activeTab={activeTab}
                 onChangeTab={({ item }) => {
-                  setQueryObject((x) => ({ ...x, activeTab: item }));
+                  setQueryObject((x) => ({ ...x, activeTab: item, page: 1 }));
                 }}
               />
             </div>
-            <TagsTable
-              columns={columns}
-              data={filteredTags}
-              loading={loading}
+            <div className="flex-1">
+              <TagsTable
+                columns={columns}
+                data={filteredTags}
+                loading={loading}
+              />
+            </div>
+            <CustomPagination
+              fetchedCount={tags.length}
+              totalCount={pagination.total}
+              pageSize={pagination.limit}
+              page={queryObject.page ?? 1}
+              onChangePage={(val) => setQueryObject((x) => ({ ...x, page: val }))}
             />
           </div>
         </div>

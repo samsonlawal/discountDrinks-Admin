@@ -7,6 +7,7 @@ import { useGetUsers } from "@/hooks/api/users";
 import { useGetProducts } from "@/hooks/api/products";
 import { useGetOrders } from "@/hooks/api/orders";
 import { Checkbox } from "@/components/ui/checkbox";
+import { PoundSterling } from "lucide-react";
 import React from "react";
 
 type Order = {
@@ -133,20 +134,24 @@ function DashboardHome() {
     fetchOrders({ limit: 50 });
   }, []);
 
-  const totalSales = recentOrders.reduce((sum: number, order: any) => {
+  const paidOrders = recentOrders.filter(
+    (order: any) => order.paymentStatus?.toLowerCase() === "paid",
+  );
+
+  const totalSales = paidOrders.reduce((sum: number, order: any) => {
     return sum + (Number(order.amount) || 0);
   }, 0);
 
   const totalOrders = recentOrders.length;
+  const successfulOrdersCount = paidOrders.length;
 
   // Mock data - replace with real API data
   const stats = [
     {
       title: "Total Sales",
       value: `£${totalSales.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-      icon: "/icons/receipt.svg",
+      icon: <PoundSterling className="w-6 h-6" />,
       trend: {
-        // value: `From ${totalOrders} orders`,
         value: "",
         isPositive: true,
       },
@@ -154,10 +159,14 @@ function DashboardHome() {
     },
     {
       title: "Total Orders",
-      value: totalOrders.toString(),
+      value: (
+        <span>
+          {successfulOrdersCount}
+          <span className="text-gray-400 text-[16px] font-medium">/{totalOrders}</span>
+        </span>
+      ),
       icon: "/icons/receipt.svg",
       trend: {
-        // value: `${totalOrders} total orders`,
         value: "",
         isPositive: true,
       },
@@ -206,7 +215,7 @@ function DashboardHome() {
               title={stat.title}
               value={stat.value}
               icon={stat.icon}
-              // trend={stat.trend}
+              trend={stat.trend}
               bgColor={stat.bgColor}
             />
           ))}
