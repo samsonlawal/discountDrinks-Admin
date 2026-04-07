@@ -33,30 +33,29 @@ export const StatCard: React.FC<StatCardProps> = ({
   bgColor = "bg-blue-500",
 }) => {
   return (
-    <Card className="p-6">
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
+    <Card className="p-6 h-full flex flex-col justify-between">
+      <div className="flex-1 flex flex-row items-start gap-4 ">
+                <div className="flex-1">
           <p className="text-sm font-medium text-gray-600 mb-1">{title}</p>
           <div className="text-2xl font-bold text-gray-900">{value}</div>
-          {trend && trend.value && (
-            <p
-              className={`text-sm mt-2 ${trend.isPositive ? "text-green-600" : "text-red-600"}`}
-            >
-              {(trend.showArrow ?? true) && (trend.isPositive ? "↑ " : "↓ ")}
-              {trend.value}
-            </p>
-          )}
         </div>
-        <div className={`${bgColor} p-3 rounded-lg flex items-center justify-center`}>
+        <div className={`${bgColor} p-2 rounded-lg flex items-center justify-center shrink-0`}>
           {typeof icon === "string" ? (
-            <img src={icon} alt={title} className="w-6 h-6 brightness-0 invert" />
+            <img src={icon} alt={title} className="w-5 h-5 brightness-0 invert" />
           ) : (
-            <div className="text-white">
+            <div className="text-white scale-90">
               {icon}
             </div>
           )}
         </div>
+
       </div>
+      {trend && trend.value && (
+        <p className={`text-sm ${trend.isPositive ? "text-green-600" : "text-red-600"} font-medium`}>
+          {(trend.showArrow ?? true) && (trend.isPositive ? "↑ " : "↓ ")}
+          {trend.value}
+        </p>
+      )}
     </Card>
   );
 };

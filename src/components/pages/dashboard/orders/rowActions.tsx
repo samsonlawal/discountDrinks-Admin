@@ -46,14 +46,6 @@ export function RowActions({ order, refresh, onView }: DataTableRowActionsProps)
             />
             <span>View</span>
           </button>
-          <button className="hover:bg-gray-100 w-full flex items-center px-3 py-2 gap-2 cursor-pointer text-[14px] text-[#111111] transition-colors">
-            <img
-              src="/icons/pencil.svg"
-              alt=""
-              className="cursor-pointer w-[18px] h-[18px]"
-            />
-            <span>Edit</span>
-          </button>
 
           <ReuseableDialog
             title="Delete Order"

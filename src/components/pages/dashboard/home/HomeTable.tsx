@@ -89,7 +89,7 @@ function HomeTable<TData, TValue>({
         </div>
       )}
       {/* <div className=" border relative min-h-[440px] overflow-x-auto "> */}
-      <div className=" border relative min-h-[400px] overflow-x-auto rounded-lg ">
+      <div className=" border relative overflow-x-auto rounded-lg ">
         {loading ? (
           <div className=" absolute flex items-center justify-center right-0 top-0 bg-[white]/86  h-full w-full z-[20] pt-[100px]">
             <Spinner className="w-7 h-7 text-gray-600" />

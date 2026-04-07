@@ -6,8 +6,9 @@ import { ColumnDef } from "@tanstack/react-table";
 import { useGetUsers } from "@/hooks/api/users";
 import { useGetProducts } from "@/hooks/api/products";
 import { useGetOrders } from "@/hooks/api/orders";
+import { useGetSubscribers } from "@/hooks/api/subscribers";
 import { Checkbox } from "@/components/ui/checkbox";
-import { PoundSterling } from "lucide-react";
+import { PoundSterling, Users, Mail } from "lucide-react";
 import React from "react";
 
 type Order = {
@@ -57,6 +58,8 @@ const orderColumns: ColumnDef<Order>[] = [
   {
     accessorKey: "paymentStatus",
     header: "Payment",
+    size: 120,
+
     cell: ({ row }) => {
       const pStatus = (row.getValue("paymentStatus") as string || "").toLowerCase();
       const getPStatusColor = (status: string) => {
@@ -83,6 +86,7 @@ const orderColumns: ColumnDef<Order>[] = [
   {
     accessorKey: "amount",
     header: "Amount",
+    size: 80,
     cell: ({ row }) => {
       const amount = row.getValue("amount");
       return <span>£{Number(amount).toLocaleString()}</span>;
@@ -127,11 +131,13 @@ function DashboardHome() {
   const { users, fetchUsers } = useGetUsers();
   const { products, fetchProducts } = useGetProducts();
   const { orders: recentOrders, fetchOrders } = useGetOrders();
+  const { pagination: subPagination, fetchSubscribers } = useGetSubscribers();
 
   React.useEffect(() => {
     fetchUsers();
     fetchProducts();
     fetchOrders({ limit: 50 });
+    fetchSubscribers();
   }, []);
 
   const paidOrders = recentOrders.filter(
@@ -150,7 +156,7 @@ function DashboardHome() {
     {
       title: "Total Sales",
       value: `£${totalSales.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-      icon: <PoundSterling className="w-6 h-6" />,
+      icon: <PoundSterling className="w-5 h-5" />,
       trend: {
         value: "",
         isPositive: true,
@@ -188,21 +194,50 @@ function DashboardHome() {
       value: products.length.toString(),
       icon: "/icons/tag.svg",
       trend: {
-        // value: `${products.length} total products`,
         value: "",
         isPositive: true,
       },
       bgColor: "bg-orange-500",
     },
+    {
+      title: "Total Subscribers",
+      value: subPagination.total.toString(),
+      icon: <Mail className="w-5 h-5 text-white" />,
+      trend: {
+        value: "",
+        isPositive: true,
+      },
+      bgColor: "bg-emerald-500",
+    },
   ];
 
-  const topProducts = [
-    { name: "Premium Vodka", sales: 145, revenue: "£2,175" },
-    { name: "Craft Beer Pack", sales: 132, revenue: "£1,980" },
-    { name: "Red Wine Bottle", sales: 98, revenue: "£1,470" },
-    { name: "Whiskey Premium", sales: 87, revenue: "£2,610" },
-    { name: "Champagne", sales: 76, revenue: "£3,040" },
-  ];
+  const topProducts = React.useMemo(() => {
+    const productAggregation: { [key: string]: { name: string; sales: number; revenue: number } } = {};
+
+    paidOrders.forEach((order: any) => {
+      (order.items || []).forEach((item: any) => {
+        const name = item.name || "Unknown Product";
+        const quantity = Number(item.quantity) || 0;
+        const price = Number(item.priceAtPurchase || item.price || 0);
+
+        if (!productAggregation[name]) {
+          productAggregation[name] = { name, sales: 0, revenue: 0 };
+        }
+
+        productAggregation[name].sales += quantity;
+        productAggregation[name].revenue += quantity * price;
+      });
+    });
+
+    return Object.values(productAggregation)
+      .sort((a, b) => b.sales - a.sales)
+      .slice(0, 5)
+      .map(item => ({
+        name: item.name,
+        sales: item.sales,
+        revenue: `£${item.revenue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      }));
+  }, [paidOrders]);
 
   return (
     <DashboardLayout leftTitle="Dashboard">
@@ -235,7 +270,7 @@ function DashboardHome() {
                 View all
               </a>
             </div>
-            <HomeTable columns={orderColumns} data={recentOrders.slice(0, 6)} />
+            <HomeTable columns={orderColumns} data={recentOrders.slice(0, 5)} />
           </div>
 
           {/* Top Products */}
@@ -246,17 +281,17 @@ function DashboardHome() {
               </h2>
             </div>
             <div className="space-y-4 p-4">
-              {topProducts.map((product, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">
+               {topProducts.map((product, index) => (
+                <div key={index} className="flex items-center justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate" title={product.name}>
                       {product.name}
                     </p>
                     <p className="text-xs text-gray-500">
                       {product.sales} sales
                     </p>
                   </div>
-                  <p className="text-sm font-semibold text-gray-900">
+                  <p className="text-sm font-semibold text-gray-900 shrink-0">
                     {product.revenue}
                   </p>
                 </div>

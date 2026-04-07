@@ -162,7 +162,7 @@ const columns = (
   {
     accessorKey: "amount",
     header: "Amount",
-    size: 150,
+    size: 90,
     meta: {
       className: "",
     },
