@@ -1,5 +1,5 @@
 import React from "react";
-import { Wine, Shapes } from "lucide-react";
+import { Wine, Shapes, LayoutDashboard } from "lucide-react";
 
 export type TNavbarLinkTrigger = "url" | "action";
 export type TNavbarLinkAction = "logout";
@@ -18,7 +18,7 @@ export const NAVBAR_TOP_LINKS: INavbarLink[] = [
   {
     id: "1",
     title: "Dashboard",
-    icon: "/icons/house.svg",
+    icon: LayoutDashboard,
     url: "/dashboard",
     trigger: "url",
   },

@@ -234,7 +234,7 @@ export default function ViewOrderDialog({
                           <div className="flex flex-row items-center justify-start gap-1">
                             <p className="text-sm text-gray-500 w-[100px]">DOB:</p>{" "}
                             <p className="text-sm text-gray-900">
-                              {order.user?.dob ? new Date(order.user.dob).toLocaleDateString() : "-"}
+                              {order.ageVerification?.dob ? new Date(order.ageVerification.dob).toLocaleDateString() : "-"}
                             </p>
                           </div>
                           

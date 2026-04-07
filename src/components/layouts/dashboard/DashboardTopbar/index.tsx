@@ -3,7 +3,7 @@ import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLogout } from "@/hooks/api/auth";
-import { LogOut } from "lucide-react";
+import { LogOut, LayoutDashboard, CircleUser } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,22 +30,18 @@ function DashboardTopbar({ leftTitle }: { leftTitle?: string }) {
 
       <div className="flex gap-4 items-center">
         {/* Dashboard icon that only appears on mobile */}
-        <Link href="/dashboard" className="md:hidden flex items-center">
-          <img
-            src="/icons/house.svg"
-            alt="dashboard-icon"
-            className="w-[20px] h-[20px] object-contain invert"
-          />
+        <Link 
+          href="/dashboard" 
+          className="md:hidden flex items-center justify-center w-fit h-9 rounded-md border border-gray-100 bg-white hover:bg-gray-50 transition-colors gap-2 px-2"
+        >
+          <LayoutDashboard className="w-4 h-4 text-gray-700" /> 
+          <p className="text-gray-700 text-sm">Dashboard</p>
         </Link>
         
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex items-center outline-none cursor-pointer">
-              <img
-                src="/icons/user-circle.svg"
-                alt="user-icon"
-                className="w-6.5 h-6.5 object-contain"
-              />
+            <button className="flex items-center justify-center w-9 h-9 rounded-md border border-gray-100 bg-white hover:bg-gray-50 transition-colors  outline-none cursor-pointer">
+              <CircleUser className="w-5 h-5 text-gray-700" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48 bg-white z-50">
