@@ -6,7 +6,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { useGetUsers } from "@/hooks/api/users";
 import { useGetProducts } from "@/hooks/api/products";
 import { useGetOrders } from "@/hooks/api/orders";
-import { useGetSubscribers } from "@/hooks/api/subscribers";
+// import { useGetSubscribers } from "@/hooks/api/subscribers";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PoundSterling, Users, Mail } from "lucide-react";
 import React from "react";
@@ -131,13 +131,13 @@ function DashboardHome() {
   const { users, fetchUsers } = useGetUsers();
   const { products, fetchProducts } = useGetProducts();
   const { orders: recentOrders, fetchOrders } = useGetOrders();
-  const { pagination: subPagination, fetchSubscribers } = useGetSubscribers();
+  // const { pagination: subPagination, fetchSubscribers } = useGetSubscribers();
 
   React.useEffect(() => {
     fetchUsers();
     fetchProducts();
     fetchOrders({ limit: 50 });
-    fetchSubscribers();
+    // fetchSubscribers();
   }, []);
 
   const paidOrders = recentOrders.filter(
@@ -198,16 +198,6 @@ function DashboardHome() {
         isPositive: true,
       },
       bgColor: "bg-orange-500",
-    },
-    {
-      title: "Total Subscribers",
-      value: subPagination.total.toString(),
-      icon: <Mail className="w-5 h-5 text-white" />,
-      trend: {
-        value: "",
-        isPositive: true,
-      },
-      bgColor: "bg-emerald-500",
     },
   ];
 
