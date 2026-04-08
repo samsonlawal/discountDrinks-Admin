@@ -14,6 +14,12 @@ class Service {
     });
   }
 
+  fetchNewsletterStats() {
+    return axios.get(`${env.api.subscribers}/stats`, {
+      withCredentials: true,
+    });
+  }
+
   // Add more methods as needed (e.g., delete, export)
 }
 

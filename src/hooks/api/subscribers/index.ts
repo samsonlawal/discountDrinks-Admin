@@ -7,6 +7,7 @@ import SubscribersService from "@/services/subscribers";
 export const useGetSubscribers = () => {
   const [loading, setLoading] = useState(false);
   const [subscribers, setSubscribers] = useState<any[]>([]);
+  const [totalSubscribers, setTotalSubscribers] = useState(0);
   const [pagination, setPagination] = useState({
     total: 0,
     page: 1,
@@ -31,7 +32,7 @@ export const useGetSubscribers = () => {
       return data;
     } catch (error: Error | AxiosError | any) {
       showErrorToast({
-        message: error?.response?.data?.message || "Failed to fetch subscribers",
+         message: error?.response?.data?.message || "Failed to fetch subscribers",
         description: error?.response?.data?.description || "",
       });
       return [];
@@ -40,5 +41,17 @@ export const useGetSubscribers = () => {
     }
   };
 
-  return { loading, subscribers, pagination, fetchSubscribers };
+  const fetchStats = async () => {
+    try {
+      const res = await SubscribersService.fetchNewsletterStats();
+      const count = res?.data?.data?.totalSubscribers || 0;
+      setTotalSubscribers(count);
+      return count;
+    } catch (error: any) {
+        console.error("Failed to fetch subscriber stats:", error);
+        return 0;
+    }
+  };
+
+  return { loading, subscribers, totalSubscribers, pagination, fetchSubscribers, fetchStats };
 };
